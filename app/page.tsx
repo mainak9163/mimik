@@ -1,4 +1,5 @@
 "use client"
+
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { FaceLandmarker, FaceLandmarkerOptions, FilesetResolver } from "@mediapipe/tasks-vision";
 import { Color, Euler, Matrix4 } from 'three';
@@ -14,7 +15,7 @@ import { Avatar as AvatarComponent, AvatarFallback } from "@/components/ui/avata
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
-const DEFAULT_AVATAR_URL = "/models/astra_glim.glb";
+const DEFAULT_AVATAR_URL = "./models/astra_glim.glb";
 
 // MediaPipe configuration
 let video;
@@ -40,67 +41,169 @@ function Avatar({ url }) {
   const { nodes } = useGraph(scene);
   const previousRotationRef = useRef(new Euler());
   const frameCountRef = useRef(0);
+  const headMeshRef = useRef([]);
+  
+  // Store the original position/rotation of nodes to avoid distortion
+  const initialStateRef = useRef(null);
+
   useEffect(() => {
     // Clear the head mesh array before adding new meshes
-    headMesh = [];
+    headMeshRef.current = [];
     
-    // Log all available nodes for reference
-    console.log("Available nodes:", Object.keys(nodes));
+    // Log the available nodes for debugging
+    console.log("Available nodes:", nodes);
     
-    // Only add nodes that actually exist and have morphTargets
-    Object.values(nodes).forEach(node => {
-      if (node && node.isMesh && node.morphTargetDictionary && node.morphTargetInfluences) {
-        headMesh.push(node);
-        console.log("Added mesh with morphTargets:", node.name);
-      }
-    });
+    // Store initial state of all relevant nodes to properly reset them
+    if (!initialStateRef.current) {
+      initialStateRef.current = {};
+      
+      // Save initial positions and rotations of all nodes to prevent breaking
+      // This captures the complete hierarchy to ensure proper restoration
+      Object.keys(nodes).forEach(nodeName => {
+        if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
+          initialStateRef.current[nodeName] = {
+            position: nodes[nodeName].position.clone(),
+            rotation: nodes[nodeName].rotation.clone(),
+            quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
+            scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
+          };
+        }
+      });
+    }
     
-    console.log("Found head meshes with morphTargets:", headMesh.length);
+    // Only add head-related meshes for blendshapes
+    if (nodes.head) headMeshRef.current.push(nodes.head);
+    if (nodes.head003) headMeshRef.current.push(nodes.head003);
+    if (nodes.head004) headMeshRef.current.push(nodes.head004);
+    if (nodes.Eyes_GEO) headMeshRef.current.push(nodes.Eyes_GEO);
+    if (nodes.tongue) headMeshRef.current.push(nodes.tongue);
+    if (nodes.eyeL) headMeshRef.current.push(nodes.eyeL);
+    if (nodes.eyeR) headMeshRef.current.push(nodes.eyeR);
+    
+    // Log how many head meshes were found
+    console.log("Found head meshes:", headMeshRef.current.length);
     
     // Initialize rotation if not already set
     if (!rotation) {
       rotation = new Euler(0, 0, 0);
     }
+    
+    // Complete reset of the model to initial state to prevent distortion
+    Object.entries(initialStateRef.current || {}).forEach(([nodeName, initialState]) => {
+      if (nodes[nodeName]) {
+        // Only reset if we have the initial values
+        if (initialState.position) nodes[nodeName].position.copy(initialState.position);
+        if (initialState.rotation) nodes[nodeName].rotation.copy(initialState.rotation);
+        if (initialState.quaternion && nodes[nodeName].quaternion) {
+          nodes[nodeName].quaternion.copy(initialState.quaternion);
+        }
+        if (initialState.scale && nodes[nodeName].scale) {
+          nodes[nodeName].scale.copy(initialState.scale);
+        }
+      }
+    });
+    
+    return () => {
+      // Clean up any resources when the Avatar changes
+    };
   }, [nodes, url]);
 
   useFrame(() => {
     frameCountRef.current += 1;
     
+    // We'll use a different approach - instead of resetting completely,
+    // we'll coordinate the body movement with the head to create natural motion
+    
+    // Partially reset only the most problematic parts to prevent accumulated errors
+    if (initialStateRef.current && frameCountRef.current % 30 === 0) {
+      // Only reset parts that should remain completely static
+      const staticParts = ['root', 'clavivleL', 'clavivleR'];
+      
+      staticParts.forEach(nodeName => {
+        if (nodes[nodeName] && initialStateRef.current[nodeName]) {
+          if (initialStateRef.current[nodeName].position) {
+            nodes[nodeName].position.copy(initialStateRef.current[nodeName].position);
+          }
+          
+          if (initialStateRef.current[nodeName].quaternion && nodes[nodeName].quaternion) {
+            nodes[nodeName].quaternion.copy(initialStateRef.current[nodeName].quaternion);
+          }
+        }
+      });
+    }
+    
     // Apply blendshapes if they exist
     if (blendshapes && blendshapes.length > 0) {
-      // Apply blendshapes cautiously
       blendshapes.forEach(element => {
-        headMesh.forEach(mesh => {
+        headMeshRef.current.forEach(mesh => {
           if (mesh && mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
             const index = mesh.morphTargetDictionary[element.categoryName];
             if (index !== undefined && index >= 0) {
+              // Apply a smoothed value to avoid sudden movements
               mesh.morphTargetInfluences[index] = element.score;
             }
           }
         });
       });
       
-      // Apply rotation very conservatively
-      if (rotation) {
-        // Find head node - be very careful with rotation
-        if (nodes.head) {
-          // Apply gentler rotation
-          nodes.head.rotation.x = rotation.x * 0.7;
-          nodes.head.rotation.y = rotation.y * 0.7;
-          nodes.head.rotation.z = rotation.z * 0.7;
-        }
+      // Define rotation and limits for head movement
+      const MAX_X_ROTATION = 0.5;  // Limit max up/down movement
+      const MAX_Y_ROTATION = 0.6;  // Limit max left/right movement
+      const MAX_Z_ROTATION = 0.3;  // Limit max tilting
+      
+      // Clamp rotation values to prevent extreme distortion
+      const clampedRotation = {
+        x: Math.max(-MAX_X_ROTATION, Math.min(MAX_X_ROTATION, rotation.x)),
+        y: Math.max(-MAX_Y_ROTATION, Math.min(MAX_Y_ROTATION, rotation.y)),
+        z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
+      };
+      
+      // Apply rotation to head node with proper null checks
+      if (nodes.head && initialStateRef.current && initialStateRef.current.head) {
+        nodes.head.rotation.set(
+          initialStateRef.current.head.rotation.x + (clampedRotation.x * 0.7),
+          initialStateRef.current.head.rotation.y + (clampedRotation.y * 0.7),
+          initialStateRef.current.head.rotation.z + (clampedRotation.z * 0.4)
+        );
+      }
+      
+      // Add slight movement to head004 if it exists (might be another part of the head)
+      if (nodes.head004 && initialStateRef.current && initialStateRef.current.head004) {
+        nodes.head004.rotation.set(
+          initialStateRef.current.head004.rotation.x + (clampedRotation.x * 0.7),
+          initialStateRef.current.head004.rotation.y + (clampedRotation.y * 0.7),
+          initialStateRef.current.head004.rotation.z + (clampedRotation.z * 0.4)
+        );
+      }
+      
+      // Very subtle rotation for spine to give natural movement without breaking
+      if (nodes.spin && initialStateRef.current && initialStateRef.current.spin) {
+        nodes.spin.rotation.set(
+          initialStateRef.current.spin.rotation.x + (clampedRotation.x * 0.1),
+          initialStateRef.current.spin.rotation.y + (clampedRotation.y * 0.1),
+          initialStateRef.current.spin.rotation.z + (clampedRotation.z * 0.05)
+        );
+      }
+    } else if (frameCountRef.current % 60 === 0) {
+      // Subtle idle animation when no face tracking data
+      const idleTime = Date.now() / 1000;
+      const idleX = Math.sin(idleTime * 0.5) * 0.03;
+      const idleY = Math.sin(idleTime * 0.3) * 0.03;
+      
+      if (nodes.head003 && initialStateRef.current && initialStateRef.current.head003) {
+        nodes.head003.rotation.x = initialStateRef.current.head003.rotation.x + idleX;
+        nodes.head003.rotation.y = initialStateRef.current.head003.rotation.y + idleY;
+      }
+      
+      if (nodes.head && initialStateRef.current && initialStateRef.current.head) {
+        nodes.head.rotation.x = initialStateRef.current.head.rotation.x + idleX;
+        nodes.head.rotation.y = initialStateRef.current.head.rotation.y + idleY;
       }
     }
   });
 
-// Update the primitive component in the Avatar function
-// Adjust the Avatar component's return statement for better positioning:
-return <primitive 
-  object={scene} 
-  position={[0, -1, 0]} 
-  scale={1.0} 
-  rotation={[0, 0, 0]}
-/>
+  // Adjust position and scale for better camera framing
+  return <primitive object={scene} position={[0, -3, -5]} scale={1.9} />;
 }
 
 function App() {
@@ -113,42 +216,6 @@ function App() {
   // Ref to store the animation frame ID for proper cleanup
   const animationFrameRef = useRef(null);
 
-  function analyzeModelStructure(scene) {
-    console.log("Analyzing model structure...");
-    
-    // Find all meshes with morph targets
-    const meshesWithMorphs = [];
-    scene.traverse((node) => {
-      if (node.isMesh && node.morphTargetDictionary && node.morphTargetInfluences) {
-        meshesWithMorphs.push({
-          name: node.name,
-          morphTargets: Object.keys(node.morphTargetDictionary)
-        });
-      }
-    });
-    
-    console.log("Meshes with morph targets:", meshesWithMorphs);
-    
-    // Find all bones that might be relevant for head movement
-    const relevantBones = [];
-    scene.traverse((node) => {
-      if (node.isBone && (
-        node.name.includes('Head') || 
-        node.name.includes('head') || 
-        node.name.includes('Neck') || 
-        node.name.includes('neck') || 
-        node.name.includes('Face') || 
-        node.name.includes('face')
-      )) {
-        relevantBones.push(node.name);
-      }
-    });
-    
-    console.log("Relevant bones:", relevantBones);
-    
-    return { meshesWithMorphs, relevantBones };
-  }
-  
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
       'model/gltf-binary': ['.glb'],
@@ -290,16 +357,7 @@ function App() {
             <Card className="overflow-hidden">
               <CardContent className="p-0">
                 <div className="relative w-full aspect-video bg-muted">
-                <Canvas 
-  className="w-full h-full" 
-  camera={{ 
-    fov: 40, 
-    position: [0, 0, 3], 
-    near: 0.1, 
-    far: 1000 
-  }} 
-  shadows
->
+                  <Canvas className="w-full h-full" camera={{ fov: 25 }} shadows>
                     {/* Improved lighting setup for better model appearance */}
                     <ambientLight intensity={1.2} />
                     <directionalLight 
