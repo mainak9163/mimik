@@ -43,8 +43,10 @@ function Avatar({ url }) {
   const frameCountRef = useRef(0);
   const headMeshRef = useRef([]);
   
-  // Store the original position/rotation of nodes to avoid distortion
+  // Store the original position/rotation of nodes
   const initialStateRef = useRef(null);
+  // Root node reference for whole-body movement
+  const rootRef = useRef(null);
 
   useEffect(() => {
     // Clear the head mesh array before adding new meshes
@@ -54,21 +56,25 @@ function Avatar({ url }) {
     console.log("Available nodes:", nodes);
     
     // Store initial state of all relevant nodes to properly reset them
-    if (!initialStateRef.current) {
-      initialStateRef.current = {};
-      
-      // Save initial positions and rotations of all nodes to prevent breaking
-      // This captures the complete hierarchy to ensure proper restoration
-      Object.keys(nodes).forEach(nodeName => {
-        if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
-          initialStateRef.current[nodeName] = {
-            position: nodes[nodeName].position.clone(),
-            rotation: nodes[nodeName].rotation.clone(),
-            quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
-            scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
-          };
-        }
-      });
+    initialStateRef.current = {};
+    
+    // Save initial positions and rotations of all nodes
+    Object.keys(nodes).forEach(nodeName => {
+      if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
+        initialStateRef.current[nodeName] = {
+          position: nodes[nodeName].position.clone(),
+          rotation: nodes[nodeName].rotation.clone(),
+          quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
+          scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
+        };
+      }
+    });
+    
+    // Store the root node for whole-body movement
+    if (nodes.root) {
+      rootRef.current = nodes.root;
+    } else if (nodes.Scene) {
+      rootRef.current = nodes.Scene;
     }
     
     // Only add head-related meshes for blendshapes
@@ -80,15 +86,21 @@ function Avatar({ url }) {
     if (nodes.eyeL) headMeshRef.current.push(nodes.eyeL);
     if (nodes.eyeR) headMeshRef.current.push(nodes.eyeR);
     
-    // Log how many head meshes were found
-    console.log("Found head meshes:", headMeshRef.current.length);
-    
     // Initialize rotation if not already set
     if (!rotation) {
       rotation = new Euler(0, 0, 0);
     }
     
-    // Complete reset of the model to initial state to prevent distortion
+    // Complete reset of the model to initial state
+    resetModelToInitialState();
+    
+    return () => {
+      // Clean up any resources when the Avatar changes
+    };
+  }, [nodes, url]);
+
+  // Function to reset the model to its initial state
+  const resetModelToInitialState = () => {
     Object.entries(initialStateRef.current || {}).forEach(([nodeName, initialState]) => {
       if (nodes[nodeName]) {
         // Only reset if we have the initial values
@@ -102,38 +114,20 @@ function Avatar({ url }) {
         }
       }
     });
-    
-    return () => {
-      // Clean up any resources when the Avatar changes
-    };
-  }, [nodes, url]);
+  };
 
+  // Coordinate the movement of the entire body
   useFrame(() => {
     frameCountRef.current += 1;
     
-    // We'll use a different approach - instead of resetting completely,
-    // we'll coordinate the body movement with the head to create natural motion
-    
-    // Partially reset only the most problematic parts to prevent accumulated errors
-    if (initialStateRef.current && frameCountRef.current % 30 === 0) {
-      // Only reset parts that should remain completely static
-      const staticParts = ['root', 'clavivleL', 'clavivleR'];
-      
-      staticParts.forEach(nodeName => {
-        if (nodes[nodeName] && initialStateRef.current[nodeName]) {
-          if (initialStateRef.current[nodeName].position) {
-            nodes[nodeName].position.copy(initialStateRef.current[nodeName].position);
-          }
-          
-          if (initialStateRef.current[nodeName].quaternion && nodes[nodeName].quaternion) {
-            nodes[nodeName].quaternion.copy(initialStateRef.current[nodeName].quaternion);
-          }
-        }
-      });
+    // Reset the entire model periodically to prevent accumulated distortions
+    if (frameCountRef.current % 180 === 0) {
+      resetModelToInitialState();
     }
     
-    // Apply blendshapes if they exist
+    // Apply blendshapes if they exist for facial expressions
     if (blendshapes && blendshapes.length > 0) {
+      // Apply facial blendshapes to head meshes
       blendshapes.forEach(element => {
         headMeshRef.current.forEach(mesh => {
           if (mesh && mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
@@ -146,10 +140,10 @@ function Avatar({ url }) {
         });
       });
       
-      // Define rotation and limits for head movement
-      const MAX_X_ROTATION = 0.5;  // Limit max up/down movement
-      const MAX_Y_ROTATION = 0.6;  // Limit max left/right movement
-      const MAX_Z_ROTATION = 0.3;  // Limit max tilting
+      // Movement parameters and limits
+      const MAX_X_ROTATION = 0.5;  // Up/down movement
+      const MAX_Y_ROTATION = 0.6;  // Left/right movement
+      const MAX_Z_ROTATION = 0.3;  // Tilting
       
       // Clamp rotation values to prevent extreme distortion
       const clampedRotation = {
@@ -158,46 +152,172 @@ function Avatar({ url }) {
         z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
       };
       
-      // Apply rotation to head node with proper null checks
-      if (nodes.head && initialStateRef.current && initialStateRef.current.head) {
-        nodes.head.rotation.set(
-          initialStateRef.current.head.rotation.x + (clampedRotation.x * 0.7),
-          initialStateRef.current.head.rotation.y + (clampedRotation.y * 0.7),
-          initialStateRef.current.head.rotation.z + (clampedRotation.z * 0.4)
+      // Apply whole body movement using root node (primary approach)
+      if (rootRef.current && initialStateRef.current?.root) {
+        // Move the entire body as a unit with the root node
+        rootRef.current.rotation.set(
+          initialStateRef.current.root.rotation.x + (clampedRotation.x * 0.4),
+          initialStateRef.current.root.rotation.y + (clampedRotation.y * 0.6),
+          initialStateRef.current.root.rotation.z + (clampedRotation.z * 0.3)
         );
+        
+        // Add subtle body follow-through for natural movement
+        // This creates a slight delay in lower body parts
+        
+        // Apply coordinated movements to supplemental body parts
+        // These movements will be smaller than the main root movement
+        
+        // 1. Head movements (slightly enhanced from root)
+        if (nodes.head && initialStateRef.current?.head) {
+          nodes.head.rotation.set(
+            initialStateRef.current.head.rotation.x + (clampedRotation.x * 0.15),
+            initialStateRef.current.head.rotation.y + (clampedRotation.y * 0.15),
+            initialStateRef.current.head.rotation.z + (clampedRotation.z * 0.1)
+          );
+        }
+        
+        if (nodes.head003 && initialStateRef.current?.head003) {
+          nodes.head003.rotation.set(
+            initialStateRef.current.head003.rotation.x + (clampedRotation.x * 0.15),
+            initialStateRef.current.head003.rotation.y + (clampedRotation.y * 0.15),
+            initialStateRef.current.head003.rotation.z + (clampedRotation.z * 0.1)
+          );
+        }
+        
+        if (nodes.head004 && initialStateRef.current?.head004) {
+          nodes.head004.rotation.set(
+            initialStateRef.current.head004.rotation.x + (clampedRotation.x * 0.15),
+            initialStateRef.current.head004.rotation.y + (clampedRotation.y * 0.15),
+            initialStateRef.current.head004.rotation.z + (clampedRotation.z * 0.1)
+          );
+        }
+        
+        // 2. Spine movement (smaller movement for naturalism)
+        if (nodes.spin && initialStateRef.current?.spin) {
+          nodes.spin.rotation.set(
+            initialStateRef.current.spin.rotation.x + (clampedRotation.x * 0.1),
+            initialStateRef.current.spin.rotation.y + (clampedRotation.y * 0.1),
+            initialStateRef.current.spin.rotation.z + (clampedRotation.z * 0.05)
+          );
+        }
+        
+        // 3. Arms follow-through (subtle counter-movement for natural physics)
+        if (nodes.armL && initialStateRef.current?.armL) {
+          nodes.armL.rotation.set(
+            initialStateRef.current.armL.rotation.x + (clampedRotation.x * -0.05),
+            initialStateRef.current.armL.rotation.y + (clampedRotation.y * -0.05),
+            initialStateRef.current.armL.rotation.z + (clampedRotation.z * -0.02)
+          );
+        }
+        
+        if (nodes.armR && initialStateRef.current?.armR) {
+          nodes.armR.rotation.set(
+            initialStateRef.current.armR.rotation.x + (clampedRotation.x * -0.05),
+            initialStateRef.current.armR.rotation.y + (clampedRotation.y * -0.05),
+            initialStateRef.current.armR.rotation.z + (clampedRotation.z * -0.02)
+          );
+        }
+        
+        // 4. Legs counter-balance (very subtle opposing movement)
+        if (nodes.legL && initialStateRef.current?.legL) {
+          nodes.legL.rotation.set(
+            initialStateRef.current.legL.rotation.x + (clampedRotation.x * -0.03),
+            initialStateRef.current.legL.rotation.y + (clampedRotation.y * -0.03),
+            initialStateRef.current.legL.rotation.z + (clampedRotation.z * -0.01)
+          );
+        }
+        
+        if (nodes.legR && initialStateRef.current?.legR) {
+          nodes.legR.rotation.set(
+            initialStateRef.current.legR.rotation.x + (clampedRotation.x * -0.03),
+            initialStateRef.current.legR.rotation.y + (clampedRotation.y * -0.03),
+            initialStateRef.current.legR.rotation.z + (clampedRotation.z * -0.01)
+          );
+        }
+      } else {
+        // Fallback if root node is not available
+        // Apply coordinated movement across available body parts
+        const nodeRotations = {
+          // Head group - primary movement
+          'head': { x: 0.7, y: 0.7, z: 0.4 },
+          'head003': { x: 0.7, y: 0.7, z: 0.4 },
+          'head004': { x: 0.7, y: 0.7, z: 0.4 },
+          'Eyes_GEO': { x: 0.7, y: 0.7, z: 0.4 },
+          'eyeL': { x: 0.7, y: 0.7, z: 0.4 },
+          'eyeR': { x: 0.7, y: 0.7, z: 0.4 },
+          
+          // Torso group - follows head with slight delay
+          'spin': { x: 0.6, y: 0.6, z: 0.3 },
+          'clavivleL': { x: 0.6, y: 0.6, z: 0.3 },
+          'clavivleR': { x: 0.6, y: 0.6, z: 0.3 },
+          
+          // Arms group - counter movement
+          'armL': { x: 0.5, y: 0.4, z: 0.2 },
+          'armR': { x: 0.5, y: 0.4, z: 0.2 },
+          
+          // Legs group - counter balance
+          'legL': { x: 0.4, y: 0.3, z: 0.1 },
+          'legR': { x: 0.4, y: 0.3, z: 0.1 },
+          'footL': { x: 0.2, y: 0.1, z: 0.1 },
+          'footR': { x: 0.2, y: 0.1, z: 0.1 }
+        };
+        
+        // Apply rotations to all available nodes
+        Object.entries(nodeRotations).forEach(([nodeName, factors]) => {
+          if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
+            nodes[nodeName].rotation.set(
+              initialStateRef.current[nodeName].rotation.x + (clampedRotation.x * factors.x),
+              initialStateRef.current[nodeName].rotation.y + (clampedRotation.y * factors.y),
+              initialStateRef.current[nodeName].rotation.z + (clampedRotation.z * factors.z)
+            );
+          }
+        });
       }
-      
-      // Add slight movement to head004 if it exists (might be another part of the head)
-      if (nodes.head004 && initialStateRef.current && initialStateRef.current.head004) {
-        nodes.head004.rotation.set(
-          initialStateRef.current.head004.rotation.x + (clampedRotation.x * 0.7),
-          initialStateRef.current.head004.rotation.y + (clampedRotation.y * 0.7),
-          initialStateRef.current.head004.rotation.z + (clampedRotation.z * 0.4)
-        );
-      }
-      
-      // Very subtle rotation for spine to give natural movement without breaking
-      if (nodes.spin && initialStateRef.current && initialStateRef.current.spin) {
-        nodes.spin.rotation.set(
-          initialStateRef.current.spin.rotation.x + (clampedRotation.x * 0.1),
-          initialStateRef.current.spin.rotation.y + (clampedRotation.y * 0.1),
-          initialStateRef.current.spin.rotation.z + (clampedRotation.z * 0.05)
-        );
-      }
-    } else if (frameCountRef.current % 60 === 0) {
+    } else {
       // Subtle idle animation when no face tracking data
       const idleTime = Date.now() / 1000;
-      const idleX = Math.sin(idleTime * 0.5) * 0.03;
-      const idleY = Math.sin(idleTime * 0.3) * 0.03;
       
-      if (nodes.head003 && initialStateRef.current && initialStateRef.current.head003) {
-        nodes.head003.rotation.x = initialStateRef.current.head003.rotation.x + idleX;
-        nodes.head003.rotation.y = initialStateRef.current.head003.rotation.y + idleY;
-      }
+      // Breathing animation
+      const breathe = Math.sin(idleTime * 0.5) * 0.02;
+      // Subtle swaying
+      const sway = Math.sin(idleTime * 0.3) * 0.02;
       
-      if (nodes.head && initialStateRef.current && initialStateRef.current.head) {
-        nodes.head.rotation.x = initialStateRef.current.head.rotation.x + idleX;
-        nodes.head.rotation.y = initialStateRef.current.head.rotation.y + idleY;
+      // Apply idle animation to root for whole body movement
+      if (rootRef.current && initialStateRef.current?.root) {
+        rootRef.current.rotation.set(
+          initialStateRef.current.root.rotation.x + breathe * 0.5,
+          initialStateRef.current.root.rotation.y + sway,
+          initialStateRef.current.root.rotation.z + Math.sin(idleTime * 0.2) * 0.01
+        );
+      } else {
+        // Apply breathing to chest/spine
+        if (nodes.spin && initialStateRef.current?.spin) {
+          nodes.spin.rotation.x = initialStateRef.current.spin.rotation.x + breathe;
+        }
+        
+        // Apply subtle head movement
+        if (nodes.head && initialStateRef.current?.head) {
+          nodes.head.rotation.x = initialStateRef.current.head.rotation.x + breathe * 0.3;
+          nodes.head.rotation.y = initialStateRef.current.head.rotation.y + sway * 0.7;
+        }
+        
+        // Other subtle idle movements for natural appearance
+        const nodeIdles = {
+          'head003': { x: breathe * 0.3, y: sway * 0.7, z: 0 },
+          'head004': { x: breathe * 0.3, y: sway * 0.7, z: 0 },
+          'clavivleL': { x: breathe * 0.5, y: 0, z: 0 },
+          'clavivleR': { x: breathe * 0.5, y: 0, z: 0 },
+          'armL': { x: breathe * 0.2, y: sway * 0.2, z: 0 },
+          'armR': { x: breathe * 0.2, y: sway * -0.2, z: 0 }
+        };
+        
+        Object.entries(nodeIdles).forEach(([nodeName, values]) => {
+          if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
+            nodes[nodeName].rotation.x = initialStateRef.current[nodeName].rotation.x + values.x;
+            nodes[nodeName].rotation.y = initialStateRef.current[nodeName].rotation.y + values.y;
+            nodes[nodeName].rotation.z = initialStateRef.current[nodeName].rotation.z + values.z;
+          }
+        });
       }
     }
   });
