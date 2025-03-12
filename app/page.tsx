@@ -47,6 +47,12 @@ function Avatar({ url }) {
   const initialStateRef = useRef(null);
   // Root node reference for whole-body movement
   const rootRef = useRef(null);
+  // Add smoothing factors for rotation transitions
+  const rotationLerpRef = useRef({ x: 0, y: 0, z: 0 });
+  // Track last received rotation for interpolation
+  const lastRotationRef = useRef(null);
+  // Track timing for smooth interpolation
+  const timeRef = useRef({ last: Date.now(), delta: 0 });
 
   useEffect(() => {
     // Clear the head mesh array before adding new meshes
@@ -91,6 +97,9 @@ function Avatar({ url }) {
       rotation = new Euler(0, 0, 0);
     }
     
+    // Initialize last rotation for smooth interpolation
+    lastRotationRef.current = new Euler(0, 0, 0);
+    
     // Complete reset of the model to initial state
     resetModelToInitialState();
     
@@ -116,34 +125,51 @@ function Avatar({ url }) {
     });
   };
 
+  // Smoothly interpolate between rotation values for fluid movement
+  const smoothRotation = (current, target, smoothFactor) => {
+    return current + (target - current) * smoothFactor;
+  };
+
   // Coordinate the movement of the entire body
   useFrame(() => {
+    // Calculate time delta for consistent animation speed
+    const now = Date.now();
+    timeRef.current.delta = (now - timeRef.current.last) / 1000; // Convert to seconds
+    timeRef.current.last = now;
+    
+    // Use time-based smoothing factor (between 0 and 1)
+    // Lower is smoother but less responsive, higher is more responsive but can be jittery
+    const smoothFactor = Math.min(1, timeRef.current.delta * 8);
+    
     frameCountRef.current += 1;
     
     // Reset the entire model periodically to prevent accumulated distortions
-    if (frameCountRef.current % 180 === 0) {
+    if (frameCountRef.current % 600 === 0) { // Reduced frequency of resets for smoother motion
       resetModelToInitialState();
     }
     
-    // Apply blendshapes if they exist for facial expressions
+    // Movement parameters and limits - adjusted for more natural range
+    const MAX_X_ROTATION = 0.6;  // Up/down movement
+    const MAX_Y_ROTATION = 0.7;  // Left/right movement
+    const MAX_Z_ROTATION = 0.4;  // Tilting
+    
     if (blendshapes && blendshapes.length > 0) {
-      // Apply facial blendshapes to head meshes
+      // Apply facial blendshapes with improved smoothing
       blendshapes.forEach(element => {
         headMeshRef.current.forEach(mesh => {
           if (mesh && mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
             const index = mesh.morphTargetDictionary[element.categoryName];
             if (index !== undefined && index >= 0) {
-              // Apply a smoothed value to avoid sudden movements
-              mesh.morphTargetInfluences[index] = element.score;
+              // Apply a smoother transition to facial expressions
+              mesh.morphTargetInfluences[index] = smoothRotation(
+                mesh.morphTargetInfluences[index] || 0,
+                element.score,
+                smoothFactor * 1.2 // Slightly faster reactions for facial expressions
+              );
             }
           }
         });
       });
-      
-      // Movement parameters and limits
-      const MAX_X_ROTATION = 0.5;  // Up/down movement
-      const MAX_Y_ROTATION = 0.6;  // Left/right movement
-      const MAX_Z_ROTATION = 0.3;  // Tilting
       
       // Clamp rotation values to prevent extreme distortion
       const clampedRotation = {
@@ -152,163 +178,232 @@ function Avatar({ url }) {
         z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
       };
       
-      // Apply whole body movement using root node (primary approach)
+      // Smoothly interpolate rotation for more fluid movement
+      rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, clampedRotation.x, smoothFactor);
+      rotationLerpRef.current.y = smoothRotation(rotationLerpRef.current.y, clampedRotation.y, smoothFactor);
+      rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, clampedRotation.z, smoothFactor);
+      
+      // Store last valid rotation values
+      lastRotationRef.current = new Euler(
+        rotationLerpRef.current.x,
+        rotationLerpRef.current.y,
+        rotationLerpRef.current.z
+      );
+      
+      // Apply whole body movement using root node as primary approach
       if (rootRef.current && initialStateRef.current?.root) {
-        // Move the entire body as a unit with the root node
+        // Apply primary movement to root with improved smoothing
+        // Apply the smoothed rotation values to the root node
         rootRef.current.rotation.set(
-          initialStateRef.current.root.rotation.x + (clampedRotation.x * 0.4),
-          initialStateRef.current.root.rotation.y + (clampedRotation.y * 0.6),
-          initialStateRef.current.root.rotation.z + (clampedRotation.z * 0.3)
+          initialStateRef.current.root.rotation.x + (rotationLerpRef.current.x * 0.6),
+          initialStateRef.current.root.rotation.y + (rotationLerpRef.current.y * 0.8),
+          initialStateRef.current.root.rotation.z + (rotationLerpRef.current.z * 0.4)
         );
         
-        // Add subtle body follow-through for natural movement
-        // This creates a slight delay in lower body parts
-        
-        // Apply coordinated movements to supplemental body parts
-        // These movements will be smaller than the main root movement
-        
-        // 1. Head movements (slightly enhanced from root)
-        if (nodes.head && initialStateRef.current?.head) {
-          nodes.head.rotation.set(
-            initialStateRef.current.head.rotation.x + (clampedRotation.x * 0.15),
-            initialStateRef.current.head.rotation.y + (clampedRotation.y * 0.15),
-            initialStateRef.current.head.rotation.z + (clampedRotation.z * 0.1)
-          );
-        }
-        
-        if (nodes.head003 && initialStateRef.current?.head003) {
-          nodes.head003.rotation.set(
-            initialStateRef.current.head003.rotation.x + (clampedRotation.x * 0.15),
-            initialStateRef.current.head003.rotation.y + (clampedRotation.y * 0.15),
-            initialStateRef.current.head003.rotation.z + (clampedRotation.z * 0.1)
-          );
-        }
-        
-        if (nodes.head004 && initialStateRef.current?.head004) {
-          nodes.head004.rotation.set(
-            initialStateRef.current.head004.rotation.x + (clampedRotation.x * 0.15),
-            initialStateRef.current.head004.rotation.y + (clampedRotation.y * 0.15),
-            initialStateRef.current.head004.rotation.z + (clampedRotation.z * 0.1)
-          );
-        }
-        
-        // 2. Spine movement (smaller movement for naturalism)
-        if (nodes.spin && initialStateRef.current?.spin) {
-          nodes.spin.rotation.set(
-            initialStateRef.current.spin.rotation.x + (clampedRotation.x * 0.1),
-            initialStateRef.current.spin.rotation.y + (clampedRotation.y * 0.1),
-            initialStateRef.current.spin.rotation.z + (clampedRotation.z * 0.05)
-          );
-        }
-        
-        // 3. Arms follow-through (subtle counter-movement for natural physics)
-        if (nodes.armL && initialStateRef.current?.armL) {
-          nodes.armL.rotation.set(
-            initialStateRef.current.armL.rotation.x + (clampedRotation.x * -0.05),
-            initialStateRef.current.armL.rotation.y + (clampedRotation.y * -0.05),
-            initialStateRef.current.armL.rotation.z + (clampedRotation.z * -0.02)
-          );
-        }
-        
-        if (nodes.armR && initialStateRef.current?.armR) {
-          nodes.armR.rotation.set(
-            initialStateRef.current.armR.rotation.x + (clampedRotation.x * -0.05),
-            initialStateRef.current.armR.rotation.y + (clampedRotation.y * -0.05),
-            initialStateRef.current.armR.rotation.z + (clampedRotation.z * -0.02)
-          );
-        }
-        
-        // 4. Legs counter-balance (very subtle opposing movement)
-        if (nodes.legL && initialStateRef.current?.legL) {
-          nodes.legL.rotation.set(
-            initialStateRef.current.legL.rotation.x + (clampedRotation.x * -0.03),
-            initialStateRef.current.legL.rotation.y + (clampedRotation.y * -0.03),
-            initialStateRef.current.legL.rotation.z + (clampedRotation.z * -0.01)
-          );
-        }
-        
-        if (nodes.legR && initialStateRef.current?.legR) {
-          nodes.legR.rotation.set(
-            initialStateRef.current.legR.rotation.x + (clampedRotation.x * -0.03),
-            initialStateRef.current.legR.rotation.y + (clampedRotation.y * -0.03),
-            initialStateRef.current.legR.rotation.z + (clampedRotation.z * -0.01)
-          );
-        }
-      } else {
-        // Fallback if root node is not available
-        // Apply coordinated movement across available body parts
-        const nodeRotations = {
-          // Head group - primary movement
-          'head': { x: 0.7, y: 0.7, z: 0.4 },
-          'head003': { x: 0.7, y: 0.7, z: 0.4 },
-          'head004': { x: 0.7, y: 0.7, z: 0.4 },
-          'Eyes_GEO': { x: 0.7, y: 0.7, z: 0.4 },
-          'eyeL': { x: 0.7, y: 0.7, z: 0.4 },
-          'eyeR': { x: 0.7, y: 0.7, z: 0.4 },
-          
-          // Torso group - follows head with slight delay
-          'spin': { x: 0.6, y: 0.6, z: 0.3 },
-          'clavivleL': { x: 0.6, y: 0.6, z: 0.3 },
-          'clavivleR': { x: 0.6, y: 0.6, z: 0.3 },
-          
-          // Arms group - counter movement
-          'armL': { x: 0.5, y: 0.4, z: 0.2 },
-          'armR': { x: 0.5, y: 0.4, z: 0.2 },
-          
-          // Legs group - counter balance
-          'legL': { x: 0.4, y: 0.3, z: 0.1 },
-          'legR': { x: 0.4, y: 0.3, z: 0.1 },
-          'footL': { x: 0.2, y: 0.1, z: 0.1 },
-          'footR': { x: 0.2, y: 0.1, z: 0.1 }
+        // Create propagation delay factors for natural body mechanics
+        // Different body parts should follow the head with varying delays
+        const applyDelayedMovement = (nodeName, xFactor, yFactor, zFactor, delay) => {
+          if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
+            // Calculate delayed rotation values (delay factor 0-1: lower = more delay)
+            const delayedX = rotationLerpRef.current.x * (1 - delay) + previousRotationRef.current.x * delay;
+            const delayedY = rotationLerpRef.current.y * (1 - delay) + previousRotationRef.current.y * delay;
+            const delayedZ = rotationLerpRef.current.z * (1 - delay) + previousRotationRef.current.z * delay;
+            
+            nodes[nodeName].rotation.set(
+              initialStateRef.current[nodeName].rotation.x + (delayedX * xFactor),
+              initialStateRef.current[nodeName].rotation.y + (delayedY * yFactor),
+              initialStateRef.current[nodeName].rotation.z + (delayedZ * zFactor)
+            );
+          }
         };
         
-        // Apply rotations to all available nodes
-        Object.entries(nodeRotations).forEach(([nodeName, factors]) => {
-          if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
-            nodes[nodeName].rotation.set(
-              initialStateRef.current[nodeName].rotation.x + (clampedRotation.x * factors.x),
-              initialStateRef.current[nodeName].rotation.y + (clampedRotation.y * factors.y),
-              initialStateRef.current[nodeName].rotation.z + (clampedRotation.z * factors.z)
+        // Apply natural kinetic chain movement through the body
+        // Head - primary movement, minimal delay
+        applyDelayedMovement('head', 0.3, 0.3, 0.2, 0.05);
+        applyDelayedMovement('head003', 0.3, 0.3, 0.2, 0.05);
+        applyDelayedMovement('head004', 0.3, 0.3, 0.2, 0.05);
+        
+        // Neck - follows head closely
+        applyDelayedMovement('neck', 0.25, 0.25, 0.15, 0.15);
+        
+        // Upper spine - follows with more delay
+        applyDelayedMovement('spine001', 0.2, 0.2, 0.1, 0.25);
+        applyDelayedMovement('spine002', 0.2, 0.2, 0.1, 0.25);
+        applyDelayedMovement('spin', 0.2, 0.2, 0.1, 0.25);
+        
+        // Middle spine - follows with more delay
+        applyDelayedMovement('spine', 0.15, 0.15, 0.08, 0.35);
+        
+        // Lower spine - slight counter movement for balance
+        applyDelayedMovement('spine003', 0.05, 0.05, 0.05, 0.5);
+        
+        // Shoulders - follow spine with slight counter-movement
+        applyDelayedMovement('clavivleL', 0.15, 0.15, 0.1, 0.3);
+        applyDelayedMovement('clavivleR', 0.15, 0.15, 0.1, 0.3);
+        
+        // Arms - counter-movement for natural balance
+        applyDelayedMovement('armL', -0.08, -0.08, -0.04, 0.4);
+        applyDelayedMovement('armR', -0.08, -0.08, -0.04, 0.4);
+        
+        // Forearms - follow arms with more delay (pendulum effect)
+        applyDelayedMovement('forearmL', -0.06, -0.06, -0.03, 0.5);
+        applyDelayedMovement('forearmR', -0.06, -0.06, -0.03, 0.5);
+        
+        // Hands - slight follow-through
+        applyDelayedMovement('handL', -0.04, -0.04, -0.02, 0.6);
+        applyDelayedMovement('handR', -0.04, -0.04, -0.02, 0.6);
+        
+        // Hips - subtle counter-movement
+        applyDelayedMovement('hips', -0.05, -0.05, -0.03, 0.7);
+        
+        // Legs - counter-balance
+        applyDelayedMovement('legL', -0.04, -0.04, -0.02, 0.8);
+        applyDelayedMovement('legR', -0.04, -0.04, -0.02, 0.8);
+        
+        // Feet - ground the character with minimal movement
+        applyDelayedMovement('footL', 0, 0, 0, 0.9);
+        applyDelayedMovement('footR', 0, 0, 0, 0.9);
+      } else {
+        // Fallback approach if root node is not available
+        // Apply progressive movement down the body with natural physics
+        const nodeHierarchy = [
+          // Head group - primary movement
+          { node: 'head', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          { node: 'head003', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          { node: 'head004', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          { node: 'eyeL', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          { node: 'eyeR', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          
+          // Neck group - follows head closely
+          { node: 'neck', factors: { x: 0.6, y: 0.6, z: 0.4 }, delay: 0.15 },
+          
+          // Upper torso - follows with some delay
+          { node: 'spine001', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
+          { node: 'spine002', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
+          { node: 'spin', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
+          
+          // Middle torso - follows with more delay
+          { node: 'spine', factors: { x: 0.4, y: 0.4, z: 0.2 }, delay: 0.3 },
+          
+          // Lower torso - subtle counter-movement
+          { node: 'spine003', factors: { x: 0.2, y: 0.2, z: 0.1 }, delay: 0.4 },
+          
+          // Shoulders 
+          { node: 'clavivleL', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
+          { node: 'clavivleR', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
+          
+          // Arms - natural counter-movement
+          { node: 'armL', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
+          { node: 'armR', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
+          
+          // Forearms - follow arms with pendulum effect
+          { node: 'forearmL', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
+          { node: 'forearmR', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
+          
+          // Hands - slight follow through
+          { node: 'handL', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
+          { node: 'handR', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
+          
+          // Hips - subtle counter-movement
+          { node: 'hips', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.5 },
+          
+          // Legs - counter-balance with more delay
+          { node: 'legL', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
+          { node: 'legR', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
+          
+          // Calves - follow legs with more delay
+          { node: 'shinL', factors: { x: -0.03, y: -0.03, z: -0.02 }, delay: 0.7 },
+          { node: 'shinR', factors: { x: -0.03, y: -0.03, z: -0.02 }, delay: 0.7 },
+          
+          // Feet - minimal movement to ground the character
+          { node: 'footL', factors: { x: -0.01, y: -0.01, z: -0.01 }, delay: 0.8 },
+          { node: 'footR', factors: { x: -0.01, y: -0.01, z: -0.01 }, delay: 0.8 }
+        ];
+        
+        // Apply movement to all nodes in the hierarchy
+        nodeHierarchy.forEach(({ node, factors, delay }) => {
+          if (nodes[node] && initialStateRef.current?.[node]) {
+            // Calculate delayed rotation values (delay factor 0-1: lower = more delay)
+            const delayedX = rotationLerpRef.current.x * (1 - delay) + previousRotationRef.current.x * delay;
+            const delayedY = rotationLerpRef.current.y * (1 - delay) + previousRotationRef.current.y * delay;
+            const delayedZ = rotationLerpRef.current.z * (1 - delay) + previousRotationRef.current.z * delay;
+            
+            nodes[node].rotation.set(
+              initialStateRef.current[node].rotation.x + (delayedX * factors.x),
+              initialStateRef.current[node].rotation.y + (delayedY * factors.y),
+              initialStateRef.current[node].rotation.z + (delayedZ * factors.z)
             );
           }
         });
       }
+      
+      // Store current rotation for next frame's calculations
+      previousRotationRef.current = new Euler(
+        rotationLerpRef.current.x,
+        rotationLerpRef.current.y,
+        rotationLerpRef.current.z
+      );
+      
     } else {
-      // Subtle idle animation when no face tracking data
+      // Improved idle animation when no face tracking data
       const idleTime = Date.now() / 1000;
       
-      // Breathing animation
+      // Use multiple sine waves with different frequencies for more natural idle movement
+      // Main breathing cycle
       const breathe = Math.sin(idleTime * 0.5) * 0.02;
-      // Subtle swaying
+      // Primary subtle swaying
       const sway = Math.sin(idleTime * 0.3) * 0.02;
+      // Secondary micro-movements
+      const microMove1 = Math.sin(idleTime * 1.7) * 0.005;
+      const microMove2 = Math.sin(idleTime * 2.3) * 0.003;
+      
+      // Combine breathing and micromovement for a more lifelike idle
+      const combinedBreathing = breathe + microMove1;
+      const combinedSwaying = sway + microMove2;
+      
+      // Gradually transition from active tracking to idle
+      // This creates a seamless blend when tracking is lost
+      if (lastRotationRef.current) {
+        rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, 0, smoothFactor * 0.5);
+        rotationLerpRef.current.y = smoothRotation(rotationLerpRef.current.y, 0, smoothFactor * 0.5);
+        rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, 0, smoothFactor * 0.5);
+      }
       
       // Apply idle animation to root for whole body movement
       if (rootRef.current && initialStateRef.current?.root) {
         rootRef.current.rotation.set(
-          initialStateRef.current.root.rotation.x + breathe * 0.5,
-          initialStateRef.current.root.rotation.y + sway,
+          initialStateRef.current.root.rotation.x + combinedBreathing * 0.5,
+          initialStateRef.current.root.rotation.y + combinedSwaying,
           initialStateRef.current.root.rotation.z + Math.sin(idleTime * 0.2) * 0.01
         );
       } else {
-        // Apply breathing to chest/spine
+        // Apply breathing to chest/spine with natural physics
         if (nodes.spin && initialStateRef.current?.spin) {
-          nodes.spin.rotation.x = initialStateRef.current.spin.rotation.x + breathe;
+          nodes.spin.rotation.x = initialStateRef.current.spin.rotation.x + combinedBreathing;
         }
         
         // Apply subtle head movement
         if (nodes.head && initialStateRef.current?.head) {
-          nodes.head.rotation.x = initialStateRef.current.head.rotation.x + breathe * 0.3;
-          nodes.head.rotation.y = initialStateRef.current.head.rotation.y + sway * 0.7;
+          nodes.head.rotation.x = initialStateRef.current.head.rotation.x + combinedBreathing * 0.3;
+          nodes.head.rotation.y = initialStateRef.current.head.rotation.y + combinedSwaying * 0.7;
+          nodes.head.rotation.z = initialStateRef.current.head.rotation.z + microMove1 * 0.5;
         }
         
-        // Other subtle idle movements for natural appearance
+        // Create a more varied idle animation with subtle differences
+        // for each body part to avoid the robot-like synchronized movement
         const nodeIdles = {
-          'head003': { x: breathe * 0.3, y: sway * 0.7, z: 0 },
-          'head004': { x: breathe * 0.3, y: sway * 0.7, z: 0 },
-          'clavivleL': { x: breathe * 0.5, y: 0, z: 0 },
-          'clavivleR': { x: breathe * 0.5, y: 0, z: 0 },
-          'armL': { x: breathe * 0.2, y: sway * 0.2, z: 0 },
-          'armR': { x: breathe * 0.2, y: sway * -0.2, z: 0 }
+          'head003': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
+          'head004': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
+          'neck': { x: combinedBreathing * 0.25, y: combinedSwaying * 0.6, z: microMove2 * 0.4 },
+          'spine001': { x: combinedBreathing * 0.7, y: combinedSwaying * 0.5, z: microMove1 * 0.3 },
+          'spine002': { x: combinedBreathing * 0.7, y: combinedSwaying * 0.4, z: microMove2 * 0.3 },
+          'clavivleL': { x: combinedBreathing * 0.6, y: combinedSwaying * 0.1, z: microMove1 * 0.2 },
+          'clavivleR': { x: combinedBreathing * 0.6, y: combinedSwaying * 0.1, z: microMove2 * 0.2 },
+          'spine': { x: combinedBreathing * 0.8, y: combinedSwaying * 0.3, z: microMove1 * 0.2 },
+          'armL': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.2 + Math.sin(idleTime * 0.27) * 0.01, z: microMove2 * 0.1 },
+          'armR': { x: combinedBreathing * 0.3, y: combinedSwaying * -0.2 + Math.sin(idleTime * 0.29) * 0.01, z: microMove1 * 0.1 },
+          'forearmL': { x: combinedBreathing * 0.2, y: combinedSwaying * 0.1 + Math.sin(idleTime * 0.31) * 0.005, z: microMove2 * 0.05 },
+          'forearmR': { x: combinedBreathing * 0.2, y: combinedSwaying * -0.1 + Math.sin(idleTime * 0.33) * 0.005, z: microMove1 * 0.05 }
         };
         
         Object.entries(nodeIdles).forEach(([nodeName, values]) => {
@@ -318,6 +413,24 @@ function Avatar({ url }) {
             nodes[nodeName].rotation.z = initialStateRef.current[nodeName].rotation.z + values.z;
           }
         });
+        
+        // Add very subtle random movements to simulate muscle micro-adjustments
+        // This makes idle animation feel less mechanical
+        if (frameCountRef.current % 90 === 0) {
+          const microNodes = ['head', 'armL', 'armR', 'spine', 'eyeL', 'eyeR'];
+          microNodes.forEach(nodeName => {
+            if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
+              // Tiny random adjustment (max 0.5 degrees) that will be smoothed out
+              const microX = (Math.random() - 0.5) * 0.01;
+              const microY = (Math.random() - 0.5) * 0.01;
+              const microZ = (Math.random() - 0.5) * 0.01;
+              
+              nodes[nodeName].rotation.x += microX;
+              nodes[nodeName].rotation.y += microY;
+              nodes[nodeName].rotation.z += microZ;
+            }
+          });
+        }
       }
     }
   });
