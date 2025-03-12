@@ -53,6 +53,8 @@ function Avatar({ url }) {
   const lastRotationRef = useRef(null);
   // Track timing for smooth interpolation
   const timeRef = useRef({ last: Date.now(), delta: 0 });
+  // Add material references to fix texture issues
+  const materialRefsRef = useRef({});
 
   useEffect(() => {
     // Clear the head mesh array before adding new meshes
@@ -64,7 +66,7 @@ function Avatar({ url }) {
     // Store initial state of all relevant nodes to properly reset them
     initialStateRef.current = {};
     
-    // Save initial positions and rotations of all nodes
+    // Save initial positions and rotations of all nodes and store material references
     Object.keys(nodes).forEach(nodeName => {
       if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
         initialStateRef.current[nodeName] = {
@@ -73,6 +75,11 @@ function Avatar({ url }) {
           quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
           scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
         };
+        
+        // Store reference to materials for fixing texture issues
+        if (nodes[nodeName].material) {
+          materialRefsRef.current[nodeName] = nodes[nodeName].material;
+        }
       }
     });
     
@@ -103,10 +110,48 @@ function Avatar({ url }) {
     // Complete reset of the model to initial state
     resetModelToInitialState();
     
+    // Fix any texture settings that might cause inconsistencies
+    fixMaterialSettings();
+    
     return () => {
       // Clean up any resources when the Avatar changes
     };
   }, [nodes, url]);
+
+  // Function to fix material settings for better texture consistency
+  const fixMaterialSettings = () => {
+    // Process all materials
+    Object.values(materialRefsRef.current).forEach(material => {
+      if (material) {
+        // Ensure materials use proper settings for consistent rendering
+        material.needsUpdate = true;
+        
+        // Fix common texture issues
+        if (material.map) {
+          material.map.needsUpdate = true;
+          material.map.anisotropy = 16; // Improve texture quality during rotation
+        }
+        
+        // Ensure proper normal mapping
+        if (material.normalMap) {
+          material.normalMap.needsUpdate = true;
+          material.normalScale.set(1, 1); // Normalize normal scale
+        }
+        
+        // Fix shininess and specular issues
+        if (material.specular) {
+          material.shininess = Math.min(material.shininess, 50); // Prevent over-shiny spots
+        }
+        
+        // Ensure consistent geometry normals
+        Object.keys(nodes).forEach(nodeName => {
+          if (nodes[nodeName].geometry) {
+            nodes[nodeName].geometry.computeVertexNormals();
+          }
+        });
+      }
+    });
+  };
 
   // Function to reset the model to its initial state
   const resetModelToInitialState = () => {
@@ -146,12 +191,14 @@ function Avatar({ url }) {
     // Reset the entire model periodically to prevent accumulated distortions
     if (frameCountRef.current % 600 === 0) { // Reduced frequency of resets for smoother motion
       resetModelToInitialState();
+      // Fix material settings periodically to prevent texture inconsistencies
+      fixMaterialSettings();
     }
     
     // Movement parameters and limits - adjusted for more natural range
     const MAX_X_ROTATION = 0.6;  // Up/down movement
     const MAX_Y_ROTATION = 0.7;  // Left/right movement
-    const MAX_Z_ROTATION = 0.4;  // Tilting
+    const MAX_Z_ROTATION = 0.5;  // Tilting - increased for better side tilt
     
     if (blendshapes && blendshapes.length > 0) {
       // Apply facial blendshapes with improved smoothing
@@ -181,7 +228,8 @@ function Avatar({ url }) {
       // Smoothly interpolate rotation for more fluid movement
       rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, clampedRotation.x, smoothFactor);
       rotationLerpRef.current.y = smoothRotation(rotationLerpRef.current.y, clampedRotation.y, smoothFactor);
-      rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, clampedRotation.z, smoothFactor);
+      // Increase z-axis (side tilting) responsiveness
+      rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, clampedRotation.z, smoothFactor * 1.2);
       
       // Store last valid rotation values
       lastRotationRef.current = new Euler(
@@ -197,7 +245,8 @@ function Avatar({ url }) {
         rootRef.current.rotation.set(
           initialStateRef.current.root.rotation.x + (rotationLerpRef.current.x * 0.6),
           initialStateRef.current.root.rotation.y + (rotationLerpRef.current.y * 0.8),
-          initialStateRef.current.root.rotation.z + (rotationLerpRef.current.z * 0.4)
+          // Increase z-axis (tilting) influence for better side tilt
+          initialStateRef.current.root.rotation.z + (rotationLerpRef.current.z * 0.6)
         );
         
         // Create propagation delay factors for natural body mechanics
@@ -214,25 +263,30 @@ function Avatar({ url }) {
               initialStateRef.current[nodeName].rotation.y + (delayedY * yFactor),
               initialStateRef.current[nodeName].rotation.z + (delayedZ * zFactor)
             );
+            
+            // Fix for protruding body parts by ensuring scale remains consistent
+            if (initialStateRef.current[nodeName].scale && nodes[nodeName].scale) {
+              nodes[nodeName].scale.copy(initialStateRef.current[nodeName].scale);
+            }
           }
         };
         
         // Apply natural kinetic chain movement through the body
         // Head - primary movement, minimal delay
-        applyDelayedMovement('head', 0.3, 0.3, 0.2, 0.05);
-        applyDelayedMovement('head003', 0.3, 0.3, 0.2, 0.05);
-        applyDelayedMovement('head004', 0.3, 0.3, 0.2, 0.05);
+        applyDelayedMovement('head', 0.3, 0.3, 0.3, 0.05); // Increased z-factor for better tilt
+        applyDelayedMovement('head003', 0.3, 0.3, 0.3, 0.05);
+        applyDelayedMovement('head004', 0.3, 0.3, 0.3, 0.05);
         
         // Neck - follows head closely
-        applyDelayedMovement('neck', 0.25, 0.25, 0.15, 0.15);
+        applyDelayedMovement('neck', 0.25, 0.25, 0.25, 0.15); // Increased z-factor
         
         // Upper spine - follows with more delay
-        applyDelayedMovement('spine001', 0.2, 0.2, 0.1, 0.25);
-        applyDelayedMovement('spine002', 0.2, 0.2, 0.1, 0.25);
-        applyDelayedMovement('spin', 0.2, 0.2, 0.1, 0.25);
+        applyDelayedMovement('spine001', 0.2, 0.2, 0.15, 0.25);
+        applyDelayedMovement('spine002', 0.2, 0.2, 0.15, 0.25);
+        applyDelayedMovement('spin', 0.2, 0.2, 0.15, 0.25);
         
         // Middle spine - follows with more delay
-        applyDelayedMovement('spine', 0.15, 0.15, 0.08, 0.35);
+        applyDelayedMovement('spine', 0.15, 0.15, 0.1, 0.35);
         
         // Lower spine - slight counter movement for balance
         applyDelayedMovement('spine003', 0.05, 0.05, 0.05, 0.5);
@@ -268,48 +322,48 @@ function Avatar({ url }) {
         // Apply progressive movement down the body with natural physics
         const nodeHierarchy = [
           // Head group - primary movement
-          { node: 'head', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'head003', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'head004', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'eyeL', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'eyeR', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+          { node: 'head', factors: { x: 0.8, y: 0.8, z: 0.8 }, delay: 0.05 }, // Increased z-factor
+          { node: 'head003', factors: { x: 0.8, y: 0.8, z: 0.8 }, delay: 0.05 },
+          { node: 'head004', factors: { x: 0.8, y: 0.8, z: 0.8 }, delay: 0.05 },
+          { node: 'eyeL', factors: { x: 0.8, y: 0.8, z: 0.8 }, delay: 0.05 },
+          { node: 'eyeR', factors: { x: 0.8, y: 0.8, z: 0.8 }, delay: 0.05 },
           
           // Neck group - follows head closely
-          { node: 'neck', factors: { x: 0.6, y: 0.6, z: 0.4 }, delay: 0.15 },
+          { node: 'neck', factors: { x: 0.6, y: 0.6, z: 0.6 }, delay: 0.15 }, // Increased z-factor
           
           // Upper torso - follows with some delay
-          { node: 'spine001', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
-          { node: 'spine002', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
-          { node: 'spin', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
+          { node: 'spine001', factors: { x: 0.5, y: 0.5, z: 0.4 }, delay: 0.2 },
+          { node: 'spine002', factors: { x: 0.5, y: 0.5, z: 0.4 }, delay: 0.2 },
+          { node: 'spin', factors: { x: 0.5, y: 0.5, z: 0.4 }, delay: 0.2 },
           
           // Middle torso - follows with more delay
-          { node: 'spine', factors: { x: 0.4, y: 0.4, z: 0.2 }, delay: 0.3 },
+          { node: 'spine', factors: { x: 0.4, y: 0.4, z: 0.3 }, delay: 0.3 },
           
           // Lower torso - subtle counter-movement
-          { node: 'spine003', factors: { x: 0.2, y: 0.2, z: 0.1 }, delay: 0.4 },
+          { node: 'spine003', factors: { x: 0.2, y: 0.2, z: 0.15 }, delay: 0.4 },
           
           // Shoulders 
-          { node: 'clavivleL', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
-          { node: 'clavivleR', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
+          { node: 'clavivleL', factors: { x: 0.3, y: 0.3, z: 0.25 }, delay: 0.25 },
+          { node: 'clavivleR', factors: { x: 0.3, y: 0.3, z: 0.25 }, delay: 0.25 },
           
           // Arms - natural counter-movement
-          { node: 'armL', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
-          { node: 'armR', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
+          { node: 'armL', factors: { x: -0.15, y: -0.15, z: -0.12 }, delay: 0.35 },
+          { node: 'armR', factors: { x: -0.15, y: -0.15, z: -0.12 }, delay: 0.35 },
           
           // Forearms - follow arms with pendulum effect
-          { node: 'forearmL', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
-          { node: 'forearmR', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
+          { node: 'forearmL', factors: { x: -0.1, y: -0.1, z: -0.08 }, delay: 0.45 },
+          { node: 'forearmR', factors: { x: -0.1, y: -0.1, z: -0.08 }, delay: 0.45 },
           
           // Hands - slight follow through
-          { node: 'handL', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
-          { node: 'handR', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
+          { node: 'handL', factors: { x: -0.05, y: -0.05, z: -0.04 }, delay: 0.55 },
+          { node: 'handR', factors: { x: -0.05, y: -0.05, z: -0.04 }, delay: 0.55 },
           
           // Hips - subtle counter-movement
-          { node: 'hips', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.5 },
+          { node: 'hips', factors: { x: -0.1, y: -0.1, z: -0.08 }, delay: 0.5 },
           
           // Legs - counter-balance with more delay
-          { node: 'legL', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
-          { node: 'legR', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
+          { node: 'legL', factors: { x: -0.08, y: -0.08, z: -0.06 }, delay: 0.6 },
+          { node: 'legR', factors: { x: -0.08, y: -0.08, z: -0.06 }, delay: 0.6 },
           
           // Calves - follow legs with more delay
           { node: 'shinL', factors: { x: -0.03, y: -0.03, z: -0.02 }, delay: 0.7 },
@@ -333,6 +387,11 @@ function Avatar({ url }) {
               initialStateRef.current[node].rotation.y + (delayedY * factors.y),
               initialStateRef.current[node].rotation.z + (delayedZ * factors.z)
             );
+            
+            // Fix for protruding body parts by ensuring scale remains consistent
+            if (initialStateRef.current[node].scale && nodes[node].scale) {
+              nodes[node].scale.copy(initialStateRef.current[node].scale);
+            }
           }
         });
       }
@@ -411,6 +470,11 @@ function Avatar({ url }) {
             nodes[nodeName].rotation.x = initialStateRef.current[nodeName].rotation.x + values.x;
             nodes[nodeName].rotation.y = initialStateRef.current[nodeName].rotation.y + values.y;
             nodes[nodeName].rotation.z = initialStateRef.current[nodeName].rotation.z + values.z;
+            
+            // Fix for protruding body parts by ensuring scale remains consistent
+            if (initialStateRef.current[nodeName].scale && nodes[nodeName].scale) {
+              nodes[nodeName].scale.copy(initialStateRef.current[nodeName].scale);
+            }
           }
         });
         
@@ -432,6 +496,13 @@ function Avatar({ url }) {
           });
         }
       }
+    }
+    
+    // Fix any texture issues that might occur during rotation
+    if (frameCountRef.current % 30 === 0) {
+      Object.values(materialRefsRef.current).forEach(material => {
+        if (material) material.needsUpdate = true;
+      });
     }
   });
 
