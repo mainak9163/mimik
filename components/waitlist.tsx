@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { Loader2, Mail, CheckCircle2, AlertCircle, MoonStar, Sun } from "lucide-react"
+import { Loader2, Mail, CheckCircle2, AlertCircle } from "lucide-react"
 import { toast } from "sonner"
 import { appendEmailToSheet } from "@/lib/append-email"
 import { cn } from "@/lib/utils"
@@ -17,7 +17,7 @@ const WaitlistComponent = () => {
   const [isLoading, setIsLoading] = useState(false)
   const [wantToTest, setWantToTest] = useState(false)
   const [acceptedTerms, setAcceptedTerms] = useState(false)
-  const [isDarkMode, setIsDarkMode] = useState(false)
+  // const [isDarkMode, setIsDarkMode] = useState(false)
 
   // Email validation regex
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
@@ -60,10 +60,10 @@ const WaitlistComponent = () => {
     }
   }
 
-  const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode)
-    document.documentElement.classList.toggle("dark")
-  }
+  // const toggleDarkMode = () => {
+  //   setIsDarkMode(!isDarkMode)
+  //   document.documentElement.classList.toggle("dark")
+  // }
 
   const isSubmitDisabled = !email || !wantToTest || !acceptedTerms || isLoading
 
@@ -74,12 +74,12 @@ const WaitlistComponent = () => {
       )}
     >
       <div className="w-full max-w-md">
-        <div className="absolute right-4 top-4">
+        {/* <div className="absolute right-4 top-4">
           <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="rounded-full">
             {isDarkMode ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
             <span className="sr-only">Toggle dark mode</span>
           </Button>
-        </div>
+        </div> */}
 
         <Card className="overflow-hidden border-2 shadow-lg dark:border-gray-800">
           <div className="absolute right-0 top-0 h-20 w-20 translate-x-6 -translate-y-6 bg-primary/20 rounded-full blur-3xl"></div>
