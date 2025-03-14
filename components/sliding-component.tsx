@@ -115,17 +115,18 @@ const SlidingComponent = () => {
               >
                 {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
               </Button>
-            </div>
-            
-            {/* Close button */}
+                          {/* Close button */}
             <Button 
               onClick={handleCloseClick}
               variant="outline" 
               size="icon" 
-              className="absolute mt-[36px] cursor-pointer top-6 right-6 bg-black/50 text-white border-white/20 hover:bg-black/70 z-[100000000000000000]"
+              className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
             >
               <X size={24} />
             </Button>
+            </div>
+            
+
           </div>
         </div>
       </div>
