@@ -102,7 +102,7 @@ const SlidingComponent = () => {
                 onClick={togglePlay} 
                 variant="outline" 
                 size="icon" 
-                className="bg-black/50 text-white border-white/20 hover:bg-black/70"
+                className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
               >
                 {isPlaying ? <Pause size={24} /> : <Play size={24} />}
               </Button>
@@ -111,7 +111,7 @@ const SlidingComponent = () => {
                 onClick={toggleMute} 
                 variant="outline" 
                 size="icon" 
-                className="bg-black/50 text-white border-white/20 hover:bg-black/70"
+                className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
               >
                 {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
               </Button>
@@ -122,7 +122,7 @@ const SlidingComponent = () => {
               onClick={handleCloseClick}
               variant="outline" 
               size="icon" 
-              className="absolute top-6 right-6 bg-black/50 text-white border-white/20 hover:bg-black/70"
+              className="absolute mt-[36px] cursor-pointer top-6 right-6 bg-black/50 text-white border-white/20 hover:bg-black/70 z-[100000000000000000]"
             >
               <X size={24} />
             </Button>
