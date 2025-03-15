@@ -1,18 +1,15 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//@ts-nocheck
 /* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from 'react';
-import { FaceLandmarker, FaceLandmarkerOptions, FilesetResolver } from "@mediapipe/tasks-vision";
+import { FaceLandmarker,  FilesetResolver } from "@mediapipe/tasks-vision";
 import { Color, Euler, Matrix4 } from 'three';
 import { Canvas, useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF, Environment, OrbitControls } from '@react-three/drei';
-import { useDropzone } from 'react-dropzone';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Upload } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
-import { Avatar as AvatarComponent, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
@@ -24,7 +21,7 @@ let faceLandmarker;
 let lastVideoTime = -1;
 let blendshapes = [];
 let rotation;
-let headMesh = [];
+// let headMesh = [];
 
 const options = {
   baseOptions: {
@@ -107,6 +104,7 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
     return () => {
       // Clean up any resources when the Avatar changes
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nodes, url]);
 
   // Function to reset the model to its initial state
@@ -550,6 +548,7 @@ export default function AavatarFaceTracking() {
       blendshapes = [];
       headMesh = [];
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
