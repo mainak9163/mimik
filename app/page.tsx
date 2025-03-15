@@ -1,4 +1,5 @@
 import ContactForm from '@/components/contact-form'
+import AvatarFaceTracking from '@/components/face-recognition'
 import AstrapuffFeatures from '@/components/features'
 import SecondHero from '@/components/second-hero'
 import SlidingComponent from '@/components/sliding-component'
@@ -13,6 +14,7 @@ const App = () => {
       <SecondHero />
       <Separator className="bg-border"/>
       <AstrapuffFeatures />
+      <AvatarFaceTracking/>
       <Separator className="bg-border"/>
       <WaitlistComponent />
       <Separator className="bg-border"/>
