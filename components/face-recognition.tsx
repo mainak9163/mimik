@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -15,7 +16,7 @@ import { Avatar as AvatarComponent, AvatarFallback } from "@/components/ui/avata
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
-const DEFAULT_AVATAR_URL = "./models/astra3.glb";
+const DEFAULT_AVATAR_URL = "./models/astra1.glb";
 
 // MediaPipe configuration
 let video;
@@ -36,7 +37,7 @@ const options = {
   outputFacialTransformationMatrixes: true,
 };
 
-function Avatar({ url }) {
+function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
   const { scene } = useGLTF(url);
   const { nodes } = useGraph(scene);
   const previousRotationRef = useRef(new Euler());
@@ -436,12 +437,15 @@ function Avatar({ url }) {
   });
 
   // Adjust position and scale for better camera framing
-  return <primitive object={scene} position={[0, -2, -5]} scale={4} />;
+  return <primitive object={scene} position={[0, -2, -5]} scale={scale} />;
 }
 
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
-  const [customUrl, setCustomUrl] = useState("");
+  const [scale, setScale] = useState(1.9);
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.png",scale:1.9 },
+    { modelUrl: "./models/astra2.glb", modelImage: "/astra2.png",scale:4 },
+  ]
   const [cameraActive, setCameraActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [predictionActive, setPredictionActive] = useState(false);
@@ -449,26 +453,10 @@ export default function AavatarFaceTracking() {
   // Ref to store the animation frame ID for proper cleanup
   const animationFrameRef = useRef(null);
 
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    accept: {
-      'model/gltf-binary': ['.glb'],
-    },
-    onDrop: files => {
-      setIsLoading(true);
-      const file = files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        setAvatarUrl(reader.result);
-        setIsLoading(false);
-      }
-      reader.readAsDataURL(file);
-    }
-  });
-
   const predict = useCallback(async () => {
     if (!video || !faceLandmarker) return;
     
-    let nowInMs = Date.now();
+    const nowInMs = Date.now();
     if (lastVideoTime !== video.currentTime) {
       lastVideoTime = video.currentTime;
       try {
@@ -564,103 +552,124 @@ export default function AavatarFaceTracking() {
     };
   }, []);
 
-  const handleCustomUrlSubmit = (e) => {
-    e.preventDefault();
-    if (customUrl.trim()) {
-      setIsLoading(true);
-      setAvatarUrl(customUrl);
-      setIsLoading(false);
-    }
-  };
 
   return (
-    <div className="bg-background text-foreground p-4">
-      <div className="mx-auto max-w-6xl">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="">
-            <Card className="overflow-hidden">
-              <CardContent className="p-0">
-                <div className="relative w-full aspect-video h-full bg-muted">
-                  <Canvas className="w-full h-full bg-background" camera={{ fov: 25 }} shadows>
-                    {/* Improved lighting setup for better model appearance */}
-                    <ambientLight intensity={1.2} />
-                    <directionalLight 
-                      position={[2, 5, 5]} 
-                      intensity={1.5} 
-                      castShadow 
-                      shadow-mapSize-width={1024} 
-                      shadow-mapSize-height={1024}
-                    />
-                    <pointLight position={[-5, 2, -10]} color={new Color(0.7, 0.7, 1)} intensity={0.6} />
-                    <pointLight position={[5, 0, -5]} color={new Color(1, 0.9, 0.8)} intensity={0.8} />
-                    <pointLight position={[0, 3, 5]} color={new Color(1, 1, 1)} intensity={0.5} />
-                    
-                    {/* Environment map for more realistic reflections */}
-                    <Environment preset="apartment" />
-                    
-                    <Avatar url={avatarUrl} />
-                    <OrbitControls enableZoom={false} enablePan={false} />
-                  </Canvas>
-                  {isLoading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
-                      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-          
-          <div className="space-y-6 h-full">
-            {/* Camera Section */}
-            <Card className="h-full">
-              <CardContent className="pt-6">
-                <h2 className="text-lg font-medium mb-4">Camera Feed</h2>
-                <video 
-                  id="video" 
-                  className="w-0 aspect-video rounded-md bg-muted object-cover mb-4"
-                  autoPlay
-                  playsInline
-                  muted
-                ></video>
+<div className="bg-background text-foreground p-4 min-h-screen">
+  <div className="mx-auto max-w-6xl">
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      {/* Avatar Display - Left Side */}
+      <div>
+        <Card className="overflow-hidden shadow-md h-full">
+          <CardContent className="p-0 h-full">
+            <div className="relative w-full aspect-video h-full bg-muted">
+              <Canvas className="w-full h-full bg-background" camera={{ fov: 25 }} shadows>
+                <ambientLight intensity={1.2} />
+                <directionalLight 
+                  position={[2, 5, 5]} 
+                  intensity={1.5} 
+                  castShadow 
+                  shadow-mapSize-width={1024} 
+                  shadow-mapSize-height={1024}
+                />
+                <pointLight position={[-5, 2, -10]} color={new Color(0.7, 0.7, 1)} intensity={0.6} />
+                <pointLight position={[5, 0, -5]} color={new Color(1, 0.9, 0.8)} intensity={0.8} />
+                <pointLight position={[0, 3, 5]} color={new Color(1, 1, 1)} intensity={0.5} />
                 
-                {!cameraActive ? (
-                  <Button 
-                    variant="default" 
-                    className="w-full"
-                    onClick={setup}
-                  >
-                    Enable Camera
-                  </Button>
-                ) : (
-                  <Button 
-                    variant="outline" 
-                    className="w-full"
-                    onClick={() => {
-                      if (video && video.srcObject) {
-                        const stream = video.srcObject;
-                        const tracks = stream.getTracks();
-                        tracks.forEach(track => track.stop());
-                        video.srcObject = null;
-                      }
-                      setCameraActive(false);
-                      setPredictionActive(false);
-                      if (animationFrameRef.current) {
-                        window.cancelAnimationFrame(animationFrameRef.current);
-                        animationFrameRef.current = null;
-                      }
-                    }}
-                  >
-                    Disable Camera
-                  </Button>
-                )}
-              </CardContent>
-            </Card>
-
-          </div>
-        </div>
+                <Environment preset="apartment" />
+                
+                <Avatar url={avatarUrl} scale={scale} />
+                <OrbitControls enableZoom={false} enablePan={false} />
+              </Canvas>
+              {isLoading && (
+                <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+                  <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+                </div>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+      
+      {/* Controls - Right Side */}
+      <div>
+        <Card className="h-full shadow-md">
+          <CardContent className="pt-6 h-full flex flex-col">
+            <h2 className="text-xl font-semibold mb-6">Control your avatar using your face movements</h2>
+            
+            {/* Hidden video element */}
+            <video 
+              id="video" 
+              className="w-0 h-0 overflow-hidden"
+              autoPlay
+              playsInline
+              muted
+            ></video>
+            
+            {/* Camera Controls */}
+            <div className="mb-8">
+              {!cameraActive ? (
+                <Button 
+                  variant="default" 
+                  className="w-full py-6 text-base"
+                  onClick={setup}
+                >
+                  Enable Camera
+                </Button>
+              ) : (
+                <Button 
+                  variant="outline" 
+                  className="w-full py-6 text-base"
+                  onClick={() => {
+                    if (video && video.srcObject) {
+                      const stream = video.srcObject;
+                      const tracks = stream.getTracks();
+                      tracks.forEach(track => track.stop());
+                      video.srcObject = null;
+                    }
+                    setCameraActive(false);
+                    setPredictionActive(false);
+                    if (animationFrameRef.current) {
+                      window.cancelAnimationFrame(animationFrameRef.current);
+                      animationFrameRef.current = null;
+                    }
+                  }}
+                >
+                  Disable Camera
+                </Button>
+              )}
+            </div>
+            
+            {/* Avatar Selection */}
+            <h3 className="text-md font-medium mb-4">Choose your avatar</h3>
+            <div className="grid grid-cols-2 gap-4 mt-2 flex-grow overflow-none">
+              {modelChoiceArray.map((modelChoice, index) => (
+                <div 
+                  onClick={() => {setAvatarUrl(modelChoice.modelUrl)
+                    setScale(modelChoice.scale)}
+                  } 
+                  key={index} 
+                  className={cn(
+                    "cursor-pointer transition-all duration-200 hover:scale-105",
+                    "rounded-lg overflow-hidden",
+                    avatarUrl === modelChoice.modelUrl 
+                      ? "ring-4 ring-primary shadow-lg" 
+                      : "ring-1 ring-border hover:ring-2 hover:ring-primary/50"
+                  )}
+                >
+                  <img 
+                    src={modelChoice.modelImage || "/placeholder.svg"} 
+                    alt={`Avatar option ${index + 1}`} 
+                    className="w-full h-full object-cover aspect-square"
+                  />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
+  </div>
+</div>
   );
 }
 
