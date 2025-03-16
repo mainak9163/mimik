@@ -21,7 +21,8 @@ let faceLandmarker;
 let lastVideoTime = -1;
 let blendshapes = [];
 let rotation;
-// let headMesh = [];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+let headMesh = [];
 
 const options = {
   baseOptions: {
