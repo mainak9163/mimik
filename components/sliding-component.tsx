@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Volume2, VolumeX, X, Play, Pause } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
@@ -10,6 +10,21 @@ const SlidingComponent = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  
+  // Adding event listener for 'Escape' key press
+useEffect(() => {
+  const handleEsc = (event: KeyboardEvent) => {
+    if (event.key === 'Escape') {
+      handleCloseClick();
+    }
+  };
+
+  window.addEventListener('keydown', handleEsc);
+
+  return () => {
+    window.removeEventListener('keydown', handleEsc);
+  };
+}, []);
   
   const handleGameplayClick = () => {
     setShowVideo(true);
@@ -21,7 +36,7 @@ const SlidingComponent = () => {
     }, 600); // Start playing after transition completes
   };
   
-  const handleCloseClick = () => {
+  function handleCloseClick(){
     if (videoRef.current) {
       videoRef.current.pause();
       setIsPlaying(false);

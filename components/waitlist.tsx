@@ -70,7 +70,7 @@ const WaitlistComponent = () => {
   return (
     <div
       className={cn(
-        "flex min-h-screen items-center justify-center p-4 transition-colors bg-background"
+        "flex min-h-screen items-center justify-center p-4 py-16 transition-colors bg-background"
       )}
     >
       <div className="w-full max-w-md">

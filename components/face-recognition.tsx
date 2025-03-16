@@ -441,8 +441,8 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [scale, setScale] = useState(1.9);
-  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.png",scale:1.9 },
-    { modelUrl: "./models/astra2.glb", modelImage: "/astra2.png",scale:4 },
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.png",scale:1.9,modelName:"Glimmerpuff" },
+    { modelUrl: "./models/astra2.glb", modelImage: "/astra2.png",scale:4,modelName:"Cosmodrip" },
   ]
   const [cameraActive, setCameraActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -553,7 +553,8 @@ export default function AavatarFaceTracking() {
 
 
   return (
-<div className="bg-background text-foreground p-4 min-h-screen">
+    <div className="bg-background text-foreground px-4 py-16">
+      <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-12 text-center">Lets Play</h1>
   <div className="mx-auto max-w-6xl">
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Avatar Display - Left Side */}
@@ -593,7 +594,7 @@ export default function AavatarFaceTracking() {
       <div>
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
-            <h2 className="text-xl font-semibold mb-6">Control your avatar using your face movements</h2>
+            <h2 className="text-xl font-semibold mb-6 text-center">Control avatar body using your face movements</h2>
             
             {/* Hidden video element */}
             <video 
@@ -639,14 +640,16 @@ export default function AavatarFaceTracking() {
             </div>
             
             {/* Avatar Selection */}
-            <h3 className="text-md font-medium mb-4">Choose your avatar</h3>
+            {/* <h3 className="text-md font-medium mb-4">Choose your avatar</h3> */}
             <div className="grid grid-cols-2 gap-4 mt-2 flex-grow overflow-none">
-              {modelChoiceArray.map((modelChoice, index) => (
+                  {modelChoiceArray.map((modelChoice, index) => (
+                    <div className="" key={index} >
+                      <h2 className="font-medium text-center mb-2">{modelChoice.modelName}</h2>
                 <div 
                   onClick={() => {setAvatarUrl(modelChoice.modelUrl)
                     setScale(modelChoice.scale)}
                   } 
-                  key={index} 
+                 
                   className={cn(
                     "cursor-pointer transition-all duration-200 hover:scale-105",
                     "rounded-lg overflow-hidden",
@@ -660,7 +663,8 @@ export default function AavatarFaceTracking() {
                     alt={`Avatar option ${index + 1}`} 
                     className="w-full h-full object-cover aspect-square"
                   />
-                </div>
+                      </div>
+                      </div>
               ))}
             </div>
           </CardContent>

@@ -1,6 +1,8 @@
-import ContactForm from '@/components/contact-form'
+import AvatarShowcase from '@/components/avatar-showcase'
+// import ContactForm from '@/components/contact-form'
 import AvatarFaceTracking from '@/components/face-recognition'
-import AstrapuffFeatures from '@/components/features'
+import Footer from '@/components/footer'
+// import AstrapuffFeatures from '@/components/features'
 import SecondHero from '@/components/second-hero'
 import SlidingComponent from '@/components/sliding-component'
 import { Separator } from '@/components/ui/separator'
@@ -12,13 +14,17 @@ const App = () => {
       <div className="flex flex-col">
       <SlidingComponent />
       <SecondHero />
+      <Separator className="bg-border" />
+      <AvatarShowcase/>
       <Separator className="bg-border"/>
-      <AstrapuffFeatures />
+      {/* <AstrapuffFeatures />
+      <Separator className="bg-border"/> */}
       <AvatarFaceTracking/>
       <Separator className="bg-border"/>
       <WaitlistComponent />
       <Separator className="bg-border"/>
-      <ContactForm/>
+      {/* <ContactForm/> */}
+      <Footer/>
     </div>
   )
 }
