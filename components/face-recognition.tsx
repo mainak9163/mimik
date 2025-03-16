@@ -21,7 +21,7 @@ let faceLandmarker;
 let lastVideoTime = -1;
 let blendshapes = [];
 let rotation;
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+// eslint-disable-next-line @typescript-eslint/no-unused-vars, prefer-const
 let headMesh = [];
 
 const options = {
@@ -524,33 +524,33 @@ export default function AavatarFaceTracking() {
   }, [predict, predictionActive]);
 
   // Effect to initialize camera when component loads
-  useEffect(() => {
-    // Start with camera on automatically
-    setup();
+  // useEffect(() => {
+  //   // Start with camera on automatically
+  //   setup();
     
-    return () => {
-      // Cleanup on component unmount
-      if (video && video.srcObject) {
-        const stream = video.srcObject;
-        const tracks = stream.getTracks();
+  //   return () => {
+  //     // Cleanup on component unmount
+  //     if (video && video.srcObject) {
+  //       const stream = video.srcObject;
+  //       const tracks = stream.getTracks();
         
-        tracks.forEach(track => {
-          track.stop();
-        });
-      }
+  //       tracks.forEach(track => {
+  //         track.stop();
+  //       });
+  //     }
       
-      // Cancel any animation frames
-      if (animationFrameRef.current) {
-        window.cancelAnimationFrame(animationFrameRef.current);
-      }
+  //     // Cancel any animation frames
+  //     if (animationFrameRef.current) {
+  //       window.cancelAnimationFrame(animationFrameRef.current);
+  //     }
       
-      // Reset global variables
-      lastVideoTime = -1;
-      blendshapes = [];
-      headMesh = [];
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  //     // Reset global variables
+  //     lastVideoTime = -1;
+  //     blendshapes = [];
+  //     headMesh = [];
+  //   };
+  // // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
 
   return (

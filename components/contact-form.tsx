@@ -41,7 +41,7 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-16  border-b-2 border-border min-h-screen flex flex-col justify-center">
+    <div className="container mx-auto px-4 py-4  border-b-2 border-border flex flex-col justify-center">
       <Card className="mx-auto my-auto max-w-lg border-none bg-background/60 backdrop-blur-sm sm:min-w-[500px]">
         <CardHeader className="space-y-1">
           <CardTitle className="text-3xl font-bold">Contact Us</CardTitle>

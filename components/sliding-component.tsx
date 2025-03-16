@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
 import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX, X, Play, Pause } from 'lucide-react';
+import { Volume2, VolumeX, X, Play, Pause, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -75,7 +75,7 @@ useEffect(() => {
         <div className="w-screen h-full flex-shrink-0 relative">
           <div 
             className="w-full h-full bg-cover bg-center flex flex-col items-center justify-center"
-            style={{ backgroundImage: "url('/background2.png')" }}
+            style={{ backgroundImage: "url('/astrapuff-bg.jpg')" }}
           >
             <img 
               src="/logo.png" 
@@ -83,21 +83,19 @@ useEffect(() => {
               className="w-64 h-auto mb-8"
             />
             
-            <div className="relative px-8 py-4 mb-8 text-center">
-              {/* Blurred background for text */}
+            {/* <div className="relative px-8 py-4 mb-8 text-center">
+              Blurred background for text
               <div className="absolute inset-0 bg-black/30 backdrop-blur-sm rounded-lg"></div>
               
               <h1 className="text-3xl md:text-4xl font-bold text-white relative z-10 mb-2">
                 Manifest your own dimension!
               </h1>
-            </div>
+            </div> */}
             
-            <Button 
-              onClick={handleGameplayClick}
-              className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-6 text-lg rounded-lg"
-            >
-              gameplay
-            </Button>
+            <button onClick={handleGameplayClick} className="flex items-center justify-center gap-2 bg-[#38373D] text-white py-2 px-4 rounded-md hover:bg-[#4a4952] transition-colors">
+  <Film size={24} />
+  <span>Gameplay</span>
+</button>
           </div>
         </div>
         
