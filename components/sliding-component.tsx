@@ -1,66 +1,70 @@
 /* eslint-disable @next/next/no-img-element */
 "use client"
-import React, { useState, useRef, useEffect } from 'react';
-import { Volume2, VolumeX, X, Play, Pause, Film } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Film } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 const SlidingComponent = () => {
   const [showVideo, setShowVideo] = useState(false);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [isMuted, setIsMuted] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const iframeWrapperRef = useRef<HTMLDivElement>(null);
   
   // Adding event listener for 'Escape' key press
-useEffect(() => {
-  const handleEsc = (event: KeyboardEvent) => {
-    if (event.key === 'Escape') {
-      handleCloseClick();
-    }
-  };
+  useEffect(() => {
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handleCloseClick();
+      }
+    };
 
-  window.addEventListener('keydown', handleEsc);
+    window.addEventListener('keydown', handleEsc);
 
-  return () => {
-    window.removeEventListener('keydown', handleEsc);
-  };
-}, []);
+    return () => {
+      window.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
   
   const handleGameplayClick = () => {
     setShowVideo(true);
-    setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.play();
-        setIsPlaying(true);
-      }
-    }, 600); // Start playing after transition completes
+    
+    // Load Vimeo script if it doesn't exist yet
+    if (!document.querySelector('script[src="https://player.vimeo.com/api/player.js"]')) {
+      const script = document.createElement('script');
+      script.src = "https://player.vimeo.com/api/player.js";
+      document.body.appendChild(script);
+    }
   };
   
-  function handleCloseClick(){
-    if (videoRef.current) {
-      videoRef.current.pause();
-      setIsPlaying(false);
-    }
+  function handleCloseClick() {
     setShowVideo(false);
-  };
-  
-  const togglePlay = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
+    
+    // Clear the iframe content to stop the video
+    if (iframeWrapperRef.current) {
+      iframeWrapperRef.current.innerHTML = '';
     }
-  };
+  }
   
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !isMuted;
-      setIsMuted(!isMuted);
+  // Effect to load iframe content after transition
+  useEffect(() => {
+    if (showVideo && iframeWrapperRef.current) {
+      // Wait for the transition to complete before loading the iframe
+      setTimeout(() => {
+        if (iframeWrapperRef.current) {
+          iframeWrapperRef.current.innerHTML = `
+            <div style="padding:56.25% 0 0 0;position:relative;">
+              <iframe 
+                src="https://player.vimeo.com/video/1066154342?h=b674f7b09d&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                frameborder="0" 
+                allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
+                style="position:absolute;top:0;left:0;width:100%;height:100%;" 
+                title="Atrapuff gameplay Alpha 6 - no logo">
+              </iframe>
+            </div>
+          `;
+        }
+      }, 600);
     }
-  };
+  }, [showVideo]);
   
   return (
     <div className="relative w-full h-screen overflow-hidden">
@@ -83,63 +87,34 @@ useEffect(() => {
               className="w-64 h-auto mb-8"
             />
             
-            {/* <div className="relative px-8 py-4 mb-8 text-center">
-              Blurred background for text
-              <div className="absolute inset-0 bg-black/30 backdrop-blur-sm rounded-lg"></div>
-              
-              <h1 className="text-3xl md:text-4xl font-bold text-white relative z-10 mb-2">
-                Manifest your own dimension!
-              </h1>
-            </div> */}
-            
-            <button onClick={handleGameplayClick} className="flex items-center justify-center gap-2 bg-[#38373D] text-white py-2 px-4 rounded-md hover:bg-[#4a4952] transition-colors">
-  <Film size={24} />
-  <span>Gameplay</span>
-</button>
+            <button 
+              onClick={handleGameplayClick} 
+              className="flex items-center justify-center gap-2 bg-[#38373D] text-white py-2 px-4 rounded-md hover:bg-[#4a4952] transition-colors"
+            >
+              <Film size={24} />
+              <span>Gameplay</span>
+            </button>
           </div>
         </div>
         
-        {/* Right panel - Video */}
-        <div className="w-screen h-full flex-shrink-0 relative bg-black">
+        {/* Right panel - Vimeo Video */}
+        <div className="w-screen h-full flex-shrink-0 relative">
           <div className="w-full h-full flex items-center justify-center">
-            <video 
-              ref={videoRef}
-              className="w-full h-full md:h-auto object-contain max-h-screen"
-              src="/video.mov"
-              playsInline
-            />
+            {/* This div will be populated with the iframe when showVideo is true */}
+            <div 
+              ref={iframeWrapperRef} 
+              className="w-full max-w-4xl"
+            ></div>
             
-            {/* Video controls */}
-            <div className="absolute bottom-8 left-0 right-0 flex justify-center gap-4">
-              <Button 
-                onClick={togglePlay} 
-                variant="outline" 
-                size="icon" 
-                className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
-              >
-                {isPlaying ? <Pause size={24} /> : <Play size={24} />}
-              </Button>
-              
-              <Button 
-                onClick={toggleMute} 
-                variant="outline" 
-                size="icon" 
-                className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
-              >
-                {isMuted ? <VolumeX size={24} /> : <Volume2 size={24} />}
-              </Button>
-                          {/* Close button */}
+            {/* Close button */}
             <Button 
               onClick={handleCloseClick}
               variant="outline" 
               size="icon" 
-              className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
+              className="absolute bottom-8 bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
             >
               <X size={24} />
             </Button>
-            </div>
-            
-
           </div>
         </div>
       </div>

@@ -22,6 +22,7 @@
     "@react-three/drei": "^9.68.3",
     "@react-three/fiber": "^9.0.0-alpha.8",
     "@tabler/icons-react": "^3.31.0",
+    "@u-wave/react-vimeo": "^0.9.12",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "googleapis": "^146.0.0",
