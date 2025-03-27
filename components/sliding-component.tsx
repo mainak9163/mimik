@@ -1,49 +1,53 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"
-import React, { useState, useEffect, useRef } from 'react';
-import { X, Film } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+"use client";
+import React, { useState, useEffect, useRef } from "react";
+import { X, Film } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const SlidingComponent = () => {
   const [showVideo, setShowVideo] = useState(false);
   const iframeWrapperRef = useRef<HTMLDivElement>(null);
-  
+
   // Adding event listener for 'Escape' key press
   useEffect(() => {
     const handleEsc = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
+      if (event.key === "Escape") {
         handleCloseClick();
       }
     };
 
-    window.addEventListener('keydown', handleEsc);
+    window.addEventListener("keydown", handleEsc);
 
     return () => {
-      window.removeEventListener('keydown', handleEsc);
+      window.removeEventListener("keydown", handleEsc);
     };
   }, []);
-  
+
   const handleGameplayClick = () => {
     setShowVideo(true);
-    
+
     // Load Vimeo script if it doesn't exist yet
-    if (!document.querySelector('script[src="https://player.vimeo.com/api/player.js"]')) {
-      const script = document.createElement('script');
+    if (
+      !document.querySelector(
+        'script[src="https://player.vimeo.com/api/player.js"]'
+      )
+    ) {
+      const script = document.createElement("script");
       script.src = "https://player.vimeo.com/api/player.js";
       document.body.appendChild(script);
     }
   };
-  
+
   function handleCloseClick() {
     setShowVideo(false);
-    
+
     // Clear the iframe content to stop the video
     if (iframeWrapperRef.current) {
-      iframeWrapperRef.current.innerHTML = '';
+      iframeWrapperRef.current.innerHTML = "";
     }
   }
-  
+
   // Effect to load iframe content after transition
   useEffect(() => {
     if (showVideo && iframeWrapperRef.current) {
@@ -65,11 +69,11 @@ const SlidingComponent = () => {
       }, 600);
     }
   }, [showVideo]);
-  
+
   return (
     <div className="relative w-full h-screen overflow-hidden">
       {/* Container for both panels */}
-      <div 
+      <div
         className={cn(
           "flex transition-transform duration-500 ease-in-out w-[200vw] h-full",
           showVideo ? "transform -translate-x-1/2" : ""
@@ -77,18 +81,14 @@ const SlidingComponent = () => {
       >
         {/* Left panel - Logo */}
         <div className="w-screen h-full flex-shrink-0 relative">
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center flex flex-col items-center justify-center"
             style={{ backgroundImage: "url('/astrapuff-bg.jpg')" }}
           >
-            <img 
-              src="/logo.png" 
-              alt="Logo" 
-              className="w-64 h-auto mb-8"
-            />
-            
-            <button 
-              onClick={handleGameplayClick} 
+            <img src="/logo-small.png" alt="Logo" className="w-96 h-auto mb-8" />
+
+            <button
+              onClick={handleGameplayClick}
               className="flex items-center justify-center gap-2 bg-[#f8b0a4] text-white py-6 px-8 rounded-md hover:bg-[#9d4048] transition-colors text-5xl"
             >
               <Film size={48} />
@@ -96,25 +96,23 @@ const SlidingComponent = () => {
             </button>
           </div>
         </div>
-        
+
         {/* Right panel - Vimeo Video */}
         <div className="w-screen h-full flex-shrink-0 relative">
+          <div className="py-8 w-[90%] mx-auto flex justify-end">
+            {/* Close button */}
+            <Button
+              onClick={handleCloseClick}
+              variant="outline"
+              size="icon"
+              className=" bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
+            >
+              <X size={36} />
+            </Button>
+          </div>
           <div className="w-full h-full flex items-center justify-center">
             {/* This div will be populated with the iframe when showVideo is true */}
-            <div 
-              ref={iframeWrapperRef} 
-              className="w-full max-w-4xl"
-            ></div>
-            
-            {/* Close button */}
-            <Button 
-              onClick={handleCloseClick}
-              variant="outline" 
-              size="icon" 
-              className="absolute bottom-8 bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
-            >
-              <X size={24} />
-            </Button>
+            <div ref={iframeWrapperRef} className="w-full max-w-4xl"></div>
           </div>
         </div>
       </div>
