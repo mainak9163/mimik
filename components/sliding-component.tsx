@@ -89,9 +89,9 @@ const SlidingComponent = () => {
             
             <button 
               onClick={handleGameplayClick} 
-              className="flex items-center justify-center gap-2 bg-[#38373D] text-white py-2 px-4 rounded-md hover:bg-[#4a4952] transition-colors"
+              className="flex items-center justify-center gap-2 bg-[#38373D] text-white py-2 px-4 rounded-md hover:bg-[#4a4952] transition-colors text-5xl"
             >
-              <Film size={24} />
+              <Film size={48} />
               <span>Gameplay</span>
             </button>
           </div>
