@@ -199,12 +199,12 @@ export default function AvatarShowcase() {
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
                 Meet some Astras
               </h1>
-              <p className="text-  text-muted-foreground">
+              <p className="text-xl  text-muted-foreground">
                 Astrapuffs are unique characters from diverse dimensions, each with their own personality and
                 story. These AI-driven companions create immersive experiences that adapt to your interactions, making
                 every adventure unique and engaging.
               </p>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-xl text-muted-foreground">
                 From the mind-bending Puzzle Dimension to the lush Verdant Expanse, each Astrapuff brings their realm&apos;s
                 essence into your gaming experience. Explore their stories and discover how they can transform your
                 virtual adventures.
