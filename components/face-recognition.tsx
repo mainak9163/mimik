@@ -596,7 +596,7 @@ export default function AavatarFaceTracking() {
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
             <h2 className="text-3xl font-semibold mb-6 text-center text-muted-foreground">Move your head side to side</h2>
-            <h3 className="text-xl font-semibold mb-6 text-center text-muted-foreground">Eyes and mouth control coming soon!</h3>
+            <p className="text-xl font-semibold mb-6 text-center text-muted-foreground">Eyes and mouth control coming soon!</p>
             
             {/* Hidden video element */}
             <video 
