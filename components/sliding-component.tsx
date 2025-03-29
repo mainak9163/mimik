@@ -99,7 +99,7 @@ const SlidingComponent = () => {
 
         {/* Right panel - Vimeo Video */}
         <div className="w-screen h-full flex-shrink-0 relative">
-          <div className="py-8 w-[90%] mx-auto flex justify-end">
+          <div className="absolute p-8 w-full flex justify-end">
             {/* Close button */}
             <Button
               onClick={handleCloseClick}
@@ -107,7 +107,7 @@ const SlidingComponent = () => {
               size="icon"
               className=" bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
             >
-              <X size={36} />
+              <X size={48} />
             </Button>
           </div>
           <div className="w-full h-full flex items-center justify-center">
