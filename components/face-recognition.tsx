@@ -595,7 +595,8 @@ export default function AavatarFaceTracking() {
       <div>
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
-            <h2 className="text-xl font-semibold mb-6 text-center">Control avatar body using your face movements</h2>
+            <h2 className="text-3xl font-semibold mb-6 text-center text-muted-foreground">Move your head side to side</h2>
+            <h3 className="text-xl font-semibold mb-6 text-center text-muted-foreground">Eyes and mouth control coming soon!</h3>
             
             {/* Hidden video element */}
             <video 
@@ -611,7 +612,7 @@ export default function AavatarFaceTracking() {
               {!cameraActive ? (
                 <Button 
                   variant="default" 
-                  className="w-full py-6 text-base"
+                  className="w-full py-6 text-2xl bg-[#faa0ab]"
                   onClick={setup}
                 >
                   Enable Camera

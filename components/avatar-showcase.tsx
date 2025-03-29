@@ -153,7 +153,7 @@ export default function AvatarShowcase() {
                   <ChevronLeft className="w-14 h-14" />
                 </Button>
                 <div className="text-center">
-                  <h3 className="mb-2 text-xl font-semibold">{currentAvatar.name}</h3>
+                  <h3 className="mb-2 text-4xl font-semibold">{currentAvatar.name}</h3>
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -197,10 +197,10 @@ export default function AvatarShowcase() {
 
             <div className="space-y-6">
               <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Let&apos;s See Some Avatars
+                Meet some Astras
               </h1>
-              <p className="text-lg text-muted-foreground">
-                Meet the Astrapuffs – unique characters from diverse dimensions, each with their own personality and
+              <p className="text-  text-muted-foreground">
+                Astrapuffs are unique characters from diverse dimensions, each with their own personality and
                 story. These AI-driven companions create immersive experiences that adapt to your interactions, making
                 every adventure unique and engaging.
               </p>
