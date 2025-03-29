@@ -150,7 +150,7 @@ export default function AvatarShowcase() {
                   className="z-20 rounded-full"
                   aria-label="Previous avatar"
                 >
-                  <ChevronLeft className="w-14 h-14" />
+                  <ChevronLeft size={48} />
                 </Button>
                 <div className="text-center">
                   <h3 className="mb-2 text-4xl font-semibold">{currentAvatar.name}</h3>
@@ -172,7 +172,7 @@ export default function AvatarShowcase() {
                   className="z-20 rounded-full"
                   aria-label="Next avatar"
                 >
-                  <ChevronRight className="w-14 h-14" />
+                  <ChevronRight size={48} />
                 </Button>
               </div>
 
