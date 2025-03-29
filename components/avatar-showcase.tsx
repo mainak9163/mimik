@@ -4,7 +4,7 @@
 
 import { useState } from "react"
 import Image from "next/image"
-import { ChevronUp, ChevronDown, Info } from "lucide-react"
+import { ChevronLeft, ChevronRight, Info } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -150,7 +150,7 @@ export default function AvatarShowcase() {
                   className="z-20 rounded-full"
                   aria-label="Previous avatar"
                 >
-                  <ChevronUp className="w-14 h-14" />
+                  <ChevronLeft className="w-14 h-14" />
                 </Button>
                 <div className="text-center">
                   <h3 className="mb-2 text-4xl font-semibold">{currentAvatar.name}</h3>
@@ -172,7 +172,7 @@ export default function AvatarShowcase() {
                   className="z-20 rounded-full"
                   aria-label="Next avatar"
                 >
-                  <ChevronDown className="w-14 h-14" />
+                  <ChevronRight className="w-14 h-14" />
                 </Button>
               </div>
 
