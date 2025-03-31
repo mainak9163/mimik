@@ -143,15 +143,13 @@ export default function AvatarShowcase() {
             <div className="relative flex flex-col items-center">
               {/* Navigation controls with improved positioning */}
               <div className="flex w-full justify-between px-8 pb-6">
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <div
                   onClick={handlePrevious}
-                  className="z-20 rounded-full"
+                  className="z-20 rounded-full active:opacity-50 hover:opacity-75"
                   aria-label="Previous avatar"
                 >
-                  <ChevronLeft className="w-24 h-24" />
-                </Button>
+                  <ChevronLeft className="w-20 h-20 cursor-pointer" />
+                </div>
                 <div className="text-center">
                   <h3 className="mb-2 text-4xl font-semibold">{currentAvatar.name}</h3>
                   <Button 
@@ -165,15 +163,13 @@ export default function AvatarShowcase() {
                     Know More
                   </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
+                <div
                   onClick={handleNext}
-                  className="z-20 rounded-full"
+                  className="z-20 rounded-full active:opacity-50 hover:opacity-75"
                   aria-label="Next avatar"
                 >
-                  <ChevronRight className="w-24 h-24" />
-                </Button>
+                  <ChevronRight className="w-20 h-20 cursor-pointer" />
+                </div>
               </div>
 
               {/* Card container with backdrop blur effect */}
