@@ -36,7 +36,7 @@ const Footer = () => {
           </a>
         </div>
         <div className="text-sm text-muted-foreground">
-          &copy; Copyright {currentYear} p3co inclusive
+          &copy; Copyright {currentYear} P2CO, Inc
         </div>
       </div>
       
