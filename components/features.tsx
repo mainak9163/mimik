@@ -11,7 +11,7 @@ interface SecondHeroProps {
   image: string;
 }
 
-function Feature({ index, title,id, description, image }: SecondHeroProps): JSX.Element {
+function Feature({ index, title,id, description, image }: SecondHeroProps) {
    console.log(index%2==0)
   return (
     <section  id={id}>
