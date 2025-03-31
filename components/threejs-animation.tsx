@@ -7,7 +7,7 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 
 // Model component that handles the 3D model
-const Model = ({ currentSection }: { currentSection: 'one' | 'two' | 'three' | 'four' | 'five' }) => {
+const Model = ({ currentSection }: { currentSection: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five' }) => {
   const modelRef = useRef<THREE.Object3D | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   
@@ -20,9 +20,21 @@ const Model = ({ currentSection }: { currentSection: 'one' | 'two' | 'three' | '
       position: [1.5, -1, 0],
       rotation: [0, 0, 0]
     },
-    'two': {
+    'two.one': {
       position: [-1.6, -1, 0],
       rotation: [-0.2, 0.5, 0]
+    },
+    'two.two': {
+      position: [1.8, -1, -2],
+      rotation: [-0.3, -0.5, 0]
+    },
+    'two.three': {
+      position: [-1.6, -1, 0], // Using two's position
+      rotation: [-0.2, 0.5, 0] // Using two's rotation
+    },
+    'two.four': {
+      position: [1.8, -1, -2],
+      rotation: [-0.3, -0.5, 0]
     },
     'three': {
       position: [1.8, -1, -2],
@@ -102,7 +114,7 @@ const LoadingPlaceholder = () => {
 const Lights = () => {
   return (
     <>
-      <ambientLight intensity={1.3} />
+      <ambientLight intensity={1.5} />
       <directionalLight 
         position={[500, 500, 500]} 
         intensity={1} 
@@ -113,19 +125,19 @@ const Lights = () => {
 
 // Main component
 const ThreeJSAnimation = () => {
-  const [currentSection, setCurrentSection] = useState<'one' | 'two' | 'three' | 'four' | 'five'>('one');
+  const [currentSection, setCurrentSection] = useState<'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five'>('one');
 
   // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('section');
-      let active: 'one' | 'two' | 'three' | 'four' | 'five' | '' = '';
+      let active: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five' | '' = '';
       
       sections.forEach((section) => {
         const rect = section.getBoundingClientRect();
         if (rect.top <= window.innerHeight / 3) {
-          if (['one', 'two', 'three', 'four', 'five'].includes(section.id)) {
-            active = section.id as 'one' | 'two' | 'three' | 'four' | 'five';
+          if (['one', 'two.one', 'two.two', 'two.three', 'two.four', 'three', 'four', 'five'].includes(section.id)) {
+            active = section.id as 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five';
           }
         }
       });
@@ -148,8 +160,8 @@ const ThreeJSAnimation = () => {
         pointerEvents: 'none'
       }}
     >
-          <Canvas
-              style={{pointerEvents: 'none'}}
+      <Canvas
+        style={{pointerEvents: 'none'}}
         camera={{ position: [0, 0, 13], fov: 10 }}
       >
         <Lights />

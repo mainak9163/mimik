@@ -2,13 +2,12 @@ import AvatarShowcase from '@/components/avatar-showcase'
 // import ContactForm from '@/components/contact-form'
 import AvatarFaceTracking from '@/components/face-recognition'
 import Footer from '@/components/footer'
-// import AstrapuffFeatures from '@/components/features'
-import SecondHero from '@/components/second-hero'
 import SlidingComponent from '@/components/sliding-component'
 import ThreeJSAnimationWithNoSSR from '@/components/threejs-animation'
 import { Separator } from '@/components/ui/separator'
 import WaitlistComponent from '@/components/waitlist'
 import React from 'react'
+import Features from '@/components/features'
 
 const App = () => {
   return (
@@ -18,9 +17,8 @@ const App = () => {
         <SlidingComponent />
       </section>
       <Separator className="bg-border" />
-      <section id="two">
-        <SecondHero />
-      </section>
+        <Features />
+      <Separator className="bg-border" />
       <section id="three">
         <AvatarShowcase />
         </section>
