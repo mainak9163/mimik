@@ -53,25 +53,25 @@ export default function Features() {
     {
       id: "two.one",
       title: "Companionship",
-      description: `AstraPuffs feature Agenti NPCs who journey with you, tell stories, help solve puzzles, spark quests, and engage in heartfelt conversations—making every interaction feel like an adventure with a trusted friend`,
+      description: `AstraPuffs feature Agentic NPCs that act as your in-game companions, tell stories, help solve puzzles, spark quests, and engage in heartfelt conversations—making every interaction feel like an adventure with a trusted friend`,
       image: "/features/companion.png",
     },
     {
       id: "two.two",
       title: "Safety",
-      description: `To foster kindness, players who use toxic language are gently “bubbled,” causing their speech to appear as playful gibberish. They can still play, but group chat stays safe and respectful`,
+      description: `To foster kindness, players who use toxic language are gently “bubbled,” causing their speech to appear as playful gibberish to other players. They can still play and interact with Astras, but group chat stays safe and respectful`,
       image: "/features/safety.png",
     },
     {
       id: "two.three",
       title: "Delight",
-      description: `AstraPuffs bring joy through playful mechanics like bubble-making and effortless flying. Whether you’re gliding across shimmering skies or popping bubbles with friends, moments of wonder are always just a tap away`,
+      description: `AstraPuffs bring joy through playful mechanics like making bubbles and flying. Whether you’re gliding across shimmering skies or popping bubbles with friends, moments of wonder are always just a tap away`,
       image: "/features/delight.png",
     },
     {
       id: "two.four",
       title: "Fun",
-      description: `From whimsical rain dances to grass-growing minigames, AstraPuffs offers endless fun. Shake trees for surprises, recycle with purpose, and craft across entire dimensions filled with color, magic, and meaning`,
+      description: `From whimsical rain dances to grass-growing minigames, AstraPuffs offers endless fun. Shake trees for candies, recycle with purpose, and craft across entire dimensions filled with color, magic, and whymsical experiences`,
       image: "/features/fun.png",
     },
   ];
