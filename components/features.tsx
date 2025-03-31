@@ -21,46 +21,23 @@ const Feature: FC<SecondHeroProps> = ({
 }) => {
   return (
     <section id={id}>
-      <div className={`min-h-screen w-full transition-colors`}>
-        <div className="container relative mx-auto px-4 py-16">
+      <div className={`w-full transition-colors py-3`}>
+        <div className="container relative mx-auto px-4 pt-16">
           <Card className="overflow-hidden border-none bg-background/60 backdrop-blur-sm shadow-none">
-            <CardContent className="grid gap-8 p-12 md:grid-cols-2 shadow-none ">
-              {index % 2 != 0 && (
-                <div className="relative aspect-square overflow-hidden rounded-lg">
-                  <Image
-                    src={image}
-                    alt="Astrapuff Preview"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
-              <div className="space-y-6">
-                <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+            <CardContent
+              className={`flex gap-10 lg:gap-20 justify-between flex-col ${
+                index % 2 ? "lg:flex-row-reverse" : "lg:flex-row"
+              }`}
+            >
+              <div className="space-y-6 w-full">
+                <h2 className="text-5xl font-bold tracking-tighter ">
                   {title}
-                </h1>
-                <p className="text-lg text-muted-foreground">{description}</p>
-                {/* <div className="flex flex-col gap-3 sm:flex-row">
-                <Button size="lg" className="font-medium">
-                  Get Started
-                </Button>
-                <Button variant="outline" size="lg" className="font-medium">
-                  Learn More
-                </Button>
-              </div> */}
+                </h2>
+                <p className="text-xl text-muted-foreground">{description}</p>
               </div>
-              {index % 2 == 0 && (
-                <div className="relative aspect-square overflow-hidden rounded-lg">
-                  <Image
-                    src={image}
-                    alt="Astrapuff Preview"
-                    fill
-                    className="object-cover"
-                    priority
-                  />
-                </div>
-              )}
+              <div className="w-full overflow-hidden rounded-3xl">
+                <img src={image} className="w-full bg-cover" />
+              </div>
             </CardContent>
           </Card>
         </div>
@@ -103,7 +80,12 @@ export default function Features() {
   ];
 
   return (
-    <>
+    <div>
+      <div className="container relative mx-auto px-4 pt-16">
+        <h1 className="text-6xl text-center font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
+          Key Features
+        </h1>
+      </div>
       {features.map((feature, index) => (
         <Feature
           key={index}
@@ -114,6 +96,6 @@ export default function Features() {
           image={feature.image}
         />
       ))}
-    </>
+    </div>
   );
 }

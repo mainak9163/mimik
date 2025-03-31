@@ -5,8 +5,8 @@ import { Card, CardContent } from "@/components/ui/card"
 
 export default function SecondHero() {
   return (
-    <div className={`min-h-screen w-full transition-colors`}>
-      <div className="container relative mx-auto px-4 py-16">
+    <div className={`w-full transition-colors`}>
+      <div className="container relative mx-auto px-4 py-8">
 
         <Card className="overflow-hidden border-none bg-background/60 backdrop-blur-sm shadow-none">
           <CardContent className="grid gap-8 p-6 md:grid-cols-2 md:p-12 shadow-none">

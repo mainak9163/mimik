@@ -2,6 +2,8 @@ import AvatarShowcase from '@/components/avatar-showcase'
 // import ContactForm from '@/components/contact-form'
 import AvatarFaceTracking from '@/components/face-recognition'
 import Footer from '@/components/footer'
+// import AstrapuffFeatures from '@/components/features'
+import SecondHero from '@/components/second-hero'
 import SlidingComponent from '@/components/sliding-component'
 import ThreeJSAnimationWithNoSSR from '@/components/threejs-animation'
 import { Separator } from '@/components/ui/separator'
@@ -17,6 +19,9 @@ const App = () => {
         <SlidingComponent />
       </section>
       <Separator className="bg-border" />
+        <SecondHero />
+      <Separator className="bg-border" />
+      <Separator className="bg-border" />
         <Features />
       <Separator className="bg-border" />
       <section id="three">
@@ -29,7 +34,7 @@ const App = () => {
         <AvatarFaceTracking />
         </section>
       <Separator className="bg-border" />
-      <section id="five">
+      <section id="five" className="bg-[#faa0ab]/30">
         <WaitlistComponent />
         </section>
       <Separator className="bg-border"/>
