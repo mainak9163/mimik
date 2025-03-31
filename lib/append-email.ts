@@ -4,7 +4,7 @@ import { google } from "googleapis";
 
 export async function appendEmailToSheet(email: string) {
   const spreadsheetId = process.env.GOOGLE_SHEET_ID_FOR_WAITLIST;
-  console.log("spreadsheetId", spreadsheetId);
+  // console.log("spreadsheetId", spreadsheetId);
 
   const auth = new google.auth.GoogleAuth({
     credentials: {
@@ -50,9 +50,9 @@ export async function appendEmailToSheet(email: string) {
       },
     });
 
-    console.log(
-      `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Date/Time "${dateTime}" in row ${nextRow}.`,
-    );
+    // console.log(
+    //   `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Date/Time "${dateTime}" in row ${nextRow}.`,
+    // );
     return { success: true, message: `Email added in row ${nextRow}` };
   } catch (err) {
     console.error("Error appending email:", err);

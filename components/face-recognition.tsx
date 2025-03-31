@@ -58,7 +58,7 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
     headMeshRef.current = [];
     
     // Log the available nodes for debugging
-    console.log("Available nodes:", nodes);
+    // console.log("Available nodes:", nodes);
     
     // Store initial state of all relevant nodes to properly reset them
     initialStateRef.current = {};
