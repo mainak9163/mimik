@@ -27,7 +27,7 @@ export default function SecondHero() {
               </div> */}
             </div>
             <div className="relative aspect-square overflow-hidden rounded-lg">
-              <Image src="/astra_2.png" alt="Astrapuff Preview" fill className="object-cover" priority />
+              <Image src="/astra_2.webp" alt="Astrapuff Preview" fill className="object-cover" priority />
             </div>
           </CardContent>
         </Card>

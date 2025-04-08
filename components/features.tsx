@@ -54,25 +54,25 @@ export default function Features() {
       id: "two.one",
       title: "Companionship",
       description: `AstraPuffs feature Agentic NPCs that act as your in-game companions, tell stories, help solve puzzles, spark quests, and engage in heartfelt conversations—making every interaction feel like an adventure with a trusted friend`,
-      image: "/features/companion.png",
+      image: "/features/companion.jpg",
     },
     {
       id: "two.two",
       title: "Safety",
       description: `To foster kindness, players who use toxic language are gently “bubbled,” causing their speech to appear as playful gibberish to other players. They can still play and interact with Astras, but group chat stays safe and respectful`,
-      image: "/features/safety.png",
+      image: "/features/safety.webp",
     },
     {
       id: "two.three",
       title: "Delight",
       description: `AstraPuffs bring joy through playful mechanics like making bubbles and flying. Whether you’re gliding across shimmering skies or popping bubbles with friends, moments of wonder are always just a tap away`,
-      image: "/features/delight.png",
+      image: "/features/delight.jpg",
     },
     {
       id: "two.four",
       title: "Fun",
       description: `From whimsical rain dances to grass-growing minigames, AstraPuffs offers endless fun. Shake trees for candies, recycle with purpose, and craft across entire dimensions filled with color, magic, and whymsical experiences`,
-      image: "/features/fun.png",
+      image: "/features/fun.webp",
     },
   ];
 
