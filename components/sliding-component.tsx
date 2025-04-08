@@ -57,7 +57,7 @@ const SlidingComponent = () => {
           iframeWrapperRef.current.innerHTML = `
             <div style="padding:56.25% 0 0 0;position:relative;">
               <iframe 
-                src="https://player.vimeo.com/video/1071158373?h=ab072e9368&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                src="https://player.vimeo.com/video/1073594430?h=c25806ace0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
                 frameborder="0" 
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
                 style="position:absolute;top:0;left:0;width:100%;height:100%;" 
@@ -92,7 +92,7 @@ const SlidingComponent = () => {
               className="flex items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/95 to-[#0fafaf]/95 shadow-xl text-white py-6 px-8 rounded-xl hover:shadow-2xl transition-colors text-5xl"
             >
               <Film size={48} />
-              <span>Gameplay</span>
+              <span>Watch Trailer</span>
             </button>
           </div>
         </div>
