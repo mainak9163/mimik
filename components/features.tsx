@@ -33,7 +33,11 @@ const Feature: FC<SecondHeroProps> = ({
                 <p className="text-xl text-muted-foreground">{description}</p>
               </div>
               <div className="w-full overflow-hidden rounded-3xl">
-                <img src={image} className="w-full bg-cover" />
+                {Array.isArray(image) ? (
+                  <>Carrousel component</>
+                ) : (
+                  <img src={image} className="w-full bg-cover" />
+                )}
               </div>
             </CardContent>
           </Card>
@@ -58,18 +62,24 @@ export default function Features() {
     },
     {
       id: "two.two",
+      title: "Calm",
+      description: `Landscapes shift with your journey—from cozy meadows to glowing crystal caves—each designed to spark curiosity and invite peaceful exploration, blending comfort with a sense of magical discovery.`,
+      image: "/features/estrellas.webp",
+    },
+    {
+      id: "two.three",
       title: "Safety",
       description: `To foster kindness, players who use toxic language are gently “bubbled,” causing their speech to appear as playful gibberish to other players. They can still play and interact with Astras, but group chat stays safe and respectful`,
       image: "/features/safety.webp",
     },
     {
-      id: "two.three",
+      id: "two.four",
       title: "Delight",
       description: `AstraPuffs bring joy through playful mechanics like making bubbles and flying. Whether you’re gliding across shimmering skies or popping bubbles with friends, moments of wonder are always just a tap away`,
       image: "/features/delight.jpg",
     },
     {
-      id: "two.four",
+      id: "two.five",
       title: "Fun",
       description: `From whimsical rain dances to grass-growing minigames, AstraPuffs offers endless fun. Shake trees for candies, recycle with purpose, and craft across entire dimensions filled with color, magic, and whymsical experiences`,
       image: "/features/fun.webp",
