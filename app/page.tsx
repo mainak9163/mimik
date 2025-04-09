@@ -43,7 +43,6 @@ const App = () => {
         <Separator className="bg-border" />
         {/* <ContactForm/> */}
       </main>
-      <Footer />
     </div>
   );
 };

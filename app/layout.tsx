@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
+import Footer from "@/components/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -15,7 +16,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Astrapuffs | Intelligent characters",
-  description: "Astrapuffs is a Agentic NPC multiplayer cozy simulator. Offering unique experiences that only NPCs infused with agentic AI can",
+  description:
+    "Astrapuffs is a Agentic NPC multiplayer cozy simulator. Offering unique experiences that only NPCs infused with agentic AI can",
 };
 
 export default function RootLayout({
@@ -30,6 +32,7 @@ export default function RootLayout({
       >
         {children}
         <Toaster richColors />
+        <Footer />
       </body>
     </html>
   );
