@@ -34,11 +34,11 @@ const Feature: FC<SecondHeroProps> = ({
                 </h2>
                 <p className="text-xl text-muted-foreground">{description}</p>
               </div>
-              <div className="w-full rounded-3xl">
+              <div className="w-full">
                 {Array.isArray(image) ? (
                  <CustomCarousel images={image} autoPlayInterval={5000} />
                 ) : (
-                  <img src={image} className="w-full bg-cover" />
+                  <img src={image} className="w-full bg-cover rounded-3xl" />
                 )}
               </div>
             </CardContent>
@@ -66,7 +66,7 @@ export default function Features() {
       id: "two.two",
       title: "Calm",
       description: `Landscapes shift with your journey—from cozy meadows to glowing crystal caves—each designed to spark curiosity and invite peaceful exploration, blending comfort with a sense of magical discovery.`,
-      image: "/features/estrellas.webp",
+      image: ["/features/estrellas.webp","/features/dia.webp","/features/nocheLuna.webp", "/features/amanecer.webp"],
     },
     {
       id: "two.three",
@@ -84,7 +84,7 @@ export default function Features() {
       id: "two.five",
       title: "Fun",
       description: `From whimsical rain dances to grass-growing minigames, AstraPuffs offers endless fun. Shake trees for candies, recycle with purpose, and craft across entire dimensions filled with color, magic, and whymsical experiences`,
-      image: ["/features/fun.webp","/features/dia.webp","/features/nocheLuna.webp"],
+      image: "/features/fun.webp",
     },
   ];
 
