@@ -7,15 +7,15 @@ import gsap from 'gsap';
 import * as THREE from 'three';
 
 // Model component that handles the 3D model
-const Model = ({ currentSection }: { currentSection: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five' }) => {
+const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five', isMobile: boolean }) => {
   const modelRef = useRef<THREE.Object3D | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   
   // Use drei's useGLTF hook instead of manually using GLTFLoader
   const { scene, animations } = useGLTF('/models/astra3.glb');
   
-  // Section positions configuration
-  const sectionPositions = {
+  // Section positions configuration for desktop
+  const desktopPositions = {
     'one': {
       position: [1.5, -1, 0],
       rotation: [0, 0, 0]
@@ -29,12 +29,16 @@ const Model = ({ currentSection }: { currentSection: 'one' | 'two.one' | 'two.tw
       rotation: [-0.3, -0.5, 0]
     },
     'two.three': {
-      position: [-1.6, -1, 0], // Using two's position
-      rotation: [-0.2, 0.5, 0] // Using two's rotation
+      position: [-1.6, -1, 0],
+      rotation: [-0.2, 0.5, 0]
     },
     'two.four': {
       position: [1.8, -1, -2],
       rotation: [-0.3, -0.5, 0]
+    },
+    'two.five': {
+      position: [-1.6, -1, 0],
+      rotation: [-0.2, 0.5, 0]
     },
     'three': {
       position: [1.8, -1, -2],
@@ -47,6 +51,46 @@ const Model = ({ currentSection }: { currentSection: 'one' | 'two.one' | 'two.tw
     'five': {
       position: [1.5, -0.5, 0],
       rotation: [0, -0.5, 0]
+    }
+  };
+
+  // Section positions configuration for mobile
+  const mobilePositions = {
+    'one': {
+      position: [0, 0.5, 0],
+      rotation: [0, 0, 0]
+    },
+    'two.one': {
+      position: [-0.3, -1, 0],
+      rotation: [-0.2, 0.5, 0]
+    },
+    'two.two': {
+      position: [.3, -1, -2],
+      rotation: [-0.3, -0.5, 0]
+    },
+    'two.three': {
+      position: [-.3, -1, 0],
+      rotation: [-0.2, 0.5, 0]
+    },
+    'two.four': {
+      position: [.3, -1, -2],
+      rotation: [-0.3, -0.5, 0]
+    },
+    'two.five': {
+      position: [-.3, -1, 0],
+      rotation: [-0.2, 0.5, 0]
+    },
+    'three': {
+      position: [.4, -1, -2],
+      rotation: [-0.3, -0.5, 0]
+    },
+    'four': {
+      position: [-.5, 0.4, -5],
+      rotation: [0.5, 0.5, 0]
+    },
+    'five': {
+      position: [.3, -1, -2],
+      rotation: [-0.3, -0.5, 0]
     }
   };
 
@@ -66,34 +110,42 @@ const Model = ({ currentSection }: { currentSection: 'one' | 'two.one' | 'two.tw
     }
   });
 
-  // GSAP animations for model position and rotation
+  // GSAP animations for model position and rotation based on device type
   useGSAP(() => {
-    if (modelRef.current && sectionPositions[currentSection]) {
-      const { position, rotation } = sectionPositions[currentSection];
+    if (modelRef.current) {
+      // Select the appropriate positions based on device type
+      const positionsToUse = isMobile ? mobilePositions : desktopPositions;
+      
+      if (positionsToUse[currentSection]) {
+        const { position, rotation } = positionsToUse[currentSection];
 
-      gsap.to(modelRef.current.position, {
-        x: position[0],
-        y: position[1],
-        z: position[2],
-        duration: 2.5,
-        ease: "power2.out"
-      });
+        gsap.to(modelRef.current.position, {
+          x: position[0],
+          y: position[1],
+          z: position[2],
+          duration: 2.5,
+          ease: "power2.out"
+        });
 
-      gsap.to(modelRef.current.rotation, {
-        x: rotation[0],
-        y: rotation[1],
-        z: rotation[2],
-        duration: 2.5,
-        ease: "power2.out"
-      });
+        gsap.to(modelRef.current.rotation, {
+          x: rotation[0],
+          y: rotation[1],
+          z: rotation[2],
+          duration: 2.5,
+          ease: "power2.out"
+        });
+      }
     }
-  }, [currentSection]);
+  }, [currentSection, isMobile]);
+
+  // Calculate appropriate scale based on device
+  const scale = isMobile ? 0.4 : 1;
 
   return (
     <primitive 
       ref={modelRef}
       object={scene} 
-      scale={1}
+      scale={scale}
       position={[0, -1, 0]}
       rotation={[0, 1.5, 0]}
     />
@@ -125,19 +177,36 @@ const Lights = () => {
 
 // Main component
 const ThreeJSAnimation = () => {
-  const [currentSection, setCurrentSection] = useState<'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five'>('one');
+  const [currentSection, setCurrentSection] = useState<'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five'>('one');
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check for mobile device
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    // Initial check
+    checkMobile();
+    
+    // Add resize listener
+    window.addEventListener('resize', checkMobile);
+    
+    // Cleanup
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('section');
-      let active: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five' | '' = '';
+      let active: 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five' | '' = '';
       
       sections.forEach((section) => {
         const rect = section.getBoundingClientRect();
         if (rect.top <= window.innerHeight / 3) {
-          if (['one', 'two.one', 'two.two', 'two.three', 'two.four', 'three', 'four', 'five'].includes(section.id)) {
-            active = section.id as 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'three' | 'four' | 'five';
+          if (['one', 'two.one', 'two.two', 'two.three', 'two.four', 'two.five', 'three', 'four', 'five'].includes(section.id)) {
+            active = section.id as 'one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five';
           }
         }
       });
@@ -166,7 +235,7 @@ const ThreeJSAnimation = () => {
       >
         <Lights />
         <Suspense fallback={<LoadingPlaceholder />}>
-          <Model currentSection={currentSection} />
+          <Model currentSection={currentSection} isMobile={isMobile} />
         </Suspense>
       </Canvas>
     </div>

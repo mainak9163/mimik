@@ -70,20 +70,14 @@ const WaitlistComponent = () => {
   return (
     <div
       className={cn(
-        "flex min-h-screen items-center justify-center p-4 py-16 transition-colors bg-background"
+        "flex min-h-screen items-center justify-center p-4 py-16 transition-colors"
       )}
     >
-      <div className="w-full max-w-md">
-        {/* <div className="absolute right-4 top-4">
-          <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="rounded-full">
-            {isDarkMode ? <Sun className="h-5 w-5" /> : <MoonStar className="h-5 w-5" />}
-            <span className="sr-only">Toggle dark mode</span>
-          </Button>
-        </div> */}
+
 
         <Card className="overflow-hidden border-2 shadow-lg dark:border-gray-800">
-          <div className="absolute right-0 top-0 h-20 w-20 translate-x-6 -translate-y-6 bg-primary/20 rounded-full blur-3xl"></div>
-          <div className="absolute left-0 bottom-0 h-20 w-20 -translate-x-6 translate-y-6 bg-primary/20 rounded-full blur-3xl"></div>
+          {/* <div className="absolute right-0 top-0 h-20 w-20 translate-x-6 -translate-y-6 bg-primary/20 rounded-full blur-3xl"></div>
+          <div className="absolute left-0 bottom-0 h-20 w-20 -translate-x-6 translate-y-6 bg-primary/20 rounded-full blur-3xl"></div> */}
 
           <CardHeader className="space-y-1 text-center pb-2">
             <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
@@ -187,7 +181,7 @@ const WaitlistComponent = () => {
             </a>
           </p>
         </div> */}
-      </div>
+
     </div>
   )
 }

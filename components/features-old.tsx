@@ -8,17 +8,17 @@ export function AstrapuffFeatures() {
     {
       title: "Cozy",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra2.png"
+      image: "/astra2.webp"
     },
     {
       title: "Companion",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra3.png"
+      image: "/astra3.webp"
     },
     {
       title: "Delight",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra4.png"
+      image: "/astra4.webp"
     }
   ];
 

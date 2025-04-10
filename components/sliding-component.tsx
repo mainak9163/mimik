@@ -57,7 +57,7 @@ const SlidingComponent = () => {
           iframeWrapperRef.current.innerHTML = `
             <div style="padding:56.25% 0 0 0;position:relative;">
               <iframe 
-                src="https://player.vimeo.com/video/1070529679?h=9df03c9ef6&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                src="https://player.vimeo.com/video/1073594430?h=c25806ace0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
                 frameborder="0" 
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
                 style="position:absolute;top:0;left:0;width:100%;height:100%;" 
@@ -83,16 +83,16 @@ const SlidingComponent = () => {
         <div className="w-screen h-full flex-shrink-0 relative">
           <div
             className="w-full h-full bg-cover bg-center flex flex-col items-center justify-center"
-            style={{ backgroundImage: "url('/astrapuff-bg.jpg')" }}
+            style={{ backgroundImage: "url('/astrapuff-bg.webp')" }}
           >
             <img src="/logo-small.png" alt="Logo" className="w-96 h-auto mb-8" />
 
             <button
               onClick={handleGameplayClick}
-              className="flex items-center justify-center gap-2 bg-[#f8b0a4] text-white py-6 px-8 rounded-md hover:bg-[#9d4048] transition-colors text-5xl"
+              className="flex items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/95 to-[#0fafaf]/95 shadow-xl text-white py-6 px-8 rounded-xl hover:shadow-2xl transition-colors text-5xl"
             >
               <Film size={48} />
-              <span>Gameplay</span>
+              <span>Watch Trailer</span>
             </button>
           </div>
         </div>

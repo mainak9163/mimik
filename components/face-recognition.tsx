@@ -58,7 +58,7 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
     headMeshRef.current = [];
     
     // Log the available nodes for debugging
-    console.log("Available nodes:", nodes);
+    // console.log("Available nodes:", nodes);
     
     // Store initial state of all relevant nodes to properly reset them
     initialStateRef.current = {};
@@ -442,8 +442,8 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [scale, setScale] = useState(1.9);
-  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.png",scale:1.9,modelName:"Glimmerpuff" },
-    { modelUrl: "./models/astra2.glb", modelImage: "/astra2.png",scale:4,modelName:"Cosmodrip" },
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
+    { modelUrl: "./models/astra2.glb", modelImage: "/astra2.webp",scale:4,modelName:"Cosmodrip" },
   ]
   const [cameraActive, setCameraActive] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -556,10 +556,10 @@ export default function AavatarFaceTracking() {
   return (
     <div className="bg-background text-foreground px-4 py-16">
       <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-12 text-center">Lets Play</h1>
-  <div className="mx-auto max-w-6xl">
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+  <div className="mx-auto max-w-screen sm:max-w-6xl">
+    <div className="flex flex-wrap">
       {/* Avatar Display - Left Side */}
-      <div>
+      <div className="w-full sm:w-1/2">
         <Card className="overflow-hidden shadow-md h-full">
           <CardContent className="p-0 h-full">
             <div className="relative w-full aspect-video h-full bg-muted">
@@ -592,7 +592,7 @@ export default function AavatarFaceTracking() {
       </div>
       
       {/* Controls - Right Side */}
-      <div>
+      <div className="w-full sm:w-1/2 mt-8 sm:mt-0">
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
             <h2 className="text-3xl font-semibold mb-6 text-center text-muted-foreground">Move your head side to side</h2>

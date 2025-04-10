@@ -48,9 +48,9 @@ export async function appendContactToSheet(email: string, content: string) {
       },
     });
 
-    console.log(
-      `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Content "${content}", Date/Time "${dateTime}" in row ${nextRow}.`,
-    );
+    // console.log(
+    //   `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Content "${content}", Date/Time "${dateTime}" in row ${nextRow}.`,
+    // );
     return { success: true, message: `Data added in row ${nextRow}` };
   } catch (err) {
     console.error("Error appending data:", err);
