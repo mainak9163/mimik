@@ -1,7 +1,7 @@
 import AvatarShowcase from "@/components/avatar-showcase";
 // import ContactForm from '@/components/contact-form'
 import AvatarFaceTracking from "@/components/face-recognition";
-import Footer from "@/components/footer";
+// import Footer from "@/components/footer";
 // import AstrapuffFeatures from '@/components/features'
 import SecondHero from "@/components/second-hero";
 import SlidingComponent from "@/components/sliding-component";
@@ -43,7 +43,6 @@ const App = () => {
         <Separator className="bg-border" />
         {/* <ContactForm/> */}
       </main>
-      <Footer />
     </div>
   );
 };

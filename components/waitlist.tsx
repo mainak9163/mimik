@@ -145,11 +145,11 @@ const WaitlistComponent = () => {
                     </Label>
                     <p className="text-xs text-muted-foreground">
                       By signing up, you agree to our{" "}
-                      <a href="#" className="text-primary underline hover:text-primary/80">
+                      <a href="/terms-of-service" className="text-primary underline hover:text-primary/80">
                         Terms of Service
                       </a>{" "}
                       and{" "}
-                      <a href="#" className="text-primary underline hover:text-primary/80">
+                      <a href="/privacy-policy" className="text-primary underline hover:text-primary/80">
                         Privacy Policy
                       </a>
                     </p>
