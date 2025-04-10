@@ -7,7 +7,7 @@ const InstagramLogo = () => {
     <img
       src={"/instagram.svg"}
       alt={`instagram logo`}
-      className="w-14 h-14 object-cover"
+      className="w-10 h-10 object-cover"
     />
   );
 };
@@ -34,15 +34,8 @@ const Footer = () => {
 
   return (
     <footer className="w-full border-t border-border bg-background/80 py-4">
-      <div className="container mx-auto flex flex-col justify-between px-4 md:flex-row md:items-center">
-        <div className="mb-2 md:mb-0 flex flex-col-reverse">
-          <a
-            href="#contact"
-            onClick={handleContactClick}
-            className="text-sm hover:text-white/70 bg-gray-800 px-4 py-2 text-white rounded-lg"
-          >
-            Contact Us
-          </a>
+      <div className="container mx-auto flex justify-between px-4 md:flex-row md:items-center">
+        <div className="mb-2 md:mb-0 flex flex-col">
           <a
             href="https://instagram.com/astrapuffs"
             className="flex flex-row items-center cursor-pointer"
@@ -50,8 +43,21 @@ const Footer = () => {
             <InstagramLogo />
             Follow us!
           </a>
+          <a
+            href="#terms-of-service"
+            className="flex flex-row items-center cursor-pointer"
+          >
+            Terms Of Service
+          </a>
         </div>
-        <div className="text-sm text-muted-foreground">
+        <div className="text-sm text-muted-foreground flex flex-col items-end gap-2">
+          <a
+            href="#contact"
+            onClick={handleContactClick}
+            className="w-fit grow-0 text-sm hover:text-white/70 bg-[#faa0ab] px-4 py-2 text-white rounded-lg"
+          >
+            Contact Us
+          </a>
           &copy; Copyright {currentYear} P2CO, Inc
         </div>
       </div>
