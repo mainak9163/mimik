@@ -69,7 +69,7 @@ useEffect(() => {
   headMeshRef.current = [];
   
   // Log the available nodes for debugging
-  console.log("Available nodes:", Object.keys(nodes));
+  // console.log("Available nodes:", Object.keys(nodes));
   
   // Store initial state of all relevant nodes
   initialStateRef.current = {};
