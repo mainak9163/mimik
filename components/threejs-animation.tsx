@@ -59,48 +59,48 @@ const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one'
   };
 
   // Section positions configuration for mobile
-  const mobilePositions = {
-    'one': {
-      position: [0, 0.5, 0],
-      rotation: [0, 0, 0]
-    },
-    'one.one': {
-      position: [2.5, -1, 0],
-      rotation: [0, 0, 0]
-    },
-    'two.one': {
-      position: [-0.3, -1, 0],
-      rotation: [-0.2, 0.5, 0]
-    },
-    'two.two': {
-      position: [.3, -1, -2],
-      rotation: [-0.3, -0.5, 0]
-    },
-    'two.three': {
-      position: [-.3, -1, 0],
-      rotation: [-0.2, 0.5, 0]
-    },
-    'two.four': {
-      position: [.3, -1, -2],
-      rotation: [-0.3, -0.5, 0]
-    },
-    'two.five': {
-      position: [-.3, -1, 0],
-      rotation: [-0.2, 0.5, 0]
-    },
-    'three': {
-      position: [.4, -1, -2],
-      rotation: [-0.3, -0.5, 0]
-    },
-    'four': {
-      position: [-.5, 0.4, -5],
-      rotation: [0.5, 0.5, 0]
-    },
-    'five': {
-      position: [.3, -1, -2],
-      rotation: [-0.3, -0.5, 0]
-    }
-  };
+  // const mobilePositions = {
+  //   'one': {
+  //     position: [0, 0.5, 0],
+  //     rotation: [0, 0, 0]
+  //   },
+  //   'one.one': {
+  //     position: [2.5, -1, 0],
+  //     rotation: [0, 0, 0]
+  //   },
+  //   'two.one': {
+  //     position: [-0.3, -1, 0],
+  //     rotation: [-0.2, 0.5, 0]
+  //   },
+  //   'two.two': {
+  //     position: [.3, -1, -2],
+  //     rotation: [-0.3, -0.5, 0]
+  //   },
+  //   'two.three': {
+  //     position: [-.3, -1, 0],
+  //     rotation: [-0.2, 0.5, 0]
+  //   },
+  //   'two.four': {
+  //     position: [.3, -1, -2],
+  //     rotation: [-0.3, -0.5, 0]
+  //   },
+  //   'two.five': {
+  //     position: [-.3, -1, 0],
+  //     rotation: [-0.2, 0.5, 0]
+  //   },
+  //   'three': {
+  //     position: [.4, -1, -2],
+  //     rotation: [-0.3, -0.5, 0]
+  //   },
+  //   'four': {
+  //     position: [-.5, 0.4, -5],
+  //     rotation: [0.5, 0.5, 0]
+  //   },
+  //   'five': {
+  //     position: [.3, -1, -2],
+  //     rotation: [-0.3, -0.5, 0]
+  //   }
+  // };
 
   // Initialize animation mixer
   useEffect(() => {
