@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
-const DEFAULT_AVATAR_URL = "./models/astra1.glb";
+const DEFAULT_AVATAR_URL = "./models/astra1.2.glb";
 
 // MediaPipe configuration
 let video;
@@ -53,60 +53,77 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
   // Track timing for smooth interpolation
   const timeRef = useRef({ last: Date.now(), delta: 0 });
 
-  useEffect(() => {
-    // Clear the head mesh array before adding new meshes
-    headMeshRef.current = [];
-    
-    // Log the available nodes for debugging
-    // console.log("Available nodes:", nodes);
-    
-    // Store initial state of all relevant nodes to properly reset them
-    initialStateRef.current = {};
-    
-    // Save initial positions and rotations of all nodes
-    Object.keys(nodes).forEach(nodeName => {
-      if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
-        initialStateRef.current[nodeName] = {
-          position: nodes[nodeName].position.clone(),
-          rotation: nodes[nodeName].rotation.clone(),
-          quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
-          scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
-        };
-      }
-    });
-    
-    // Store the root node for whole-body movement
-    if (nodes.root) {
-      rootRef.current = nodes.root;
-    } else if (nodes.Scene) {
-      rootRef.current = nodes.Scene;
+  const eyeStateRef = useRef({
+    leftOpen: 1, // 1 = fully open, 0 = fully closed
+    rightOpen: 1,
+    blinkInProgress: false,
+    winkInProgress: false,
+    lastBlinkTime: 0,
+    blinkDuration: 150, // milliseconds
+    randomBlinkInterval: 2000 // random blink every ~2-7 seconds
+  });
+
+// Update the head mesh references to match your model
+useEffect(() => {
+  // Clear the head mesh array before adding new meshes
+  headMeshRef.current = [];
+  
+  // Log the available nodes for debugging
+  console.log("Available nodes:", Object.keys(nodes));
+  
+  // Store initial state of all relevant nodes
+  initialStateRef.current = {};
+  
+  // Save initial positions and rotations of all nodes
+  Object.keys(nodes).forEach(nodeName => {
+    if (nodes[nodeName] && nodes[nodeName].position && nodes[nodeName].rotation) {
+      initialStateRef.current[nodeName] = {
+        position: nodes[nodeName].position.clone(),
+        rotation: nodes[nodeName].rotation.clone(),
+        quaternion: nodes[nodeName].quaternion ? nodes[nodeName].quaternion.clone() : null,
+        scale: nodes[nodeName].scale ? nodes[nodeName].scale.clone() : null
+      };
     }
-    
-    // Only add head-related meshes for blendshapes
-    if (nodes.head) headMeshRef.current.push(nodes.head);
-    if (nodes.head003) headMeshRef.current.push(nodes.head003);
-    if (nodes.head004) headMeshRef.current.push(nodes.head004);
-    if (nodes.Eyes_GEO) headMeshRef.current.push(nodes.Eyes_GEO);
-    if (nodes.tongue) headMeshRef.current.push(nodes.tongue);
-    if (nodes.eyeL) headMeshRef.current.push(nodes.eyeL);
-    if (nodes.eyeR) headMeshRef.current.push(nodes.eyeR);
-    
-    // Initialize rotation if not already set
-    if (!rotation) {
-      rotation = new Euler(0, 0, 0);
-    }
-    
-    // Initialize last rotation for smooth interpolation
-    lastRotationRef.current = new Euler(0, 0, 0);
-    
-    // Complete reset of the model to initial state
-    resetModelToInitialState();
-    
-    return () => {
-      // Clean up any resources when the Avatar changes
-    };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nodes, url]);
+  });
+  
+  // Store the root node for whole-body movement
+  if (nodes.Scene) {
+    rootRef.current = nodes.Scene;
+  } else if (nodes.Astra2) {
+    rootRef.current = nodes.Astra2;
+  }
+
+  // Add eye nodes for winking
+  if (nodes.LeftEye) headMeshRef.current.push(nodes.LeftEye);
+  if (nodes.RightEye) headMeshRef.current.push(nodes.RightEye);
+
+  // Add head for facial expressions and movement
+  if (nodes.Head) headMeshRef.current.push(nodes.Head);
+  
+  // Initialize rotation if not already set
+  if (!rotation) {
+    rotation = new Euler(0, 0, 0);
+  }
+  
+  // Initialize last rotation for smooth interpolation
+  lastRotationRef.current = new Euler(0, 0, 0);
+  
+  // Complete reset of the model to initial state
+  resetModelToInitialState();
+
+  eyeStateRef.current = {
+    leftOpen: 1,
+    rightOpen: 1,
+    blinkInProgress: false,
+    winkInProgress: false,
+    lastBlinkTime: 0,
+    blinkDuration: 200,
+  };
+  
+  return () => {
+    // Clean up resources when Avatar changes
+  };
+}, [nodes, url]);
 
   // Function to reset the model to its initial state
   const resetModelToInitialState = () => {
@@ -130,55 +147,169 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
     return current + (target - current) * smoothFactor;
   };
 
+  // Function to handle eye blinking and winking - add this before the useFrame function
+// Handle eye winking with your model's LeftEye and RightEye nodes
+// Replace the handleEyeMovement function with this improved version
+ // Replace the handleEyeMovement function with this revised version
+// Replace the handleEyeMovement function with this improved version
+// Replace the handleEyeMovement function with this improved version
+const handleEyeMovement = () => {
+  const now = Date.now();
+  const { blinkInProgress, winkInProgress, lastBlinkTime, blinkDuration } = eyeStateRef.current;
+  
+  // Simplified eye state tracking for winking
+  let leftEyeClosed = false;
+  let rightEyeClosed = false;
+  
+  if (blendshapes && blendshapes.length > 0) {
+    // Check blink-related blendshapes
+    blendshapes.forEach(element => {
+      if (element.categoryName === "eyeBlinkLeft" || element.categoryName === "eyeSquintLeft") {
+        leftEyeClosed = element.score > 0.45;
+      }
+      if (element.categoryName === "eyeBlinkRight" || element.categoryName === "eyeSquintRight") {
+        rightEyeClosed = element.score > 0.45;
+      }
+    });
+  }
+  
+  // Handle wink/blink states with mirroring
+  // IMPORTANT: Mirror the eyes - user's left eye maps to avatar's right eye and vice versa
+  if (leftEyeClosed && rightEyeClosed) {
+    // Both eyes closed - blink
+    if (!blinkInProgress) {
+      eyeStateRef.current.blinkInProgress = true;
+      eyeStateRef.current.winkInProgress = false;
+      eyeStateRef.current.leftOpen = 0;
+      eyeStateRef.current.rightOpen = 0;
+      eyeStateRef.current.lastBlinkTime = now;
+    }
+  } else if (leftEyeClosed && !rightEyeClosed) {
+    // User's left eye closed = avatar's RIGHT eye should close (mirroring)
+    if (!winkInProgress && !blinkInProgress) {
+      eyeStateRef.current.winkInProgress = true;
+      eyeStateRef.current.blinkInProgress = false;
+      eyeStateRef.current.leftOpen = 1; // Keep LEFT eye open
+      eyeStateRef.current.rightOpen = 0; // Close RIGHT eye
+      eyeStateRef.current.lastBlinkTime = now;
+    }
+  } else if (rightEyeClosed && !leftEyeClosed) {
+    // User's right eye closed = avatar's LEFT eye should close (mirroring)
+    if (!winkInProgress && !blinkInProgress) {
+      eyeStateRef.current.winkInProgress = true;
+      eyeStateRef.current.blinkInProgress = false;
+      eyeStateRef.current.leftOpen = 0; // Close LEFT eye
+      eyeStateRef.current.rightOpen = 1; // Keep RIGHT eye open
+      eyeStateRef.current.lastBlinkTime = now;
+    }
+  } else if (!leftEyeClosed && !rightEyeClosed && (blinkInProgress || winkInProgress)) {
+    // Eyes returning to open state
+    const elapsedTime = now - lastBlinkTime;
+    
+    if (elapsedTime > blinkDuration) {
+      // End the blink/wink with smooth transition
+      eyeStateRef.current.blinkInProgress = false;
+      eyeStateRef.current.winkInProgress = false;
+      eyeStateRef.current.leftOpen = 1;
+      eyeStateRef.current.rightOpen = 1;
+    }
+  }
+  
+  // Apply eye states to the model with symmetric closure from top and bottom
+  // For LEFT eye (corresponds to user's RIGHT eye)
+  if (nodes.LeftEye && initialStateRef.current?.LeftEye) {
+    // Calculate how closed the eye should be (0 = closed, 1 = open)
+    const openFactor = eyeStateRef.current.leftOpen;
+    
+    // Apply symmetrical scaling from both top and bottom
+    // This maintains center point by equally scaling from both sides
+    const targetScaleY = initialStateRef.current.LeftEye.scale.y * openFactor;
+    
+    // Get current values for smooth transition
+    const currentScaleY = nodes.LeftEye.scale.y;
+    const smoothFactor = 0.3;
+    
+    // Apply smooth transition to scale
+    nodes.LeftEye.scale.y = currentScaleY + (targetScaleY - currentScaleY) * smoothFactor;
+    
+    // CRITICAL: Keep the eye's center position fixed
+    // This ensures it scales from both top and bottom equally
+    nodes.LeftEye.position.y = initialStateRef.current.LeftEye.position.y;
+    
+    // Optional: Add slight horizontal scaling for natural squint
+    // Less is more here - very subtle effect
+    if (openFactor < 1) {
+      const squintFactor = 1 + ((1 - openFactor) * 0.05);
+      nodes.LeftEye.scale.x = initialStateRef.current.LeftEye.scale.x * squintFactor;
+    } else {
+      nodes.LeftEye.scale.x = initialStateRef.current.LeftEye.scale.x;
+    }
+  }
+  
+  // For RIGHT eye (corresponds to user's LEFT eye)
+  if (nodes.RightEye && initialStateRef.current?.RightEye) {
+    // Calculate how closed the eye should be (0 = closed, 1 = open)
+    const openFactor = eyeStateRef.current.rightOpen;
+    
+    // Apply symmetrical scaling from both top and bottom
+    const targetScaleY = initialStateRef.current.RightEye.scale.y * openFactor;
+    
+    // Get current values for smooth transition
+    const currentScaleY = nodes.RightEye.scale.y;
+    const smoothFactor = 0.3;
+    
+    // Apply smooth transition to scale
+    nodes.RightEye.scale.y = currentScaleY + (targetScaleY - currentScaleY) * smoothFactor;
+    
+    // CRITICAL: Keep the eye's center position fixed
+    nodes.RightEye.position.y = initialStateRef.current.RightEye.position.y;
+    
+    // Optional: Add slight horizontal scaling for natural squint
+    if (openFactor < 1) {
+      const squintFactor = 1 + ((1 - openFactor) * 0.05);
+      nodes.RightEye.scale.x = initialStateRef.current.RightEye.scale.x * squintFactor;
+    } else {
+      nodes.RightEye.scale.x = initialStateRef.current.RightEye.scale.x;
+    }
+  }
+};
+  
   // Coordinate the movement of the entire body
   useFrame(() => {
     // Calculate time delta for consistent animation speed
     const now = Date.now();
-    timeRef.current.delta = (now - timeRef.current.last) / 1000; // Convert to seconds
+    timeRef.current.delta = (now - timeRef.current.last) / 1000;
     timeRef.current.last = now;
     
-    // Use time-based smoothing factor (between 0 and 1)
-    // Lower is smoother but less responsive, higher is more responsive but can be jittery
+    // Use time-based smoothing factor
     const smoothFactor = Math.min(1, timeRef.current.delta * 8);
     
     frameCountRef.current += 1;
     
-    // Reset the entire model periodically to prevent accumulated distortions
-    if (frameCountRef.current % 600 === 0) { // Reduced frequency of resets for smoother motion
+    // Reset model periodically to prevent distortions
+    if (frameCountRef.current % 600 === 0) {
       resetModelToInitialState();
     }
     
-    // Movement parameters and limits - adjusted for more natural range
-    const MAX_X_ROTATION = 0.6;  // Up/down movement
-    const MAX_Y_ROTATION = 0.7;  // Left/right movement
-    const MAX_Z_ROTATION = 0.4;  // Tilting
+    // Movement parameters
+    const MAX_X_ROTATION = 0.6;
+    const MAX_Y_ROTATION = 0.7;
+    const MAX_Z_ROTATION = 0.4;
+  
+    // Handle eye movement
+    handleEyeMovement();
     
     if (blendshapes && blendshapes.length > 0) {
-      // Apply facial blendshapes with improved smoothing
-      blendshapes.forEach(element => {
-        headMeshRef.current.forEach(mesh => {
-          if (mesh && mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
-            const index = mesh.morphTargetDictionary[element.categoryName];
-            if (index !== undefined && index >= 0) {
-              // Apply a smoother transition to facial expressions
-              mesh.morphTargetInfluences[index] = smoothRotation(
-                mesh.morphTargetInfluences[index] || 0,
-                element.score,
-                smoothFactor * 1.2 // Slightly faster reactions for facial expressions
-              );
-            }
-          }
-        });
-      });
+      // Clamp rotation values
+// Fix 1: Invert the vertical rotation to match user's head movement
+const clampedRotation = {
+  // Invert the X rotation (vertical movement)
+  x: Math.max(-MAX_X_ROTATION, Math.min(MAX_X_ROTATION, -rotation.x)),
+  y: Math.max(-MAX_Y_ROTATION, Math.min(MAX_Y_ROTATION, rotation.y)),
+  z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
+};
       
-      // Clamp rotation values to prevent extreme distortion
-      const clampedRotation = {
-        x: Math.max(-MAX_X_ROTATION, Math.min(MAX_X_ROTATION, rotation.x)),
-        y: Math.max(-MAX_Y_ROTATION, Math.min(MAX_Y_ROTATION, rotation.y)),
-        z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
-      };
-      
-      // Smoothly interpolate rotation for more fluid movement
+      // Smoothly interpolate rotation
       rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, clampedRotation.x, smoothFactor);
       rotationLerpRef.current.y = smoothRotation(rotationLerpRef.current.y, clampedRotation.y, smoothFactor);
       rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, clampedRotation.z, smoothFactor);
@@ -190,247 +321,98 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
         rotationLerpRef.current.z
       );
       
-      // Apply whole body movement using root node as primary approach
-      if (rootRef.current && initialStateRef.current?.root) {
-        // Apply primary movement to root with improved smoothing
-        // Apply the smoothed rotation values to the root node
-        rootRef.current.rotation.set(
-          initialStateRef.current.root.rotation.x + (rotationLerpRef.current.x * 0.6),
-          initialStateRef.current.root.rotation.y + (rotationLerpRef.current.y * 0.8),
-          initialStateRef.current.root.rotation.z + (rotationLerpRef.current.z * 0.4)
-        );
+      // Apply movement to the body based on your model's structure
+      const nodeHierarchy = [
+        // Head - primary movement
+        { node: 'Head', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+        { node: 'HeadTop_End', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+        { node: 'LeftEye', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+        { node: 'RightEye', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
         
-        // Create propagation delay factors for natural body mechanics
-        // Different body parts should follow the head with varying delays
-        const applyDelayedMovement = (nodeName, xFactor, yFactor, zFactor, delay) => {
-          if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
-            // Calculate delayed rotation values (delay factor 0-1: lower = more delay)
-            const delayedX = rotationLerpRef.current.x * (1 - delay) + previousRotationRef.current.x * delay;
-            const delayedY = rotationLerpRef.current.y * (1 - delay) + previousRotationRef.current.y * delay;
-            const delayedZ = rotationLerpRef.current.z * (1 - delay) + previousRotationRef.current.z * delay;
-            
-            nodes[nodeName].rotation.set(
-              initialStateRef.current[nodeName].rotation.x + (delayedX * xFactor),
-              initialStateRef.current[nodeName].rotation.y + (delayedY * yFactor),
-              initialStateRef.current[nodeName].rotation.z + (delayedZ * zFactor)
-            );
-          }
-        };
+        // Arms - natural movement
+        { node: 'LeftArm', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.2 },
+        { node: 'RightArm', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.2 },
         
-        // Apply natural kinetic chain movement through the body
-        // Head - primary movement, minimal delay
-        applyDelayedMovement('head', 0.3, 0.3, 0.2, 0.05);
-        applyDelayedMovement('head003', 0.3, 0.3, 0.2, 0.05);
-        applyDelayedMovement('head004', 0.3, 0.3, 0.2, 0.05);
+        // Hips - counter movement for balance
+        { node: 'Hips', factors: { x: 0.2, y: 0.2, z: 0.1 }, delay: 0.3 },
         
-        // Neck - follows head closely
-        applyDelayedMovement('neck', 0.25, 0.25, 0.15, 0.15);
-        
-        // Upper spine - follows with more delay
-        applyDelayedMovement('spine001', 0.2, 0.2, 0.1, 0.25);
-        applyDelayedMovement('spine002', 0.2, 0.2, 0.1, 0.25);
-        applyDelayedMovement('spin', 0.2, 0.2, 0.1, 0.25);
-        
-        // Middle spine - follows with more delay
-        applyDelayedMovement('spine', 0.15, 0.15, 0.08, 0.35);
-        
-        // Lower spine - slight counter movement for balance
-        applyDelayedMovement('spine003', 0.05, 0.05, 0.05, 0.5);
-        
-        // Shoulders - follow spine with slight counter-movement
-        applyDelayedMovement('clavivleL', 0.15, 0.15, 0.1, 0.3);
-        applyDelayedMovement('clavivleR', 0.15, 0.15, 0.1, 0.3);
-        
-        // Arms - counter-movement for natural balance
-        applyDelayedMovement('armL', -0.08, -0.08, -0.04, 0.4);
-        applyDelayedMovement('armR', -0.08, -0.08, -0.04, 0.4);
-        
-        // Forearms - follow arms with more delay (pendulum effect)
-        applyDelayedMovement('forearmL', -0.06, -0.06, -0.03, 0.5);
-        applyDelayedMovement('forearmR', -0.06, -0.06, -0.03, 0.5);
-        
-        // Hands - slight follow-through
-        applyDelayedMovement('handL', -0.04, -0.04, -0.02, 0.6);
-        applyDelayedMovement('handR', -0.04, -0.04, -0.02, 0.6);
-        
-        // Hips - subtle counter-movement
-        applyDelayedMovement('hips', -0.05, -0.05, -0.03, 0.7);
-        
-        // Legs - counter-balance
-        applyDelayedMovement('legL', -0.04, -0.04, -0.02, 0.8);
-        applyDelayedMovement('legR', -0.04, -0.04, -0.02, 0.8);
-        
-        // Feet - ground the character with minimal movement
-        applyDelayedMovement('footL', 0, 0, 0, 0.9);
-        applyDelayedMovement('footR', 0, 0, 0, 0.9);
-      } else {
-        // Fallback approach if root node is not available
-        // Apply progressive movement down the body with natural physics
-        const nodeHierarchy = [
-          // Head group - primary movement
-          { node: 'head', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'head003', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'head004', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'eyeL', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          { node: 'eyeR', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-          
-          // Neck group - follows head closely
-          { node: 'neck', factors: { x: 0.6, y: 0.6, z: 0.4 }, delay: 0.15 },
-          
-          // Upper torso - follows with some delay
-          { node: 'spine001', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
-          { node: 'spine002', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
-          { node: 'spin', factors: { x: 0.5, y: 0.5, z: 0.3 }, delay: 0.2 },
-          
-          // Middle torso - follows with more delay
-          { node: 'spine', factors: { x: 0.4, y: 0.4, z: 0.2 }, delay: 0.3 },
-          
-          // Lower torso - subtle counter-movement
-          { node: 'spine003', factors: { x: 0.2, y: 0.2, z: 0.1 }, delay: 0.4 },
-          
-          // Shoulders 
-          { node: 'clavivleL', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
-          { node: 'clavivleR', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.25 },
-          
-          // Arms - natural counter-movement
-          { node: 'armL', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
-          { node: 'armR', factors: { x: -0.15, y: -0.15, z: -0.1 }, delay: 0.35 },
-          
-          // Forearms - follow arms with pendulum effect
-          { node: 'forearmL', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
-          { node: 'forearmR', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.45 },
-          
-          // Hands - slight follow through
-          { node: 'handL', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
-          { node: 'handR', factors: { x: -0.05, y: -0.05, z: -0.03 }, delay: 0.55 },
-          
-          // Hips - subtle counter-movement
-          { node: 'hips', factors: { x: -0.1, y: -0.1, z: -0.05 }, delay: 0.5 },
-          
-          // Legs - counter-balance with more delay
-          { node: 'legL', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
-          { node: 'legR', factors: { x: -0.08, y: -0.08, z: -0.04 }, delay: 0.6 },
-          
-          // Calves - follow legs with more delay
-          { node: 'shinL', factors: { x: -0.03, y: -0.03, z: -0.02 }, delay: 0.7 },
-          { node: 'shinR', factors: { x: -0.03, y: -0.03, z: -0.02 }, delay: 0.7 },
-          
-          // Feet - minimal movement to ground the character
-          { node: 'footL', factors: { x: -0.01, y: -0.01, z: -0.01 }, delay: 0.8 },
-          { node: 'footR', factors: { x: -0.01, y: -0.01, z: -0.01 }, delay: 0.8 }
-        ];
-        
-        // Apply movement to all nodes in the hierarchy
-        nodeHierarchy.forEach(({ node, factors, delay }) => {
-          if (nodes[node] && initialStateRef.current?.[node]) {
-            // Calculate delayed rotation values (delay factor 0-1: lower = more delay)
-            const delayedX = rotationLerpRef.current.x * (1 - delay) + previousRotationRef.current.x * delay;
-            const delayedY = rotationLerpRef.current.y * (1 - delay) + previousRotationRef.current.y * delay;
-            const delayedZ = rotationLerpRef.current.z * (1 - delay) + previousRotationRef.current.z * delay;
-            
-            nodes[node].rotation.set(
-              initialStateRef.current[node].rotation.x + (delayedX * factors.x),
-              initialStateRef.current[node].rotation.y + (delayedY * factors.y),
-              initialStateRef.current[node].rotation.z + (delayedZ * factors.z)
-            );
-          }
-        });
-      }
+        // Feet - ground the character
+        { node: 'footL', factors: { x: 0.1, y: 0.1, z: 0.05 }, delay: 0.4 },
+        { node: 'footR', factors: { x: 0.1, y: 0.1, z: 0.05 }, delay: 0.4 },
+      ];
       
-      // Store current rotation for next frame's calculations
+      // Apply movement to all nodes in the hierarchy
+      nodeHierarchy.forEach(({ node, factors, delay }) => {
+        if (nodes[node] && initialStateRef.current?.[node]) {
+          // Calculate delayed rotation values
+          const delayedX = rotationLerpRef.current.x * (1 - delay) + previousRotationRef.current.x * delay;
+          const delayedY = rotationLerpRef.current.y * (1 - delay) + previousRotationRef.current.y * delay;
+          const delayedZ = rotationLerpRef.current.z * (1 - delay) + previousRotationRef.current.z * delay;
+          
+          nodes[node].rotation.set(
+            initialStateRef.current[node].rotation.x + (delayedX * factors.x),
+            initialStateRef.current[node].rotation.y + (delayedY * factors.y),
+            initialStateRef.current[node].rotation.z + (delayedZ * factors.z)
+          );
+        }
+      });
+      
+      // Store current rotation for next frame
       previousRotationRef.current = new Euler(
         rotationLerpRef.current.x,
         rotationLerpRef.current.y,
         rotationLerpRef.current.z
       );
-      
     } else {
-      // Improved idle animation when no face tracking data
+      // Idle animation when no face tracking data
       const idleTime = Date.now() / 1000;
       
-      // Use multiple sine waves with different frequencies for more natural idle movement
-      // Main breathing cycle
+      // Use multiple sine waves for natural idle movement
       const breathe = Math.sin(idleTime * 0.5) * 0.02;
-      // Primary subtle swaying
       const sway = Math.sin(idleTime * 0.3) * 0.02;
-      // Secondary micro-movements
       const microMove1 = Math.sin(idleTime * 1.7) * 0.005;
       const microMove2 = Math.sin(idleTime * 2.3) * 0.003;
       
-      // Combine breathing and micromovement for a more lifelike idle
       const combinedBreathing = breathe + microMove1;
       const combinedSwaying = sway + microMove2;
       
-      // Gradually transition from active tracking to idle
-      // This creates a seamless blend when tracking is lost
+      // Transition from active tracking to idle
       if (lastRotationRef.current) {
         rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, 0, smoothFactor * 0.5);
         rotationLerpRef.current.y = smoothRotation(rotationLerpRef.current.y, 0, smoothFactor * 0.5);
         rotationLerpRef.current.z = smoothRotation(rotationLerpRef.current.z, 0, smoothFactor * 0.5);
       }
       
-      // Apply idle animation to root for whole body movement
-      if (rootRef.current && initialStateRef.current?.root) {
-        rootRef.current.rotation.set(
-          initialStateRef.current.root.rotation.x + combinedBreathing * 0.5,
-          initialStateRef.current.root.rotation.y + combinedSwaying,
-          initialStateRef.current.root.rotation.z + Math.sin(idleTime * 0.2) * 0.01
-        );
-      } else {
-        // Apply breathing to chest/spine with natural physics
-        if (nodes.spin && initialStateRef.current?.spin) {
-          nodes.spin.rotation.x = initialStateRef.current.spin.rotation.x + combinedBreathing;
+      // Simple idle animation for your model's nodes
+      const nodeIdles = {
+        'Head': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
+        'Hips': { x: combinedBreathing * 0.2, y: combinedSwaying * 0.3, z: microMove2 * 0.2 },
+        'LeftArm': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.2, z: microMove1 * 0.1 },
+        'RightArm': { x: combinedBreathing * 0.3, y: -combinedSwaying * 0.2, z: microMove2 * 0.1 },
+      };
+      
+      Object.entries(nodeIdles).forEach(([nodeName, values]) => {
+        if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
+          nodes[nodeName].rotation.x = initialStateRef.current[nodeName].rotation.x + values.x;
+          nodes[nodeName].rotation.y = initialStateRef.current[nodeName].rotation.y + values.y;
+          nodes[nodeName].rotation.z = initialStateRef.current[nodeName].rotation.z + values.z;
         }
-        
-        // Apply subtle head movement
-        if (nodes.head && initialStateRef.current?.head) {
-          nodes.head.rotation.x = initialStateRef.current.head.rotation.x + combinedBreathing * 0.3;
-          nodes.head.rotation.y = initialStateRef.current.head.rotation.y + combinedSwaying * 0.7;
-          nodes.head.rotation.z = initialStateRef.current.head.rotation.z + microMove1 * 0.5;
-        }
-        
-        // Create a more varied idle animation with subtle differences
-        // for each body part to avoid the robot-like synchronized movement
-        const nodeIdles = {
-          'head003': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
-          'head004': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
-          'neck': { x: combinedBreathing * 0.25, y: combinedSwaying * 0.6, z: microMove2 * 0.4 },
-          'spine001': { x: combinedBreathing * 0.7, y: combinedSwaying * 0.5, z: microMove1 * 0.3 },
-          'spine002': { x: combinedBreathing * 0.7, y: combinedSwaying * 0.4, z: microMove2 * 0.3 },
-          'clavivleL': { x: combinedBreathing * 0.6, y: combinedSwaying * 0.1, z: microMove1 * 0.2 },
-          'clavivleR': { x: combinedBreathing * 0.6, y: combinedSwaying * 0.1, z: microMove2 * 0.2 },
-          'spine': { x: combinedBreathing * 0.8, y: combinedSwaying * 0.3, z: microMove1 * 0.2 },
-          'armL': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.2 + Math.sin(idleTime * 0.27) * 0.01, z: microMove2 * 0.1 },
-          'armR': { x: combinedBreathing * 0.3, y: combinedSwaying * -0.2 + Math.sin(idleTime * 0.29) * 0.01, z: microMove1 * 0.1 },
-          'forearmL': { x: combinedBreathing * 0.2, y: combinedSwaying * 0.1 + Math.sin(idleTime * 0.31) * 0.005, z: microMove2 * 0.05 },
-          'forearmR': { x: combinedBreathing * 0.2, y: combinedSwaying * -0.1 + Math.sin(idleTime * 0.33) * 0.005, z: microMove1 * 0.05 }
-        };
-        
-        Object.entries(nodeIdles).forEach(([nodeName, values]) => {
+      });
+      
+      // Add subtle random movements occasionally
+      if (frameCountRef.current % 90 === 0) {
+        const microNodes = ['Head', 'LeftEye', 'RightEye'];
+        microNodes.forEach(nodeName => {
           if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
-            nodes[nodeName].rotation.x = initialStateRef.current[nodeName].rotation.x + values.x;
-            nodes[nodeName].rotation.y = initialStateRef.current[nodeName].rotation.y + values.y;
-            nodes[nodeName].rotation.z = initialStateRef.current[nodeName].rotation.z + values.z;
+            const microX = (Math.random() - 0.5) * 0.01;
+            const microY = (Math.random() - 0.5) * 0.01;
+            const microZ = (Math.random() - 0.5) * 0.01;
+            
+            nodes[nodeName].rotation.x += microX;
+            nodes[nodeName].rotation.y += microY;
+            nodes[nodeName].rotation.z += microZ;
           }
         });
-        
-        // Add very subtle random movements to simulate muscle micro-adjustments
-        // This makes idle animation feel less mechanical
-        if (frameCountRef.current % 90 === 0) {
-          const microNodes = ['head', 'armL', 'armR', 'spine', 'eyeL', 'eyeR'];
-          microNodes.forEach(nodeName => {
-            if (nodes[nodeName] && initialStateRef.current?.[nodeName]) {
-              // Tiny random adjustment (max 0.5 degrees) that will be smoothed out
-              const microX = (Math.random() - 0.5) * 0.01;
-              const microY = (Math.random() - 0.5) * 0.01;
-              const microZ = (Math.random() - 0.5) * 0.01;
-              
-              nodes[nodeName].rotation.x += microX;
-              nodes[nodeName].rotation.y += microY;
-              nodes[nodeName].rotation.z += microZ;
-            }
-          });
-        }
       }
     }
   });
@@ -442,7 +424,7 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [scale, setScale] = useState(1.9);
-  const modelChoiceArray = [{ modelUrl: "./models/astra1.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.2.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
     { modelUrl: "./models/astra2.glb", modelImage: "/astra2.webp",scale:4,modelName:"Cosmodrip" },
   ]
   const [cameraActive, setCameraActive] = useState(false);
@@ -468,6 +450,7 @@ export default function AavatarFaceTracking() {
             faceLandmarkerResult.facialTransformationMatrixes.length > 0) {
           
           blendshapes = faceLandmarkerResult.faceBlendshapes[0].categories;
+          // console.log(blendshapes)
           const matrix = new Matrix4().fromArray(faceLandmarkerResult.facialTransformationMatrixes[0].data);
           rotation = new Euler().setFromRotationMatrix(matrix);
         }
