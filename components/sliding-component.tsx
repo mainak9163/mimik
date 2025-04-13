@@ -93,7 +93,7 @@ const SlidingComponent = () => {
           <div className="absolute bottom-[7vh] w-fit mx-auto left-0 right-0">
           <button
               onClick={handleGameplayClick}
-              className="flex cursor-pointer items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/85 to-[#0fafaf]/85 hover:from-[#d1848d] hover:to-[#0ea5a5] shadow-xl text-white py-6 px-8 rounded-full hover:scale-[1.05] transition-all  text-5xl"
+              className="flex cursor-pointer items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/85 to-[#0fafaf]/85 hover:from-[#d1848d] hover:to-[#0ea5a5] shadow-xl text-white py-6 px-8 rounded-full hover:scale-[1.05] transition-all text-4xl  sm:text-5xl"
             >
               <Film size={48} />
               <span className="sour-gummy">Watch Trailer</span>

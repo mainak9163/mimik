@@ -21,8 +21,11 @@ const App = () => {
         </section>
       </header>
       <main>
-        <Separator className="bg-border" />
-        <SecondHero />
+        <section id="one.one">
+          <Separator className="bg-border" />
+          <SecondHero />
+          <Separator className="bg-border" />
+        </section>
         <Separator className="bg-border" />
         <Features />
         <Separator className="bg-border" />
