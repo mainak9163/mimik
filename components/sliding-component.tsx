@@ -89,10 +89,11 @@ const SlidingComponent = () => {
 
             <button
               onClick={handleGameplayClick}
-              className="flex items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/95 to-[#0fafaf]/95 shadow-xl text-white py-6 px-8 rounded-xl hover:shadow-2xl transition-colors text-5xl"
+              className="cursor-pointer flex items-center justify-center gap-2 bg-linear-to-r  text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
             >
-              <Film size={48} />
-              <span>Watch Trailer</span>
+              <img src="./clappboard.webp" alt="play trailer" />
+              {/* <Film size={48} /> */}
+              {/* <span>Watch Trailer</span> */}
             </button>
           </div>
         </div>
