@@ -14,17 +14,18 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const astrapuffs = [
   {
     name: "Cluepuff",
+    color:"#fab057",
     imageUrl: "/examples/avatar1.jpeg",
     property: (
       <>
-        <h3>Dimension: Puzzle Dimension</h3>
+        <h3 className="text-xl font-semibold sour-gummy">Dimension: Puzzle Dimension</h3>
         <p>
           Kay Puzzle is from the Puzzle Dimension—a realm where the very fabric of reality twists and turns like an M.C.
           Escher masterpiece. Here, staircases lead to endless loops, ceilings become floors, and perspectives shift
           with every glance. The landscape is a labyrinth of interlocking shapes and mind-bending optical illusions,
           where every surface hides a secret and every corner poses a challenge to logic.
         </p>
-        <h3>Personality</h3>
+        <h3 className="mt-3 text-xl font-semibold sour-gummy">Personality</h3>
         <p>
           Kay Puzzle is as enigmatic as their environment—witty, clever, and delightfully unpredictable. Their speech is
           riddled with puns and cryptic hints, often leaving listeners both amused and intrigued. With a mind always at
@@ -35,17 +36,18 @@ const astrapuffs = [
   },
   {
     name: "Terrabloom",
+    color:"#66b888",
     imageUrl: "/examples/avatar2.jpeg",
     property: (
       <>
-        <h3>Dimension: Verdant Expanse</h3>
+        <h3 className="text-xl font-semibold sour-gummy">Dimension: Verdant Expanse</h3>
         <p>
           Welcome to the Verdant Expanse—a realm where every breath feels like the kiss of spring and the landscape is a
           vibrant tapestry of blossoms, winding vines, and whispering trees. In this enchanted dimension, the earth
           itself is alive with a magical energy that causes flowers to bloom with every step, and the colors of nature
           dance in a perpetual celebration of life.
         </p>
-        <h3>Personality</h3>
+        <h3 className="mt-3 text-xl font-semibold sour-gummy">Personality</h3>
         <p>
           Terrabloom is nurturing, empathetic, and fiercely protective of all things green. With a warm and gentle
           spirit, they embody the essence of nature&apos;s resilience and beauty, always ready to lend a hand—or a petal—to
@@ -56,16 +58,17 @@ const astrapuffs = [
   },
   {
     name: "Lucyfluff",
+    color:"#d66058",
     imageUrl: "/examples/avatar3.jpeg",
     property: (
       <>
-        <h3>Dimension: Techno Nexus</h3>
+        <h3 className="text-xl font-semibold sour-gummy">Dimension: Techno Nexus</h3>
         <p>
           Welcome to the Techno Nexus—a vibrant digital frontier where circuits, code, and glowing holograms form a
           breathtaking cityscape of endless innovation. In this realm, data flows like a living river and technology is
           as natural as the wind.
         </p>
-        <h3>Personality</h3>
+        <h3 className="mt-3 text-xl font-semibold sour-gummy">Personality</h3>
         <p>
           Lucyfluff is brilliant, quick-witted, and ever-curious, always ready to guide you through the intricacies of
           technology with a touch of playful mischief. His impish humor and affable nature make even the most complex
@@ -76,16 +79,17 @@ const astrapuffs = [
   },
   {
     name: "Glimmerstorm",
+    color:"#f58e7d",
     imageUrl: "/examples/avatar4.jpeg",
     property: (
       <>
-        <h3>Dimension: Tempest Realm</h3>
+        <h3  className="text-xl font-semibold sour-gummy">Dimension: Tempest Realm</h3>
         <p>
           Welcome to the Tempest Realm—a breathtaking expanse where the skies are alive with a symphony of weather. In
           this dynamic dimension, clouds swirl in mesmerizing patterns, rainbows burst forth after sudden downpours, and
           lightning dances gracefully across the horizon.
         </p>
-        <h3>Personality</h3>
+        <h3  className="mt-3 text-xl font-semibold sour-gummy">Personality</h3>
         <p>
           Glimmerstorm is gentle and kind-hearted, with a temperament that mirrors the weather he commands. He can be as
           calm as a serene, sunlit morning or as exhilarated as a vibrant, stormy night, adapting his mood to the energy
@@ -96,16 +100,17 @@ const astrapuffs = [
   },
   {
     name: "Aurabloom",
-    imageUrl: "/examples/avatar5.webp",
+    color:"#7291bd",
+    imageUrl: "/examples/avatar5.JPG",
     property: (
       <>
-        <h3>Dimension: Ice Cream Dimension</h3>
+        <h3 className="mt-3 text-xl font-semibold sour-gummy">Dimension: Ice Cream Dimension</h3>
         <p>
           Welcome to the Ice Cream Dimension—a realm of endless sweetness and chilly delight, where the landscape is
           made entirely of scrumptious frozen treats. Here, every hill is a mound of velvety ice cream, every river a
           flowing cascade of melted caramel, and the air is always filled with a refreshing, minty breeze.
         </p>
-        <h3>Personality</h3>
+        <h3 className="mt-3 text-xl font-semibold sour-gummy">Personality</h3>
         <p>
           Aurabloom exudes a warm and gentle aura, offering comfort and sweetness to everyone they meet. They are
           inherently nurturing, kind, and caring—always ready to offer a cool word of advice or a warm smile.
@@ -151,7 +156,8 @@ export default function AvatarShowcase() {
                   <ChevronLeft className="w-20 h-20 cursor-pointer" />
                 </div>
                 <div className="text-center">
-                  <h3 className="mb-2 text-3xl sm:text-4xl font-semibold">{currentAvatar.name}</h3>
+                  <h3 className="mb-2 text-3xl sm:text-4xl font-semibold">
+                    <span className="text-transparent bg-clip-text sour-gummy" style={{ backgroundColor: currentAvatar.color }}>{currentAvatar.name}</span></h3>
                   <Button 
                     variant="outline" 
                     size="sm" 
@@ -192,8 +198,8 @@ export default function AvatarShowcase() {
             </div>
 
             <div className="space-y-6">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-                Meet some Astras
+              <h1 className="text-4xl font-semibold sour-gummy sm:text-5xl xl:text-6xl/none">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f58895] to-[#0edcdc]">Meet some Astras</span>
               </h1>
               <p className="text-xl  text-muted-foreground">
                 Astrapuffs are unique characters from diverse dimensions, each with their own personality and
@@ -214,7 +220,7 @@ export default function AvatarShowcase() {
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogContent className="sm:max-w-[700px]">
             <DialogHeader>
-              <DialogTitle className="text-2xl">{selectedAvatar.name}</DialogTitle>
+              <DialogTitle className="text-2xl"> <span className="text-transparent bg-clip-text sour-gummy" style={{ backgroundColor: currentAvatar.color }}>{selectedAvatar.name}</span></DialogTitle>
             </DialogHeader>
             <div className="grid gap-6 py-4 md:grid-cols-[200px_1fr]">
               <div className="relative aspect-square overflow-hidden rounded-lg">

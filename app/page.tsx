@@ -24,7 +24,6 @@ const App = () => {
         <Separator className="bg-border" />
         <SecondHero />
         <Separator className="bg-border" />
-        <Separator className="bg-border" />
         <Features />
         <Separator className="bg-border" />
         <section id="three">

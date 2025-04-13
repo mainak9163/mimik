@@ -139,7 +139,7 @@ const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one'
   }, [currentSection, isMobile]);
 
   // Calculate appropriate scale based on device
-  const scale = isMobile ? 0.4 : 1;
+  const scale = isMobile ? 0.4 : 0.7;
 
   return (
     <primitive 

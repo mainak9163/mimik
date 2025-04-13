@@ -11,7 +11,8 @@ export default function SecondHero() {
         <Card className="overflow-hidden border-none bg-background/60 backdrop-blur-sm shadow-none">
           <CardContent className="grid gap-8 p-6 md:grid-cols-2 md:p-12 shadow-none">
             <div className="space-y-6">
-              <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">What is astrapuff?</h1>
+              <h1 className="text-4xl font-semibold  sm:text-5xl xl:text-6xl/none sour-gummy ">What is
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f58895] to-[#0edcdc] ml-2">Astrapuff</span>?</h1>
               <p className="text-2xl text-muted-foreground">
                 Astrapuff is a multiplayer agentic NPC simulator that revolutionizes gaming experiences. Our advanced
                 AI-driven NPCs create dynamic, responsive, and immersive environments that adapt to player interactions

@@ -29,7 +29,7 @@ const Feature: FC<SecondHeroProps> = ({
               }`}
             >
               <div className="space-y-6 w-full">
-                <h2 className="text-5xl font-bold tracking-tighter ">
+                <h2 className="text-5xl font-medium sour-gummy " style={{color:index%2==0?"#f58895":"#0edcdc"}}>
                   {title}
                 </h2>
                 <p className="text-xl text-muted-foreground">{description}</p>
@@ -91,8 +91,8 @@ export default function Features() {
   return (
     <div>
       <div className="container relative mx-auto px-4 pt-16">
-        <h1 className="text-6xl text-center font-bold tracking-tighter sm:text-5xl xl:text-6xl/none">
-          Key Features
+        <h1 className="text-6xl text-center font-semibold sour-gummy sm:text-5xl xl:text-6xl/none">
+         <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f58895] to-[#0edcdc]"> Key Features</span>
         </h1>
       </div>
       {features.map((feature, index) => (
