@@ -14,7 +14,7 @@ import { ScrollArea } from "@/components/ui/scroll-area"
 const astrapuffs = [
   {
     name: "Cluepuff",
-    imageUrl: "/examples/avatar1.jpeg",
+    imageUrl: "/examples/avatar1.webp",
     property: (
       <>
         <h3>Dimension: Puzzle Dimension</h3>
@@ -35,7 +35,7 @@ const astrapuffs = [
   },
   {
     name: "Terrabloom",
-    imageUrl: "/examples/avatar2.jpeg",
+    imageUrl: "/examples/avatar2.webp",
     property: (
       <>
         <h3>Dimension: Verdant Expanse</h3>
@@ -56,7 +56,7 @@ const astrapuffs = [
   },
   {
     name: "Lucyfluff",
-    imageUrl: "/examples/avatar3.jpeg",
+    imageUrl: "/examples/avatar3.webp",
     property: (
       <>
         <h3>Dimension: Techno Nexus</h3>
@@ -76,7 +76,7 @@ const astrapuffs = [
   },
   {
     name: "Glimmerstorm",
-    imageUrl: "/examples/avatar4.jpeg",
+    imageUrl: "/examples/avatar4.webp",
     property: (
       <>
         <h3>Dimension: Tempest Realm</h3>
