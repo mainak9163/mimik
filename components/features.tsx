@@ -7,7 +7,7 @@ interface SecondHeroProps {
   id: string;
   title: string;
   description: string;
-  image: string|string[];
+  image: string | string[];
 }
 
 const Feature: FC<SecondHeroProps> = ({
@@ -17,7 +17,6 @@ const Feature: FC<SecondHeroProps> = ({
   description,
   image,
 }) => {
-
   return (
     <section id={id}>
       <div className={`w-full transition-colors py-3`}>
@@ -36,7 +35,7 @@ const Feature: FC<SecondHeroProps> = ({
               </div>
               <div className="w-full">
                 {Array.isArray(image) ? (
-                 <CustomCarousel images={image} autoPlayInterval={5000} />
+                  <CustomCarousel images={image} autoPlayInterval={5000} />
                 ) : (
                   <img src={image} className="w-full bg-cover rounded-3xl" />
                 )}
@@ -54,7 +53,7 @@ export default function Features() {
     id: string;
     title: string;
     description: string;
-    image: string|string[];
+    image: string | string[];
   }[] = [
     {
       id: "two.one",
@@ -66,7 +65,12 @@ export default function Features() {
       id: "two.two",
       title: "Calm",
       description: `Landscapes shift with your journey—from cozy meadows to glowing crystal caves—each designed to spark curiosity and invite peaceful exploration, blending comfort with a sense of magical discovery.`,
-      image: ["/features/estrellas.webp","/features/dia.webp","/features/nocheLuna.webp", "/features/amanecer.webp"],
+      image: [
+        "/features/dia.webp",
+        "/features/estrellas.webp",
+        "/features/nocheLuna.webp",
+        "/features/amanecer.webp",
+      ],
     },
     {
       id: "two.three",
