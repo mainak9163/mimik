@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
-const DEFAULT_AVATAR_URL = "./models/astra1.2.glb";
+const DEFAULT_AVATAR_URL = "./models/astra1.3.glb";
 
 // MediaPipe configuration
 let video;
@@ -69,7 +69,7 @@ useEffect(() => {
   headMeshRef.current = [];
   
   // Log the available nodes for debugging
-  // console.log("Available nodes:", Object.keys(nodes));
+  console.log("Available nodes:", Object.keys(nodes));
   
   // Store initial state of all relevant nodes
   initialStateRef.current = {};
@@ -117,7 +117,11 @@ useEffect(() => {
     blinkInProgress: false,
     winkInProgress: false,
     lastBlinkTime: 0,
-    blinkDuration: 200,
+    blinkDuration: 100,
+    // Add mouth tracking
+    mouthOpen: 0,
+    mouthSmile: 0,
+    mouthPucker: 0
   };
   
   return () => {
@@ -148,11 +152,6 @@ useEffect(() => {
   };
 
   // Function to handle eye blinking and winking - add this before the useFrame function
-// Handle eye winking with your model's LeftEye and RightEye nodes
-// Replace the handleEyeMovement function with this improved version
- // Replace the handleEyeMovement function with this revised version
-// Replace the handleEyeMovement function with this improved version
-// Replace the handleEyeMovement function with this improved version
 const handleEyeMovement = () => {
   const now = Date.now();
   const { blinkInProgress, winkInProgress, lastBlinkTime, blinkDuration } = eyeStateRef.current;
@@ -227,7 +226,7 @@ const handleEyeMovement = () => {
     
     // Get current values for smooth transition
     const currentScaleY = nodes.LeftEye.scale.y;
-    const smoothFactor = 0.3;
+    const smoothFactor = 0.5;
     
     // Apply smooth transition to scale
     nodes.LeftEye.scale.y = currentScaleY + (targetScaleY - currentScaleY) * smoothFactor;
@@ -272,8 +271,53 @@ const handleEyeMovement = () => {
       nodes.RightEye.scale.x = initialStateRef.current.RightEye.scale.x;
     }
   }
-};
+  };
   
+  const handleMouthMovement = () => {
+    if (!blendshapes || blendshapes.length === 0) return;
+    
+    let jawOpen = 0;
+    let mouthSmileLeft = 0;
+    let mouthSmileRight = 0;
+    let mouthPucker = 0;
+    
+    // Extract mouth-related blendshapes
+    blendshapes.forEach(element => {
+      if (element.categoryName === 'jawOpen') {
+        jawOpen = element.score;
+      }
+      if (element.categoryName === 'mouthSmileLeft') {
+        mouthSmileLeft = element.score;
+      }
+      if (element.categoryName === 'mouthSmileRight') {
+        mouthSmileRight = element.score;
+      }
+      if (element.categoryName === 'mouthPucker') {
+        mouthPucker = element.score;
+      }
+    });
+    
+    // Apply smooth interpolation for mouth movements
+    const smoothFactor = 0.3;
+    eyeStateRef.current.mouthOpen = eyeStateRef.current.mouthOpen + 
+      (jawOpen - eyeStateRef.current.mouthOpen) * smoothFactor;
+    
+    const smileAvg = (mouthSmileLeft + mouthSmileRight) / 2;
+    eyeStateRef.current.mouthSmile = eyeStateRef.current.mouthSmile + 
+      (smileAvg - eyeStateRef.current.mouthSmile) * smoothFactor;
+    
+    eyeStateRef.current.mouthPucker = eyeStateRef.current.mouthPucker + 
+      (mouthPucker - eyeStateRef.current.mouthPucker) * smoothFactor;
+    
+    // Apply to the mouth nodes if they exist
+    // For jaw opening
+    if (nodes.Head && initialStateRef.current?.Head) {
+      // Mouth opening - adjust head rotation slightly for jaw movement
+      const jawOpenAmount = eyeStateRef.current.mouthOpen * 0.15;
+      nodes.Head.rotation.x = initialStateRef.current.Head.rotation.x - jawOpenAmount;
+    }
+  };
+
   // Coordinate the movement of the entire body
   useFrame(() => {
     // Calculate time delta for consistent animation speed
@@ -298,16 +342,26 @@ const handleEyeMovement = () => {
   
     // Handle eye movement
     handleEyeMovement();
+
+    handleMouthMovement();
+
+    // if (rootRef.current && initialStateRef.current?.['Scene']) {
+    //   // Apply smaller rotation to the whole body
+    //   rootRef.current.rotation.x = initialStateRef.current['Scene'].rotation.x + (rotationLerpRef.current.x * 0.3);
+    //   rootRef.current.rotation.y = initialStateRef.current['Scene'].rotation.y + (rotationLerpRef.current.y * 0.3);
+    //   rootRef.current.rotation.z = initialStateRef.current['Scene'].rotation.z + (rotationLerpRef.current.z * 0.2);
+    // }
     
     if (blendshapes && blendshapes.length > 0) {
       // Clamp rotation values
-// Fix 1: Invert the vertical rotation to match user's head movement
-const clampedRotation = {
-  // Invert the X rotation (vertical movement)
-  x: Math.max(-MAX_X_ROTATION, Math.min(MAX_X_ROTATION, -rotation.x)),
-  y: Math.max(-MAX_Y_ROTATION, Math.min(MAX_Y_ROTATION, rotation.y)),
-  z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, rotation.z))
-};
+      const clampedRotation = {
+        // Keep vertical motion in the same direction
+        x: Math.max(-MAX_X_ROTATION, Math.min(MAX_X_ROTATION, rotation.x)),
+        // Mirror horizontal motion
+        y: Math.max(-MAX_Y_ROTATION, Math.min(MAX_Y_ROTATION, -rotation.y)),
+        // Maintain head tilt direction but ensure symmetry
+        z: Math.max(-MAX_Z_ROTATION, Math.min(MAX_Z_ROTATION, -rotation.z))
+      };
       
       // Smoothly interpolate rotation
       rotationLerpRef.current.x = smoothRotation(rotationLerpRef.current.x, clampedRotation.x, smoothFactor);
@@ -321,17 +375,29 @@ const clampedRotation = {
         rotationLerpRef.current.z
       );
       
+      if (rootRef.current) {
+        // Apply combined rotation to the whole model
+        const unitBodyFactor = 0.3;
+        rootRef.current.rotation.x = (initialStateRef.current?.Scene?.rotation.x || 0) + (rotationLerpRef.current.x * unitBodyFactor);
+        rootRef.current.rotation.y = (initialStateRef.current?.Scene?.rotation.y || 0) + (rotationLerpRef.current.y * unitBodyFactor);
+        rootRef.current.rotation.z = (initialStateRef.current?.Scene?.rotation.z || 0) + (rotationLerpRef.current.z * unitBodyFactor);
+      }
+
       // Apply movement to the body based on your model's structure
       const nodeHierarchy = [
         // Head - primary movement
-        { node: 'Head', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
-        { node: 'HeadTop_End', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
+        { node: 'Head', factors: { x: 1.0, y: 1.0, z: 0.8 }, delay: 0.05 },
+        { node: 'HeadTop_End', factors: { x: 1.0, y: 1.0, z: 0.8 }, delay: 0.05 },
         { node: 'LeftEye', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
         { node: 'RightEye', factors: { x: 0.8, y: 0.8, z: 0.5 }, delay: 0.05 },
         
-        // Arms - natural movement
-        { node: 'LeftArm', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.2 },
-        { node: 'RightArm', factors: { x: 0.3, y: 0.3, z: 0.2 }, delay: 0.2 },
+       // Update arms to follow body movement more directly
+       { node: 'LeftShoulder', factors: { x: 0.1, y: 0.1, z: 0.1 }, delay: 0.1 },
+       { node: 'RightShoulder', factors: { x: 0.1, y: 0.1, z: 0.1 }, delay: 0.1 },
+       { node: 'LeftArm', factors: { x: 0.05, y: 0.05, z: 0.05 }, delay: 0.12 },
+       { node: 'RightArm', factors: { x: 0.05, y: 0.05, z: 0.05 }, delay: 0.12 },
+       { node: 'LeftForeArm', factors: { x: 0.03, y: 0.03, z: 0.03 }, delay: 0.15 },
+       { node: 'RightForeArm', factors: { x: 0.03, y: 0.03, z: 0.03 }, delay: 0.15 },
         
         // Hips - counter movement for balance
         { node: 'Hips', factors: { x: 0.2, y: 0.2, z: 0.1 }, delay: 0.3 },
@@ -387,8 +453,9 @@ const clampedRotation = {
       const nodeIdles = {
         'Head': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.7, z: microMove1 * 0.5 },
         'Hips': { x: combinedBreathing * 0.2, y: combinedSwaying * 0.3, z: microMove2 * 0.2 },
-        'LeftArm': { x: combinedBreathing * 0.3, y: combinedSwaying * 0.2, z: microMove1 * 0.1 },
-        'RightArm': { x: combinedBreathing * 0.3, y: -combinedSwaying * 0.2, z: microMove2 * 0.1 },
+        // Minimal movement for arms to keep them in the same plane as body
+        'LeftArm': { x: combinedBreathing * 0.1, y: 0, z: 0 },
+        'RightArm': { x: combinedBreathing * 0.1, y: 0, z: 0 },
       };
       
       Object.entries(nodeIdles).forEach(([nodeName, values]) => {
@@ -424,7 +491,7 @@ const clampedRotation = {
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [scale, setScale] = useState(1.9);
-  const modelChoiceArray = [{ modelUrl: "./models/astra1.2.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.3.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
     { modelUrl: "./models/astra2.glb", modelImage: "/astra2.webp",scale:4,modelName:"Cosmodrip" },
   ]
   const [cameraActive, setCameraActive] = useState(false);
