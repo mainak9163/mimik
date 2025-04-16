@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { X, Film } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -72,9 +72,6 @@ const SlidingComponent = () => {
 
   return (
     <div className="relative w-full h-screen overflow-hidden">
-      <style jsx global>
-{`@import url('https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
-`}</style>
       {/* Container for both panels */}
       <div
         className={cn(
@@ -89,17 +86,16 @@ const SlidingComponent = () => {
             style={{ backgroundImage: "url('/astrapuff-bg.webp')" }}
           >
             <img src="/logo-small.png" alt="Logo" className="w-96 h-auto mb-8" />
-          </div>
-          <div className="absolute bottom-[7vh] w-fit mx-auto left-0 right-0">
-          <button
+
+            <button
               onClick={handleGameplayClick}
-              className="flex cursor-pointer items-center justify-center gap-2 bg-linear-to-r from-[#faa0ab]/85 to-[#0fafaf]/85 hover:from-[#d1848d] hover:to-[#0ea5a5] shadow-xl text-white py-6 px-8 rounded-full hover:scale-[1.05] transition-all text-4xl  sm:text-5xl"
+              className="cursor-pointer flex items-center justify-center gap-2 bg-linear-to-r  text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
             >
-              <Film size={48} />
-              <span className="sour-gummy">Watch Trailer</span>
+              <img src="./clappboard.webp" alt="play trailer" />
+              {/* <Film size={48} /> */}
+              {/* <span>Watch Trailer</span> */}
             </button>
           </div>
-
         </div>
 
         {/* Right panel - Vimeo Video */}

@@ -694,7 +694,7 @@ export default function AavatarFaceTracking() {
             {/* Avatar Selection */}
             {/* <h3 className="text-md font-medium mb-4">Choose your avatar</h3> */}
             <div className="grid grid-cols-2 gap-4 mt-2 flex-grow overflow-none">
-                  {modelChoiceArray.map((modelChoice, index) => (
+                  {modelChoiceArray.slice(0,1).map((modelChoice, index) => (
                     <div className="" key={index} >
                       <h2 className="font-medium text-center mb-2">{modelChoice.modelName}</h2>
                 <div 
