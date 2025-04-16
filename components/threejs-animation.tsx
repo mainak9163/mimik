@@ -21,11 +21,11 @@ const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one'
       rotation: [0, 0, 0]
     },
     'one.one': {
-      position: [-1.6, -1, 0],
+      position: [-3.5, -1, 0],
       rotation: [0, 0, 0]
     },
     'two.one': {
-      position: [-1.6, -1, 0],
+      position: [-2.6, -1, 0],
       rotation: [-0.2, 0.5, 0]
     },
     'two.two': {
@@ -147,7 +147,7 @@ const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one'
   }, [currentSection, isMobile]);
 
   // Calculate appropriate scale based on device
-  const scale = 0.8;
+  const scale = isMobile ? 1 : 1;
 
   return (
     <primitive 
@@ -217,7 +217,7 @@ const ThreeJSAnimation = () => {
           if (['one', 'one.one', 'two.one', 'two.two', 'two.three', 'two.four', 'two.five', 'three', 'four', 'five'].includes(section.id)) {
             active = section.id as 'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five';
           }
-          // console.log({active, sectionId: section.id})
+          console.log({active, sectionId: section.id})
         }
       });
       

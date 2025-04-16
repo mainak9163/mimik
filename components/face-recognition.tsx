@@ -605,7 +605,7 @@ export default function AavatarFaceTracking() {
 
   return (
     <div className="bg-background text-foreground px-4 py-16">
-      <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-12 text-center"><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f58895] to-[#0edcdc]">Lets Play</span></h1>
+      <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-12 text-center"><span className="">Lets Play</span></h1>
   <div className="mx-auto max-w-screen sm:max-w-6xl">
     <div className="flex flex-wrap">
       {/* Avatar Display - Left Side */}
