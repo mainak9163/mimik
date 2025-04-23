@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 // Default avatar URL - pre-defined to avoid user input
-const DEFAULT_AVATAR_URL = "./models/astra1.3.glb";
+const DEFAULT_AVATAR_URL = "./models/astra1.5.glb";
 
 // MediaPipe configuration
 let video;
@@ -67,6 +67,29 @@ function Avatar({ url,scale=1.9 }:{url:string,scale:number}) {
 useEffect(() => {
   // Clear the head mesh array before adding new meshes
   headMeshRef.current = [];
+  
+  // Add all meshes that might have morph targets
+  if (nodes.Wolf3D_Head) headMeshRef.current.push(nodes.Wolf3D_Head);
+  if (nodes.Wolf3D_Teeth) headMeshRef.current.push(nodes.Wolf3D_Teeth);
+  if (nodes.Wolf3D_Beard) headMeshRef.current.push(nodes.Wolf3D_Beard);
+  if (nodes.Wolf3D_Avatar) headMeshRef.current.push(nodes.Wolf3D_Avatar);
+  if (nodes.Wolf3D_Head_Custom) headMeshRef.current.push(nodes.Wolf3D_Head_Custom);
+  if (nodes.Head) headMeshRef.current.push(nodes.Head);
+  
+  // Add any other potential morph-capable meshes
+  Object.keys(nodes).forEach(key => {
+    if (key.includes('Head') || key.includes('Face') || key.includes('Mouth')) {
+      if (!headMeshRef.current.includes(nodes[key])) {
+        headMeshRef.current.push(nodes[key]);
+      }
+    }
+  });
+  
+  // Log the meshes to verify they have morph targets
+  headMeshRef.current.forEach(mesh => {
+    console.log("Mesh morphs:", mesh.name, 
+      mesh.morphTargetDictionary ? Object.keys(mesh.morphTargetDictionary) : "No morphTargetDictionary");
+  });
   
   // Log the available nodes for debugging
   console.log("Available nodes:", Object.keys(nodes));
@@ -123,6 +146,49 @@ useEffect(() => {
     mouthSmile: 0,
     mouthPucker: 0
   };
+
+  //debugging
+  // Add this to your useEffect after initializing headMeshRef
+
+// Log all available nodes
+console.log("All available nodes:", Object.keys(nodes));
+
+// Check each mesh for morphTargets
+Object.values(nodes).forEach(node => {
+  // Check if this looks like a mesh object
+  if (node && node.isMesh) {
+    console.log(`Node ${node.name} is a mesh:`, node);
+    
+    // Check for morphTargetDictionary
+    if (node.morphTargetDictionary) {
+      console.log(`MorphTargets for ${node.name}:`, Object.keys(node.morphTargetDictionary));
+    }
+  }
+});
+
+// Check for materials that might be related to the mouth/face
+Object.values(nodes).forEach(node => {
+  if (node && node.material) {
+    // Log material names that might be related to mouth
+    if (node.name.toLowerCase().includes('head') || 
+        node.name.toLowerCase().includes('face') ||
+        node.name.toLowerCase().includes('avatar')) {
+      console.log(`Materials for ${node.name}:`, 
+        Array.isArray(node.material) 
+          ? node.material.map(m => m.name) 
+          : node.material.name);
+    }
+  }
+});
+
+// Log details of head bone if it exists
+if (nodes.Head) {
+  console.log("Head bone details:", {
+    position: nodes.Head.position.toArray(),
+    rotation: nodes.Head.rotation.toArray(),
+    children: nodes.Head.children?.map(c => c.name) || 'No children'
+  });
+}
   
   return () => {
     // Clean up resources when Avatar changes
@@ -273,50 +339,118 @@ const handleEyeMovement = () => {
   }
   };
   
-  const handleMouthMovement = () => {
-    if (!blendshapes || blendshapes.length === 0) return;
+// Replace the handleMouthMovement function with this:
+// Replace the handleMouthMovement function with this:
+const handleMouthMovement = () => {
+  if (!blendshapes || blendshapes.length === 0) return;
+  
+  // Track the morph values for debugging
+  const morphValues = {};
+
+  // First, identify which mesh has the morph targets
+  // For models without specific mouth nodes, morph targets are often on the head mesh
+  const meshesWithMorphs = [];
+  
+  // Check all nodes for morphTargets - sometimes they're on unexpected meshes
+  Object.keys(nodes).forEach(nodeName => {
+    const node = nodes[nodeName];
+    if (node.isMesh && node.morphTargetDictionary && node.morphTargetInfluences) {
+      meshesWithMorphs.push(node);
+      console.log(`Found mesh with morphs: ${nodeName}`, 
+        Object.keys(node.morphTargetDictionary).length > 0 ? 
+        `First few morph targets: ${Object.keys(node.morphTargetDictionary).slice(0, 5)}` : 
+        "No morph targets");
+    }
+  });
+  
+  if (meshesWithMorphs.length === 0) {
+    console.log("No meshes with morph targets found. Check model structure.");
     
-    let jawOpen = 0;
-    let mouthSmileLeft = 0;
-    let mouthSmileRight = 0;
-    let mouthPucker = 0;
+    // Since no morphs were found, try direct jaw manipulation as fallback
+    const jawOpenValue = blendshapes.find(b => b.categoryName === 'jawOpen')?.score || 0;
+    if (nodes.Head && initialStateRef.current?.Head && jawOpenValue > 0.1) {
+      // Apply jaw movement directly to head rotation
+      const maxJawRotation = 0.3; // Adjust as needed
+      nodes.Head.rotation.x = initialStateRef.current.Head.rotation.x - (jawOpenValue * maxJawRotation);
+    }
+    return;
+  }
+  
+  // Process each blendshape
+  blendshapes.forEach(element => {
+    // Store morph values for debugging
+    morphValues[element.categoryName] = element.score;
     
-    // Extract mouth-related blendshapes
-    blendshapes.forEach(element => {
-      if (element.categoryName === 'jawOpen') {
-        jawOpen = element.score;
-      }
-      if (element.categoryName === 'mouthSmileLeft') {
-        mouthSmileLeft = element.score;
-      }
-      if (element.categoryName === 'mouthSmileRight') {
-        mouthSmileRight = element.score;
-      }
-      if (element.categoryName === 'mouthPucker') {
-        mouthPucker = element.score;
+    // Apply to all meshes with morph targets
+    meshesWithMorphs.forEach(mesh => {
+      if (mesh.morphTargetDictionary && mesh.morphTargetInfluences) {
+        const morphIndex = mesh.morphTargetDictionary[element.categoryName];
+        
+        if (morphIndex !== undefined && morphIndex >= 0) {
+          // Apply with smooth interpolation
+          const currentValue = mesh.morphTargetInfluences[morphIndex] || 0;
+          const targetValue = element.score;
+          const smoothFactor = 0.3; // Adjust for smoothness
+          
+          // Update the morph target value
+          mesh.morphTargetInfluences[morphIndex] = 
+            currentValue + (targetValue - currentValue) * smoothFactor;
+        }
       }
     });
+  });
+  
+  // Log first few morph values occasionally for debugging
+  if (frameCountRef.current % 60 === 0) {
+    const morphEntries = Object.entries(morphValues).slice(0, 5);
+    console.log("Sample morph values:", 
+      morphEntries.map(([key, value]) => `${key}: ${value.toFixed(2)}`).join(", "));
+  }
+  
+  // Additional Head bone manipulation based on jaw opening
+  // This works well even without morph targets
+  if (nodes.Head && initialStateRef.current?.Head) {
+    // Get mouth/jaw related values
+    const jawOpen = morphValues['jawOpen'] || 0;
+    const mouthOpen = morphValues['mouthOpen'] || 0;
     
-    // Apply smooth interpolation for mouth movements
+    // Combine values for more realistic movement
+    const openAmount = Math.max(jawOpen, mouthOpen * 0.8);
+    
+    // Store in state for animation consistency
     const smoothFactor = 0.3;
     eyeStateRef.current.mouthOpen = eyeStateRef.current.mouthOpen + 
-      (jawOpen - eyeStateRef.current.mouthOpen) * smoothFactor;
+      (openAmount - eyeStateRef.current.mouthOpen) * smoothFactor;
     
-    const smileAvg = (mouthSmileLeft + mouthSmileRight) / 2;
-    eyeStateRef.current.mouthSmile = eyeStateRef.current.mouthSmile + 
-      (smileAvg - eyeStateRef.current.mouthSmile) * smoothFactor;
+    // Apply subtle head rotation for jaw movement
+    // Adjust multiplier for your specific model
+    const jawOpenAmount = eyeStateRef.current.mouthOpen * 0.15;
+    nodes.Head.rotation.x = initialStateRef.current.Head.rotation.x - jawOpenAmount;
     
-    eyeStateRef.current.mouthPucker = eyeStateRef.current.mouthPucker + 
-      (mouthPucker - eyeStateRef.current.mouthPucker) * smoothFactor;
-    
-    // Apply to the mouth nodes if they exist
-    // For jaw opening
-    if (nodes.Head && initialStateRef.current?.Head) {
-      // Mouth opening - adjust head rotation slightly for jaw movement
-      const jawOpenAmount = eyeStateRef.current.mouthOpen * 0.15;
-      nodes.Head.rotation.x = initialStateRef.current.Head.rotation.x - jawOpenAmount;
+    // Optional: Add slight head movement forward when jaw opens
+    // This can create more natural speaking appearance
+    if (nodes.Neck && initialStateRef.current?.Neck && openAmount > 0.2) {
+      const neckTiltAmount = openAmount * 0.02;
+      nodes.Neck.rotation.x = initialStateRef.current.Neck.rotation.x - neckTiltAmount;
     }
-  };
+  }
+  
+  // Apply smile movement through head positioning
+  // This helps when no smile morph targets are working
+  const smileLeft = morphValues['mouthSmileLeft'] || 0;
+  const smileRight = morphValues['mouthSmileRight'] || 0;
+  const smile = morphValues['mouthSmile'] || 0;
+  
+  // Combine smile values
+  const overallSmile = Math.max(smile, (smileLeft + smileRight) / 2);
+  
+  // Apply smile movement through subtle head positioning
+  if (nodes.Head && initialStateRef.current?.Head && overallSmile > 0.3) {
+    // When smiling, slightly tilt head back
+    const smileTiltAmount = overallSmile * 0.05;
+    nodes.Head.rotation.x = nodes.Head.rotation.x - smileTiltAmount;
+  }
+};
 
   // Coordinate the movement of the entire body
   useFrame(() => {
@@ -491,7 +625,7 @@ const handleEyeMovement = () => {
 export default function AavatarFaceTracking() {
   const [avatarUrl, setAvatarUrl] = useState(DEFAULT_AVATAR_URL);
   const [scale, setScale] = useState(1.9);
-  const modelChoiceArray = [{ modelUrl: "./models/astra1.3.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
+  const modelChoiceArray = [{ modelUrl: "./models/astra1.5.glb", modelImage: "/astra1.webp",scale:1.9,modelName:"Glimmerpuff" },
     { modelUrl: "./models/astra2.glb", modelImage: "/astra2.webp",scale:4,modelName:"Cosmodrip" },
   ]
   const [cameraActive, setCameraActive] = useState(false);
@@ -646,7 +780,7 @@ export default function AavatarFaceTracking() {
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
             <h2 className="text-3xl font-semibold mb-6 text-center text-muted-foreground">Move your head side to side</h2>
-            <p className="text-xl font-semibold mb-6 text-center text-muted-foreground">Eyes and mouth control coming soon!</p>
+            {/* {<p className="text-xl font-semibold mb-6 text-center text-muted-foreground">Mouth control coming soon!</p>} */}
             
             {/* Hidden video element */}
             <video 

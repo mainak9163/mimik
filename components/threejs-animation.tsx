@@ -217,7 +217,7 @@ const ThreeJSAnimation = () => {
           if (['one', 'one.one', 'two.one', 'two.two', 'two.three', 'two.four', 'two.five', 'three', 'four', 'five'].includes(section.id)) {
             active = section.id as 'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five';
           }
-          console.log({active, sectionId: section.id})
+          // console.log({active, sectionId: section.id})
         }
       });
       
