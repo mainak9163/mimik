@@ -4,10 +4,21 @@ import { useState, useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import type Player from "@vimeo/player";
+
+// Add TypeScript declaration for the Vimeo Player
+declare global {
+  interface Window {
+    Vimeo?: {
+      Player: Player;
+    };
+  }
+}
 
 const SlidingComponent = () => {
   const [showVideo, setShowVideo] = useState(false);
   const iframeWrapperRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<Player>(null);
 
   // Adding event listener for 'Escape' key press
   useEffect(() => {
@@ -46,9 +57,11 @@ const SlidingComponent = () => {
     if (iframeWrapperRef.current) {
       iframeWrapperRef.current.innerHTML = "";
     }
+    // Reset the player ref
+    playerRef.current = null;
   }
 
-  // Effect to load iframe content after transition
+  // Effect to load iframe content after transition and initialize the player
   useEffect(() => {
     if (showVideo && iframeWrapperRef.current) {
       // Wait for the transition to complete before loading the iframe
@@ -57,14 +70,42 @@ const SlidingComponent = () => {
           iframeWrapperRef.current.innerHTML = `
             <div style="padding:56.25% 0 0 0;position:relative;">
               <iframe 
-                src="https://player.vimeo.com/video/1073594430?h=c25806ace0&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" 
+                src="https://player.vimeo.com/video/1073594430?h=c25806ace0&amp;badge=0&amp;autopause=0&amp;player_id=vimeo_player&amp;app_id=58479" 
                 frameborder="0" 
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
                 style="position:absolute;top:0;left:0;width:100%;height:100%;" 
-                title="Atrapuff gameplay Alpha 6 - no logo">
+                title="Astrapuff gameplay Alpha 6 - no logo"
+                id="vimeo_player">
               </iframe>
             </div>
           `;
+          
+          // Give a little time for the iframe to load
+          setTimeout(() => {
+            // Check if Vimeo Player API is loaded
+            if (window.Vimeo) {
+              // Initialize the player
+              const iframe = document.getElementById('vimeo_player');
+              if (iframe) {
+                //@ts-expect-error global type not getting caught
+                playerRef.current = new window.Vimeo.Player(iframe);
+                
+                // Enter fullscreen mode
+                playerRef.current?.ready().then(() => {
+                  // After player is ready, play and enter fullscreen
+                  playerRef.current?.play().then(() => {
+                    playerRef.current?.requestFullscreen();
+                  }).catch((error: unknown) => {
+                    console.error("Error playing video:", error);
+                  });
+                }).catch((error: unknown) => {
+                  console.error("Player not ready:", error);
+                });
+              }
+            } else {
+              console.error("Vimeo Player API not loaded");
+            }
+          }, 1000); // Wait for iframe and API to be ready
         }
       }, 600);
     }
@@ -89,11 +130,9 @@ const SlidingComponent = () => {
 
             <button
               onClick={handleGameplayClick}
-              className="cursor-pointer flex items-center justify-center gap-2 bg-linear-to-r  text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
+              className="cursor-pointer flex items-center justify-center gap-2 bg-linear-to-r text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
             >
               <img src="./clappboard.webp" alt="play trailer" />
-              {/* <Film size={48} /> */}
-              {/* <span>Watch Trailer</span> */}
             </button>
           </div>
         </div>
@@ -106,7 +145,7 @@ const SlidingComponent = () => {
               onClick={handleCloseClick}
               variant="outline"
               size="icon"
-              className=" bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
+              className="bg-black/50 cursor-pointer text-white border-white/20 hover:bg-black/70"
             >
               <X size={48} />
             </Button>
