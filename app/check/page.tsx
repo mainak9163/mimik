@@ -4,7 +4,7 @@ import './App.css';
 
 import { useEffect, useState } from 'react';
 import { FaceLandmarker, FaceLandmarkerOptions, FilesetResolver } from "@mediapipe/tasks-vision";
-import { Color, Euler, Matrix4 } from 'three';
+import { Euler, Matrix4 } from 'three';
 import { Canvas, useFrame, useGraph } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import { useDropzone } from 'react-dropzone';
@@ -12,9 +12,11 @@ import { useDropzone } from 'react-dropzone';
 let video: HTMLVideoElement;
 let faceLandmarker: FaceLandmarker;
 let lastVideoTime = -1;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let blendshapes: any[] = [];
 let rotation: Euler;
-let headMesh: any[] = [];
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const headMesh: any[] = [];
 
 const options: FaceLandmarkerOptions = {
   baseOptions: {
@@ -44,7 +46,7 @@ function Avatar({ url }: { url: string }) {
     if (blendshapes.length > 0) {
       blendshapes.forEach(element => {
         headMesh.forEach(mesh => {
-          let index = mesh.morphTargetDictionary[element.categoryName];
+          const index = mesh.morphTargetDictionary[element.categoryName];
           if (index >= 0) {
             mesh.morphTargetInfluences[index] = element.score;
           }
@@ -88,7 +90,7 @@ function App() {
   }
 
   const predict = async () => {
-    let nowInMs = Date.now();
+    const nowInMs = Date.now();
     if (lastVideoTime !== video.currentTime) {
       lastVideoTime = video.currentTime;
       const faceLandmarkerResult = faceLandmarker.detectForVideo(video, nowInMs);
@@ -104,6 +106,7 @@ function App() {
     window.requestAnimationFrame(predict);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleOnChange = (event: any) => {
     setUrl(`${event.target.value}?morphTargets=ARKit&textureAtlas=1024`);
   }
