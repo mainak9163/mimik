@@ -2,11 +2,11 @@
 import { useState, useRef } from "react";
 import ContactForm from "./contact-form";
 
-const InstagramLogo = () => {
+const SocialLogo = ({ socialMedia }: { socialMedia: string }) => {
   return (
     <img
-      src={"/instagram.svg"}
-      alt={`instagram logo`}
+      src={`/${socialMedia}.svg`}
+      alt={`${socialMedia} logo`}
       className="w-10 h-10 object-cover"
     />
   );
@@ -36,13 +36,24 @@ const Footer = () => {
     <footer className="w-full border-t border-border bg-background/80 py-4">
       <div className="container mx-auto flex justify-between px-4 md:flex-row md:items-center">
         <div className="mb-2 md:mb-0 flex flex-col">
-          <a
-            href="https://instagram.com/astrapuffs"
-            className="flex flex-row items-center cursor-pointer"
-          >
-            <InstagramLogo />
-            Follow us!
-          </a>
+          <span className="text-xl">Follow us!</span>
+          <div className="flex flex-row gap-4">
+            <a
+              href="https://instagram.com/astrapuffs"
+              className="flex flex-row items-center cursor-pointer"
+            >
+              <SocialLogo socialMedia="instagram" />
+              Instagram
+            </a>
+            <a
+              href="https://www.tiktok.com/@astrapuffs"
+              className="flex flex-row items-center cursor-pointer"
+            >
+              <SocialLogo socialMedia="tiktok" />
+              Tiktok
+            </a>
+          </div>
+          <span className="h-2" />
           <a
             href="#terms-of-service"
             className="flex flex-row items-center cursor-pointer"
