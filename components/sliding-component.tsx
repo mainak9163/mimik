@@ -130,9 +130,10 @@ const SlidingComponent = () => {
 
             <button
               onClick={handleGameplayClick}
-              className="cursor-pointer flex items-center justify-center gap-2 bg-linear-to-r text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
+              className="cursor-pointer flex flex-col items-center justify-center gap-2 bg-linear-to-r text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
             >
               <img src="./clappboard.webp" alt="play trailer" />
+              <span className="rounded-full text-4xl px-8 py-2 pb-4 bg-amber-300 border-4 border-white text-slate-800" >Lets play!</span>
             </button>
           </div>
         </div>
