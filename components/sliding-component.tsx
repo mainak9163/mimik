@@ -70,7 +70,7 @@ const SlidingComponent = () => {
           iframeWrapperRef.current.innerHTML = `
             <div style="padding:56.25% 0 0 0;position:relative;">
               <iframe 
-                src="https://player.vimeo.com/video/1080725678?h=50e9704865&amp;badge=0&amp;autopause=0&amp;player_id=vimeo_player&amp;app_id=58479" 
+                src="https://player.vimeo.com/video/1073594430?h=c25806ace0&amp;badge=0&amp;autopause=0&amp;player_id=vimeo_player&amp;app_id=58479" 
                 frameborder="0" 
                 allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" 
                 style="position:absolute;top:0;left:0;width:100%;height:100%;" 
