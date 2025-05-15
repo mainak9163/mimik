@@ -17,7 +17,7 @@ export default async  function SpecificJobPage({
             <div className="text-xl text-white font-semibold tracking-widest">{job.department.toUpperCase()}</div>
             <div className="text-4xl font-semibold text-white">{job.position} ({job.requisitionId})</div>
             </div>
-            <div className="flex flex-col md:flex-row p-4">
+            <div className="flex flex-col md:flex-row p-4 pt-10">
                 <div className="px-6 md:w-[300px] flex gap-x-4 flex-wrap md:flex-col gap-y-3">
                     <div className="flex flex-col">
                     <span className="text-white font-semibold text-base">Department</span>
