@@ -7,7 +7,7 @@ const SocialLogo = ({ socialMedia }: { socialMedia: string }) => {
     <img
       src={`/${socialMedia}.svg`}
       alt={`${socialMedia} logo`}
-      className="w-10 h-10 object-cover"
+      className="w-6 h-6 object-cover"
     />
   );
 };
@@ -33,49 +33,85 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-full border-t border-border bg-background/80 py-4">
-      <div className="container mx-auto flex justify-between px-4 md:flex-row md:items-center">
-        <div className="mb-2 md:mb-0 flex flex-col">
-          <span className="text-xl">Follow us!</span>
-          <div className="flex flex-row gap-4">
-            <a
-              href="https://instagram.com/astrapuffs"
-              className="flex flex-row items-center cursor-pointer"
-            >
-              <SocialLogo socialMedia="instagram" />
-              Instagram
-            </a>
-            <a
-              href="https://www.tiktok.com/@astrapuffs"
-              className="flex flex-row items-center cursor-pointer"
-            >
-              <SocialLogo socialMedia="tiktok" />
-              Tiktok
-            </a>
+    <footer className="w-full border-t border-border bg-background/80">
+      <div className="container mx-auto px-8 py-8">
+        {/* Main footer content */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
+          {/* Social Media Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Follow us!</h3>
+            <div className="flex flex-col space-y-3">
+              <a
+                href="https://instagram.com/astrapuffs"
+                className="flex items-center gap-3 hover:text-primary transition-colors group"
+              >
+                <div className="group-hover:scale-110 transition-transform">
+                  <SocialLogo socialMedia="instagram" />
+                </div>
+                <span>Instagram</span>
+              </a>
+              <a
+                href="https://www.tiktok.com/@astrapuffs"
+                className="flex items-center gap-3 hover:text-primary transition-colors group"
+              >
+                <div className="group-hover:scale-110 transition-transform">
+                  <SocialLogo socialMedia="tiktok" />
+                </div>
+                <span>TikTok</span>
+              </a>
+            </div>
           </div>
-          <span className="h-2" />
-          <a
-            href="#terms-of-service"
-            className="flex flex-row items-center cursor-pointer"
-          >
-            Terms Of Service
-          </a>
+
+          {/* Links Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold">Legal</h3>
+            <div className="flex flex-col space-y-3">
+              <a
+                href="#terms-of-service"
+                className="hover:text-primary transition-colors w-fit"
+              >
+                Terms of Service
+              </a>
+              <a
+                href="#privacy-policy"
+                className="hover:text-primary transition-colors w-fit"
+              >
+                Privacy Policy
+              </a>
+            </div>
+          </div>
+
+          {/* Contact Section */}
+          <div className="space-y-4 md:text-right">
+            <h3 className="text-lg font-semibold">Get in Touch</h3>
+            <button
+              onClick={handleContactClick}
+              className="inline-flex items-center justify-center px-6 py-3 bg-[#faa0ab] hover:bg-[#f8909c] text-white rounded-lg transition-colors font-medium"
+            >
+              Contact Us
+            </button>
+          </div>
         </div>
-        <div className="text-sm text-muted-foreground flex flex-col items-end gap-2">
-          <a
-            href="#contact"
-            onClick={handleContactClick}
-            className="w-fit grow-0 text-sm hover:text-white/70 bg-[#faa0ab] px-4 py-2 text-white rounded-lg"
-          >
-            Contact Us
-          </a>
-          &copy; Copyright {currentYear} P2CO, Inc
+
+        {/* Bottom section */}
+        <div className="mt-8 pt-6 border-t border-border">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-sm text-muted-foreground order-2 md:order-1">
+              &copy; Copyright {currentYear} P2CO, Inc. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground order-1 md:order-2">
+              <span>Made with ❤️</span>
+            </div>
+          </div>
         </div>
       </div>
 
+      {/* Contact Form */}
       {showContactForm && (
-        <div ref={contactFormRef} className="container mx-auto mt-8 px-4">
-          <ContactForm />
+        <div ref={contactFormRef} className="border-t border-border bg-muted/30">
+          <div className="container mx-auto px-4 py-8">
+            <ContactForm />
+          </div>
         </div>
       )}
     </footer>

@@ -22,14 +22,14 @@ const jobListings:JobListing[] = [
     company: "P3CO",
     postedDate: "2025-05-15",
     description: (
-      <div className="job-description text-gray-200 text-lg mb-10">
-        <h2 className="text-4xl font-bold mb-4 text-white">What You Will Do</h2>
+      <div className="job-description text-gray-800 text-lg mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-black">What You Will Do</h2>
         <p className="mb-10">
           P3CO is looking for a talented Environmental Artist to join our team working on Astrapuffs — a whimsical, 
           AI-powered cozy sim where emotionally intelligent NPCs form real relationships with players.
         </p>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Responsibilities</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Responsibilities</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Design stylized environments that express the emotional tone of each area</li>
           <li>Create moodboards and world-building references for zones and biomes</li>
@@ -38,7 +38,7 @@ const jobListings:JobListing[] = [
           <li>Contribute to visual storytelling that enhances NPC interactions</li>
         </ul>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Qualifications</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Qualifications</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Portfolio demonstrating strong environmental design skills</li>
           <li>Experience with Unity or similar game engines</li>
@@ -65,15 +65,15 @@ const jobListings:JobListing[] = [
     company: "P3CO",
     postedDate: "2025-05-15",
     description: (
-      <div className="job-description text-gray-200 text-lg mb-10">
-        <h2 className="text-4xl font-bold mb-4 text-white">What You Will Do</h2>
+      <div className="job-description text-gray-800 text-lg mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-black">What You Will Do</h2>
         <p className="mb-10">
           Help build the charming world of Astrapuffs by creating stylized 3D assets that bring our cozy 
           AI-powered sim to life. As a 3D Modeler at P3CO, you&apos;ll play a crucial role in establishing our 
           game&apos;s visual identity.
         </p>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Responsibilities</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Responsibilities</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Model low-poly and mid-poly assets, props, and characters</li>
           <li>Optimize assets for mobile-first performance</li>
@@ -82,7 +82,7 @@ const jobListings:JobListing[] = [
           <li>Implement assets within Unity to ensure proper functionality</li>
         </ul>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Qualifications</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Qualifications</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Portfolio showcasing stylized 3D modeling work</li>
           <li>Proficiency in Blender, Maya, or similar 3D software</li>
@@ -109,15 +109,15 @@ const jobListings:JobListing[] = [
     company: "P3CO",
     postedDate: "2025-05-15",
     description: (
-      <div className="job-description text-gray-200 text-lg mb-10">
-        <h2 className="text-4xl font-bold mb-4 text-white">What You Will Do</h2>
+      <div className="job-description text-gray-800 text-lg mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-black">What You Will Do</h2>
         <p className="mb-10">
           Join P3CO to bring emotionally intelligent NPCs to life through expressive animation. 
           Your work will be central to creating meaningful relationships between players 
           and AI-driven characters in our cozy multiplayer game, Astrapuffs.
         </p>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Responsibilities</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Responsibilities</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Animate player characters and agentic NPCs with expressive movement</li>
           <li>Create idle, interaction, and emotional state animations</li>
@@ -126,7 +126,7 @@ const jobListings:JobListing[] = [
           <li>Collaborate with the art team to maintain style consistency</li>
         </ul>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Qualifications</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Qualifications</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Portfolio showcasing character animation skills</li>
           <li>Experience with Unity animation systems</li>
@@ -153,15 +153,15 @@ const jobListings:JobListing[] = [
     company: "P3CO",
     postedDate: "2025-05-15",
     description: (
-      <div className="job-description text-gray-200 text-lg mb-10">
-        <h2 className="text-4xl font-bold mb-4 text-white">What You Will Do</h2>
+      <div className="job-description text-gray-800 text-lg mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-black">What You Will Do</h2>
         <p className="mb-10">
           As an AI Engineer at P3CO, you&apos;ll be responsible for developing the emotional intelligence systems
           that power our NPCs in Astrapuffs. Your work will create meaningful connections between players and
           AI characters in our cozy multiplayer experience.
         </p>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Responsibilities</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Responsibilities</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Design and implement emotional intelligence systems for NPCs</li>
           <li>Create memory and relationship models for player interactions</li>
@@ -170,7 +170,7 @@ const jobListings:JobListing[] = [
           <li>Optimize AI systems for runtime performance in Unity</li>
         </ul>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Qualifications</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Qualifications</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Experience with LLMs and AI agent architectures</li>
           <li>Strong programming skills in C# and Python</li>
@@ -197,15 +197,15 @@ const jobListings:JobListing[] = [
     company: "P3CO",
     postedDate: "2025-05-15",
     description: (
-      <div className="job-description text-gray-200 text-lg mb-10">
-        <h2 className="text-4xl font-bold mb-4 text-white">What You Will Do</h2>
+      <div className="job-description text-gray-800 text-lg mb-10">
+        <h2 className="text-4xl font-bold mb-4 text-black">What You Will Do</h2>
         <p className="mb-10">
           P3CO is seeking a creative Game Designer to craft engaging systems and mechanics for Astrapuffs,
           our AI-powered cozy sim. You&apos;ll design interactions that showcase the emotional intelligence of our
           NPCs while creating a delightful player experience.
         </p>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Responsibilities</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Responsibilities</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Design core gameplay loops that highlight NPC agency and relationships</li>
           <li>Create interaction systems between players and AI characters</li>
@@ -214,7 +214,7 @@ const jobListings:JobListing[] = [
           <li>Document and communicate design decisions to the development team</li>
         </ul>
         
-        <h3 className="text-2xl font-bold mt-6 mb-2 text-white">Qualifications</h3>
+        <h3 className="text-2xl font-bold mt-6 mb-2 text-black">Qualifications</h3>
         <ul className="list-disc pl-6 mb-10">
           <li>Portfolio showcasing game design work</li>
           <li>Experience with social and relationship mechanics in games</li>
