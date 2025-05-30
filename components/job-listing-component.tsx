@@ -28,7 +28,7 @@ export default function JobListingContent() {
               <span className="inline-flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full mr-2">
                 <span className="text-black font-bold">•</span>
               </span>
-              This is an unpaid, short-term opportunity with a path toward becoming part of our core team and earning
+              This is an <b>unpaid</b>, short-term opportunity with a path toward becoming part of our core team and earning
               stock options. You&apos;ll be building something ambitious with a clear, meaningful role and trajectory.
             </p>
           </div>
