@@ -41,16 +41,16 @@ export default function ContactForm() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-4  border-b-2 border-border flex flex-col justify-center">
-      <Card className="mx-auto my-auto max-w-lg border-none bg-background/60 backdrop-blur-sm sm:min-w-[500px]">
+    <div className="container mx-auto px-4 py-4 flex flex-col justify-center">
+      <Card className="mx-auto my-auto max-w-lg border-none bg-background/20 backdrop-blur-sm sm:min-w-[500px]">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold">Contact Us</CardTitle>
-          <CardDescription className="text-lg">Have questions? We&apos;d love to hear from you.</CardDescription>
+          <CardTitle className="text-3xl font-bold text-white">Contact Us</CardTitle>
+          <CardDescription className="text-lg text-gray-200">Have questions? We&apos;d love to hear from you.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-200">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -58,21 +58,21 @@ export default function ContactForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-background"
+                className="bg-purple-900 outline-none border-0 placeholder:text-gray-300"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="message">Message</Label>
+              <Label htmlFor="message" className="text-gray-200">Message</Label>
               <Textarea
                 id="message"
                 placeholder="Tell us about your concerns..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
-                className="min-h-[150px] bg-background"
+                className="min-h-[150px] bg-purple-900 outline-none border-0 placeholder:text-gray-300"
               />
             </div>
-            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-purple-500" size="lg" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

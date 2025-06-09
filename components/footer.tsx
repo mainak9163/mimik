@@ -1,121 +1,114 @@
-"use client";
-import { useState, useRef } from "react";
-import ContactForm from "./contact-form";
+"use client"
+import GSAPButton from "@/components/animated-button";
+import ContactForm from "@/components/contact-form";
+import WaveText from "@/components/squash-animation";
+import { useRef, useState } from "react";
+import MarqueeText from "react-marquee-text"
 
-const SocialLogo = ({ socialMedia }: { socialMedia: string }) => {
-  return (
-    <img
-      src={`/${socialMedia}.svg`}
-      alt={`${socialMedia} logo`}
-      className="w-6 h-6 object-cover"
-    />
-  );
-};
+export default function Footer() {
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
-  const [showContactForm, setShowContactForm] = useState(false);
-  const contactFormRef = useRef<HTMLDivElement>(null);
-
-  const handleContactClick = (e: { preventDefault: () => void }) => {
-    e.preventDefault();
-    setShowContactForm(!showContactForm);
-
-    // Wait for state update and DOM to render before scrolling
-    setTimeout(() => {
-      if (contactFormRef.current) {
-        contactFormRef.current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-      }
-    }, 100);
+   const currentYear = new Date().getFullYear();
+    const [showContactForm, setShowContactForm] = useState(false);
+    const contactFormRef = useRef<HTMLDivElement>(null);
+  
+    const handleContactClick = (e: { preventDefault: () => void }) => {
+      e.preventDefault();
+      setShowContactForm(!showContactForm);
+  
+      // Wait for state update and DOM to render before scrolling
+      setTimeout(() => {
+        if (contactFormRef.current) {
+          contactFormRef.current.scrollIntoView({
+            behavior: "smooth",
+            block: "start",
+          });
+        }
+      }, 100);
   };
-
+  
   return (
-    <footer className="w-full border-t border-border bg-background/80">
-      <div className="container mx-auto px-8 py-8">
-        {/* Main footer content */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
-          {/* Social Media Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Follow us!</h3>
-            <div className="flex flex-col space-y-3">
-              <a
+    <footer className="bg-purple-900 p-2 sm:p-4">
+      <style>
+        {
+          `
+            @keyframes marqueeScroll {
+  to {
+    transform: translate3d(0, 0, 0);
+  }
+}
+          `
+        }
+      </style>
+        <MarqueeText direction="right" className="text-purple-800 font-bold mb-2  sm:text-7xl text-3xl my-4">
+          Astrapuffs, Multiplayer Agentic NPC Simulator! 
+      </MarqueeText>
+      <div className="container mx-auto flex flex-wrap justify-evenly gap-6 my-4 sm:my-[60px]">
+        <div className="lg:w-[250px] md:w-[200px] w-[130px]">
+           <img src="/logo-small.png" alt="Logo" className="w-full h-auto mb-8" />
+</div>
+        <div className="flex flex-col gap-y-3 text-right sm:text-left">
+          <WaveText text="Games" className="text-xl font-semibold text-white" />
+          <WaveText text="Careers" className="text-xl font-semibold text-white" />
+          <WaveText text="About Us" className="text-xl font-semibold text-white" />
+          <WaveText text="Sustainability" className="text-xl font-semibold text-white" />
+          <WaveText text="Technology" className="text-xl font-semibold text-white"/>
+        </div>
+       
+        <GSAPButton onClick={handleContactClick} className="h-fit" backgroundColor="#59168b" textHoverColor="#59168b">Contact Us</GSAPButton>
+        <div className="flex flex-col">
+          <div className="text-white text-sm mb-2">FOLLOW US</div>
+          <div className="flex gap-x-2">
+           <a
                 href="https://instagram.com/astrapuffs"
                 className="flex items-center gap-3 hover:text-primary transition-colors group"
               >
-                <div className="group-hover:scale-110 transition-transform">
-                  <SocialLogo socialMedia="instagram" />
+                <div className="rounded-full border-white border-[1px] p-[2px]">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-facebook-icon lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
                 </div>
-                <span>Instagram</span>
               </a>
               <a
                 href="https://www.tiktok.com/@astrapuffs"
                 className="flex items-center gap-3 hover:text-primary transition-colors group"
               >
-                <div className="group-hover:scale-110 transition-transform">
-                  <SocialLogo socialMedia="tiktok" />
+                <div className="rounded-full border-white border-[1px] p-1">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-instagram-icon lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                 </div>
-                <span>TikTok</span>
               </a>
-            </div>
           </div>
-
-          {/* Links Section */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">Legal</h3>
-            <div className="flex flex-col space-y-3">
+        </div>
+      </div>
+            {/* Contact Form */}
+            {showContactForm && (
+              <div ref={contactFormRef} className="">
+                <div className="container mx-auto px-4 py-8">
+                  <ContactForm />
+                </div>
+              </div>
+      )}
+      {/* Bottom section */}
+        <div className="mt-[40px] sm:mt-[100px] text-white">
+          <div className="flex flex-col w-fit mx-auto gap-4">
+            <p className="text-sm ">
+              &copy; Copyright {currentYear} P2CO, Inc. All rights reserved.
+          </p>
+          <div className="flex gap-x-3 w-fit mx-auto">
               <a
                 href="#terms-of-service"
                 className="hover:text-primary transition-colors w-fit"
               >
-                Terms of Service
+                <WaveText text="Terms of Service" className="text-base font-semibold text-white" />
               </a>
               <a
                 href="#privacy-policy"
                 className="hover:text-primary transition-colors w-fit"
               >
-                Privacy Policy
+                <WaveText text="Privacy Policy" className="text-base font-semibold text-white" />
               </a>
             </div>
           </div>
-
-          {/* Contact Section */}
-          <div className="space-y-4 md:text-right">
-            <h3 className="text-lg font-semibold">Get in Touch</h3>
-            <button
-              onClick={handleContactClick}
-              className="inline-flex items-center justify-center px-6 py-3 bg-[#faa0ab] hover:bg-[#f8909c] text-white rounded-lg transition-colors font-medium"
-            >
-              Contact Us
-            </button>
-          </div>
         </div>
-
-        {/* Bottom section */}
-        <div className="mt-8 pt-6 border-t border-border">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-sm text-muted-foreground order-2 md:order-1">
-              &copy; Copyright {currentYear} P2CO, Inc. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground order-1 md:order-2">
-              <span>Made with ❤️</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Contact Form */}
-      {showContactForm && (
-        <div ref={contactFormRef} className="border-t border-border bg-muted/30">
-          <div className="container mx-auto px-4 py-8">
-            <ContactForm />
-          </div>
-        </div>
-      )}
-    </footer>
+     </footer>
   );
-};
+}
 
-export default Footer;
+

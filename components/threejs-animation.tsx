@@ -53,7 +53,7 @@ const Model = ({ currentSection, isMobile }: { currentSection: 'one' | 'two.one'
       rotation: [0.5, 0.5, 0]
     },
     'five': {
-      position: [1.5, -0.5, 0],
+      position: [2.5, -0.9, 0],
       rotation: [0, -0.5, 0]
     }
   };
