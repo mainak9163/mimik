@@ -97,7 +97,7 @@ const Footer = () => {
         <div className="mt-8 pt-6 border-t border-border">
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-muted-foreground order-2 md:order-1">
-              &copy; Copyright {currentYear} P2CO, Inc. All rights reserved.
+              &copy; Copyright {currentYear} P3CO, Inc. All rights reserved.
             </p>
             <div className="flex items-center gap-4 text-sm text-muted-foreground order-1 md:order-2">
               <span>Made with ❤️</span>

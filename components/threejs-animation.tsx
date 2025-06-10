@@ -14,19 +14,25 @@ const AVATAR_CONFIG = {
   DESKTOP_FOLLOW_SCALE: 0.2,
 };
 
+declare global {
+  interface Window {
+    __lastMousePosition?: { x: number; y: number };
+  }
+}
+
 // Model component that handles the 3D model
-const Model = ({ currentSection, isMobile, mousePosition }: { 
-  currentSection: 'one' | 'two.one' | 'one.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five', 
+const Model = ({ currentSection, isMobile, mousePosition }: {
+  currentSection: 'one' | 'two.one' | 'one.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five',
   isMobile: boolean,
   mousePosition: { x: number, y: number }
 }) => {
   const modelRef = useRef<THREE.Object3D | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const { viewport } = useThree();
-  
+
   // Use drei's useGLTF hook instead of manually using GLTFLoader
   const { scene, animations } = useGLTF('/models/astra3.glb');
-  
+
   // Section positions configuration for desktop (only for section 'one')
   const desktopPositions = {
     'one': {
@@ -85,20 +91,20 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
       } else {
         // For all other sections, shrink and follow mouse
         const shrunkScale = isMobile ? AVATAR_CONFIG.MOBILE_SCALE : AVATAR_CONFIG.DESKTOP_FOLLOW_SCALE;
-        
+
         // Apply minimum distance constraint from edges
         const minDistance = AVATAR_CONFIG.MIN_DISTANCE_FROM_EDGE;
         const constrainedMouseX = Math.max(minDistance, Math.min(window.innerWidth - minDistance, mousePosition.x));
         const constrainedMouseY = Math.max(minDistance, Math.min(window.innerHeight - minDistance, mousePosition.y));
-        
+
         // Convert constrained mouse position to 3D world coordinates
         const x = (constrainedMouseX / window.innerWidth) * 2 - 1;
         const y = -(constrainedMouseY / window.innerHeight) * 2 + 1;
-        
+
         // Scale coordinates to viewport
         const targetX = x * viewport.width * 0.5;
         const targetY = y * viewport.height * 0.5;
-        
+
         // Smooth position following
         gsap.to(modelRef.current.position, {
           x: targetX,
@@ -121,11 +127,11 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
         const lookAtPosition = new THREE.Vector3(targetX, targetY, 2);
         const currentPosition = modelRef.current.position.clone();
         const direction = lookAtPosition.clone().sub(currentPosition).normalize();
-        
+
         // Calculate rotation to face the cursor
         const targetRotationY = Math.atan2(direction.x, direction.z);
         const targetRotationX = Math.asin(-direction.y);
-        
+
         gsap.to(modelRef.current.rotation, {
           x: targetRotationX,
           y: targetRotationY,
@@ -138,9 +144,9 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
   }, [currentSection, isMobile, mousePosition.x, mousePosition.y, viewport]);
 
   return (
-    <primitive 
+    <primitive
       ref={modelRef}
-      object={scene} 
+      object={scene}
       scale={AVATAR_CONFIG.DESKTOP_SCALE}
       position={[-3, -1, 0]}
       rotation={[0, 0, 0]} // Start facing the user
@@ -163,9 +169,9 @@ const Lights = () => {
   return (
     <>
       <ambientLight intensity={1.5} />
-      <directionalLight 
-        position={[500, 500, 500]} 
-        intensity={1} 
+      <directionalLight
+        position={[500, 500, 500]}
+        intensity={1}
       />
     </>
   );
@@ -185,12 +191,12 @@ const getCurrentMousePosition = (): { x: number, y: number } => {
 
   // Add listener briefly to capture current position
   document.addEventListener('mousemove', captureMousePosition, { once: true, passive: true });
-  
+
   // If we have a recent mouse position stored, use it
-  const storedPosition = (window as any).__lastMousePosition;
+  const storedPosition = window?.__lastMousePosition;
   if (storedPosition) {
-    mouseX = storedPosition.x;
-    mouseY = storedPosition.y;
+    mouseX = storedPosition?.x;
+    mouseY = storedPosition?.y;
   }
 
   return { x: mouseX, y: mouseY };
@@ -207,13 +213,13 @@ const ThreeJSAnimation = () => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
     };
-    
+
     // Initial check
     checkMobile();
-    
+
     // Add resize listener
     window.addEventListener('resize', checkMobile);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
@@ -228,7 +234,7 @@ const ThreeJSAnimation = () => {
 
     // Store mouse position globally for reference
     const storeMousePosition = (event: MouseEvent) => {
-      (window as any).__lastMousePosition = {
+      window.__lastMousePosition = {
         x: event.clientX,
         y: event.clientY
       };
@@ -236,7 +242,7 @@ const ThreeJSAnimation = () => {
 
     // Always track mouse position globally
     window.addEventListener('mousemove', storeMousePosition, { passive: true });
-    
+
     return () => {
       window.removeEventListener('mousemove', storeMousePosition);
     };
@@ -275,7 +281,7 @@ const ThreeJSAnimation = () => {
     const handleScroll = () => {
       const sections = document.querySelectorAll('section');
       let active: 'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five' | '' = '';
-      
+
       sections.forEach((section) => {
         const rect = section.getBoundingClientRect();
         if (rect.top <= window.innerHeight / 3) {
@@ -284,7 +290,7 @@ const ThreeJSAnimation = () => {
           }
         }
       });
-      
+
       if (active && active !== currentSection) {
         setCurrentSection(active);
       }
@@ -305,7 +311,8 @@ const ThreeJSAnimation = () => {
         };
         setMousePosition(newPosition);
         // Also store globally
-        (window as any).__lastMousePosition = newPosition;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        window.__lastMousePosition = newPosition;
       }
     };
 
@@ -318,7 +325,7 @@ const ThreeJSAnimation = () => {
         };
         setMousePosition(newPosition);
         // Also store globally
-        (window as any).__lastMousePosition = newPosition;
+        window.__lastMousePosition = newPosition;
       }
     };
 
@@ -335,23 +342,23 @@ const ThreeJSAnimation = () => {
   }, [currentSection, isMobile]);
 
   return (
-    <div 
-      style={{ 
-        position: 'fixed', 
-        inset: 0, 
-        zIndex: 50, 
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        zIndex: 50,
         pointerEvents: 'none'
       }}
     >
       <Canvas
-        style={{pointerEvents: 'none'}}
+        style={{ pointerEvents: 'none' }}
         camera={{ position: [0, 0, 13], fov: 10 }}
       >
         <Lights />
         <Suspense fallback={<LoadingPlaceholder />}>
-          <Model 
-            currentSection={currentSection} 
-            isMobile={isMobile} 
+          <Model
+            currentSection={currentSection}
+            isMobile={isMobile}
             mousePosition={mousePosition}
           />
         </Suspense>
