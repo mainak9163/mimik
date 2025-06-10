@@ -11,6 +11,7 @@ type GSAPButtonProps = {
   textHoverColor?: string;
   backgroundColor?: string;
   fillColor?: string;
+  /* eslint-disable-next-line */
   [key: string]: any;
 };
 
