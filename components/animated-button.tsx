@@ -1,11 +1,24 @@
 import React, { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 
-const GSAPButton = ({ 
+type GSAPButtonProps = {
+  children?: React.ReactNode;
+  href?: string;
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  borderColor?: string;
+  textColor?: string;
+  textHoverColor?: string;
+  backgroundColor?: string;
+  fillColor?: string;
+  [key: string]: any;
+};
+
+const GSAPButton: React.FC<GSAPButtonProps> = ({ 
   children = "Get GSAP", 
   href = "#", 
   className = "",
-  onClick,
+  onClick = undefined,
   borderColor = "#ffffff",
   textColor = "#ffffff",
   textHoverColor = "#000000",
@@ -13,11 +26,11 @@ const GSAPButton = ({
   fillColor = "#ffffff",
   ...props 
 }) => {
-  const buttonRef = useRef(null);
-  const flairRef = useRef(null);
-  const labelRef = useRef(null);
-  const xSetRef = useRef(null);
-  const ySetRef = useRef(null);
+  const buttonRef = useRef<HTMLAnchorElement | null>(null);
+  const flairRef = useRef<HTMLSpanElement | null>(null);
+  const labelRef = useRef<HTMLSpanElement | null>(null);
+  const xSetRef = useRef<((value: number) => void) | null>(null);
+  const ySetRef = useRef<((value: number) => void) | null>(null);
   
   useEffect(() => {
     const button = buttonRef.current;
@@ -27,13 +40,14 @@ const GSAPButton = ({
     if (!button || !flair || !label) return;
 
     // Initialize GSAP quick setters
-    xSetRef.current = gsap.quickSetter(flair, "xPercent");
-    ySetRef.current = gsap.quickSetter(flair, "yPercent");
+    xSetRef.current = gsap.quickSetter(flair, "xPercent") as (value: number) => void;
+    ySetRef.current = gsap.quickSetter(flair, "yPercent") as (value: number) => void;
 
     // Set initial scale to 0
     gsap.set(flair, { scale: 0 });
 
-    const getXY = (e) => {
+    const getXY = (e: MouseEvent) => {
+      if (!button) return { x: 0, y: 0 };
       const { left, top, width, height } = button.getBoundingClientRect();
 
       const xTransformer = gsap.utils.pipe(
@@ -52,11 +66,11 @@ const GSAPButton = ({
       };
     };
 
-    const handleMouseEnter = (e) => {
+    const handleMouseEnter = (e: MouseEvent) => {
       const { x, y } = getXY(e);
 
-      xSetRef.current(x);
-      ySetRef.current(y);
+      if (xSetRef.current) xSetRef.current(x);
+      if (ySetRef.current) ySetRef.current(y);
 
       // Animate flair scale and text color
       gsap.to(flair, {
@@ -73,7 +87,7 @@ const GSAPButton = ({
       });
     };
 
-    const handleMouseLeave = (e) => {
+    const handleMouseLeave = (e: MouseEvent) => {
       const { x, y } = getXY(e);
 
       gsap.killTweensOf(flair);
@@ -96,7 +110,7 @@ const GSAPButton = ({
       });
     };
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: MouseEvent) => {
       const { x, y } = getXY(e);
 
       gsap.to(flair, {
@@ -122,7 +136,7 @@ const GSAPButton = ({
     };
   }, [textColor, textHoverColor]);
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (onClick) {
       e.preventDefault();
       onClick(e);
@@ -157,7 +171,7 @@ const GSAPButton = ({
         transition: `color 0.15s cubic-bezier(0.77, 0, 0.175, 1)`,
         '--border-color': borderColor,
         '--fill-color': fillColor
-      }}
+      } as React.CSSProperties}
       {...props}
     >
       <span 
@@ -199,7 +213,7 @@ const GSAPButton = ({
           textAlign: 'center',
           zIndex: 1
         }}
-      >
+      > 
         {children}
       </span>
       <style jsx>{`

@@ -252,7 +252,7 @@ const ThreeJSAnimation = () => {
   useEffect(() => {
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({
-        x: event.clientX,
+        x: event.clientX + 200,
         y: event.clientY
       });
     };
