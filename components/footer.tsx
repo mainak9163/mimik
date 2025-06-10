@@ -47,11 +47,12 @@ export default function Footer() {
            <img src="/logo-small.png" alt="Logo" className="w-full h-auto mb-8" />
 </div>
         <div className="flex flex-col gap-y-3 text-right sm:text-left">
-          <WaveText text="Games" className="text-xl font-semibold text-white" />
-          <WaveText text="Careers" className="text-xl font-semibold text-white" />
-          <WaveText text="About Us" className="text-xl font-semibold text-white" />
-          <WaveText text="Sustainability" className="text-xl font-semibold text-white" />
-          <WaveText text="Technology" className="text-xl font-semibold text-white"/>
+          <a href="#one"><WaveText text="Watch" className="text-xl font-semibold text-white" /></a>
+          <a href="#one.one"><WaveText text="Astrapuff" className="text-xl font-semibold text-white" /></a>
+          <a href="#two.one"><WaveText text="Features" className="text-xl font-semibold text-white" /></a>
+          <a href="#three"><WaveText text="Explore" className="text-xl font-semibold text-white" /></a>
+           <a href="#four"><WaveText text="Lets Play" className="text-xl font-semibold text-white" /></a>
+          <a href="#five"><WaveText text="Waitlist" className="text-xl font-semibold text-white"/></a>
         </div>
        
         <GSAPButton onClick={handleContactClick} className="h-fit" backgroundColor="#59168b" textHoverColor="#59168b">Contact Us</GSAPButton>

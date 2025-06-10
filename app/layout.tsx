@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Footer from "@/components/footer";
+import IceCreamCursor from "@/components/ice-cream-cursor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors />
         <Footer />
+        <IceCreamCursor/>
       </body>
     </html>
   );
