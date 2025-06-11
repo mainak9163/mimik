@@ -244,7 +244,7 @@ const handleAvatarClick = (avatar: SetStateAction<{ name: string; imageUrl: stri
       </div>
     )
   }
-console.log(selectedAvatar)
+// console.log(selectedAvatar)
   // Desktop Layout - Three Column Grid
   return (
     <div className="min-h-screen w-full transition-colors">

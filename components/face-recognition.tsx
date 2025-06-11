@@ -86,13 +86,13 @@ useEffect(() => {
   });
   
   // Log the meshes to verify they have morph targets
-  headMeshRef.current.forEach(mesh => {
-    console.log("Mesh morphs:", mesh.name, 
-      mesh.morphTargetDictionary ? Object.keys(mesh.morphTargetDictionary) : "No morphTargetDictionary");
-  });
+  // headMeshRef.current.forEach(mesh => {
+  //   console.log("Mesh morphs:", mesh.name, 
+  //     mesh.morphTargetDictionary ? Object.keys(mesh.morphTargetDictionary) : "No morphTargetDictionary");
+  // });
   
   // Log the available nodes for debugging
-  console.log("Available nodes:", Object.keys(nodes));
+  // console.log("Available nodes:", Object.keys(nodes));
   
   // Store initial state of all relevant nodes
   initialStateRef.current = {};
@@ -150,45 +150,45 @@ useEffect(() => {
   //debugging
   // Add this to your useEffect after initializing headMeshRef
 
-// Log all available nodes
-console.log("All available nodes:", Object.keys(nodes));
+// // Log all available nodes
+// console.log("All available nodes:", Object.keys(nodes));
 
-// Check each mesh for morphTargets
-Object.values(nodes).forEach(node => {
-  // Check if this looks like a mesh object
-  if (node && node.isMesh) {
-    console.log(`Node ${node.name} is a mesh:`, node);
+// // Check each mesh for morphTargets
+// Object.values(nodes).forEach(node => {
+//   // Check if this looks like a mesh object
+//   if (node && node.isMesh) {
+//     console.log(`Node ${node.name} is a mesh:`, node);
     
-    // Check for morphTargetDictionary
-    if (node.morphTargetDictionary) {
-      console.log(`MorphTargets for ${node.name}:`, Object.keys(node.morphTargetDictionary));
-    }
-  }
-});
+//     // Check for morphTargetDictionary
+//     if (node.morphTargetDictionary) {
+//       console.log(`MorphTargets for ${node.name}:`, Object.keys(node.morphTargetDictionary));
+//     }
+//   }
+// });
 
 // Check for materials that might be related to the mouth/face
-Object.values(nodes).forEach(node => {
-  if (node && node.material) {
-    // Log material names that might be related to mouth
-    if (node.name.toLowerCase().includes('head') || 
-        node.name.toLowerCase().includes('face') ||
-        node.name.toLowerCase().includes('avatar')) {
-      console.log(`Materials for ${node.name}:`, 
-        Array.isArray(node.material) 
-          ? node.material.map(m => m.name) 
-          : node.material.name);
-    }
-  }
-});
+// Object.values(nodes).forEach(node => {
+//   if (node && node.material) {
+//     // Log material names that might be related to mouth
+//     if (node.name.toLowerCase().includes('head') || 
+//         node.name.toLowerCase().includes('face') ||
+//         node.name.toLowerCase().includes('avatar')) {
+//       console.log(`Materials for ${node.name}:`, 
+//         Array.isArray(node.material) 
+//           ? node.material.map(m => m.name) 
+//           : node.material.name);
+//     }
+//   }
+// });
 
 // Log details of head bone if it exists
-if (nodes.Head) {
-  console.log("Head bone details:", {
-    position: nodes.Head.position.toArray(),
-    rotation: nodes.Head.rotation.toArray(),
-    children: nodes.Head.children?.map(c => c.name) || 'No children'
-  });
-}
+// if (nodes.Head) {
+//   console.log("Head bone details:", {
+//     position: nodes.Head.position.toArray(),
+//     rotation: nodes.Head.rotation.toArray(),
+//     children: nodes.Head.children?.map(c => c.name) || 'No children'
+//   });
+// }
   
   return () => {
     // Clean up resources when Avatar changes
