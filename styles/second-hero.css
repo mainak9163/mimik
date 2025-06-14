@@ -1,0 +1,389 @@
+    .second-hero{
+          background: linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%);
+        }
+
+        .title-what {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .title-astrapuff {
+            background: linear-gradient(135deg, #ff6b9d, #ffa8cc, #4ecdc4, #96f7ed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 3s ease-in-out infinite;
+        }
+
+        .slide-up-title {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .slide-up-title.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .slide-up-description {
+          opacity: 0;
+          transform: translateY(50px);
+          transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+          transition-delay: 0.3s;
+        }
+
+        .slide-up-description.visible {
+          opacity: 1;
+          transform: translateY(0);
+        }
+
+        .bouncy-image {
+          opacity: 0;
+          transform: translateY(30px) scale(0.9);
+          transition: all 1s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          transition-delay: 0.6s;
+        }
+
+        .bouncy-image.visible {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+          animation: gentle-bounce 4s ease-in-out infinite;
+        }
+
+        @keyframes gentle-bounce {
+          0%, 100% {
+            transform: translateY(0) scale(1);
+          }
+          25% {
+            transform: translateY(-8px) scale(1.02);
+          }
+          50% {
+            transform: translateY(0) scale(1);
+          }
+          75% {
+            transform: translateY(-4px) scale(1.01);
+          }
+        }
+
+        @keyframes shimmer {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+
+.bouncy-asset {
+            width: 200px;
+            height: 220px;
+            animation: mainBounce 3s ease-in-out infinite;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.15));
+        }
+
+        @keyframes mainBounce {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1);
+            }
+            25% { 
+                transform: translateY(-20px) rotate(-2deg) scale(1.05);
+            }
+            50% { 
+                transform: translateY(-35px) rotate(0deg) scale(1.1);
+            }
+            75% { 
+                transform: translateY(-20px) rotate(2deg) scale(1.05);
+            }
+        }
+
+        /* Main blob body */
+        .blob-body {
+            width: 160px;
+            height: 160px;
+            background: linear-gradient(135deg, #ff6b9d 0%, #ffa8cc 30%, #4ecdc4 70%, #96f7ed 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            position: relative;
+            animation: squish 2s ease-in-out infinite;
+        }
+
+        @keyframes squish {
+            0%, 100% { 
+                border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+                transform: scale(1);
+            }
+            50% { 
+                border-radius: 45% 55% 45% 55% / 65% 55% 45% 45%;
+                transform: scale(1.02);
+            }
+        }
+
+        /* Cute face */
+        .face {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .eyes {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .eye {
+            width: 16px;
+            height: 16px;
+            background: #2d3748;
+            border-radius: 50%;
+            animation: blink 4s ease-in-out infinite;
+            position: relative;
+        }
+
+        .eye::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 3px;
+        }
+
+        @keyframes blink {
+            0%, 90%, 100% { 
+                transform: scaleY(1);
+            }
+            95% { 
+                transform: scaleY(0.1);
+            }
+        }
+
+        .mouth {
+            width: 25px;
+            height: 15px;
+            background: #2d3748;
+            border-radius: 0 0 25px 25px;
+            margin: 0 auto;
+            animation: smile 3s ease-in-out infinite;
+        }
+
+        @keyframes smile {
+            0%, 100% { 
+                width: 25px;
+                height: 15px;
+            }
+            50% { 
+                width: 30px;
+                height: 18px;
+            }
+        }
+
+        /* Blush cheeks */
+        .cheek {
+            width: 20px;
+            height: 12px;
+            background: rgba(255, 107, 157, 0.4);
+            border-radius: 50%;
+            position: absolute;
+            top: 45%;
+            animation: blush 2.5s ease-in-out infinite;
+        }
+
+        .cheek-left {
+            left: 15px;
+        }
+
+        .cheek-right {
+            right: 15px;
+        }
+
+        @keyframes blush {
+            0%, 100% { 
+                opacity: 0.4;
+                transform: scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: scale(1.1);
+            }
+        }
+
+        /* Top hat/crown */
+        .hat {
+            width: 50px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffd93d, #ffe066);
+            border-radius: 50% 50% 20% 20%;
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: hatWiggle 2.5s ease-in-out infinite;
+        }
+
+        .hat::before {
+            content: '';
+            width: 15px;
+            height: 15px;
+            background: linear-gradient(135deg, #ff6b9d, #ffa8cc);
+            border-radius: 50%;
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes hatWiggle {
+            0%, 100% { 
+                transform: translateX(-50%) rotate(0deg);
+            }
+            25% { 
+                transform: translateX(-50%) rotate(-8deg);
+            }
+            75% { 
+                transform: translateX(-50%) rotate(8deg);
+            }
+        }
+
+        /* Floating sparkles */
+        .sparkle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: linear-gradient(45deg, #ffd93d, #ffe066);
+            border-radius: 50%;
+            animation: sparkle 3s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .sparkle::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: inherit;
+            border-radius: inherit;
+            transform: rotate(45deg) scale(0.7);
+        }
+
+        .sparkle-1 {
+            top: 20px;
+            left: -15px;
+            animation-delay: 0s;
+        }
+
+        .sparkle-2 {
+            top: 40px;
+            right: -20px;
+            animation-delay: 1s;
+        }
+
+        .sparkle-3 {
+            bottom: 30px;
+            left: -10px;
+            animation-delay: 2s;
+        }
+
+        .sparkle-4 {
+            bottom: 50px;
+            right: -15px;
+            animation-delay: 0.5s;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { 
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% { 
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+        }
+
+        /* Bouncy shadow */
+        .shadow {
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(0, 0, 0, 0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: shadowBounce 3s ease-in-out infinite;
+        }
+
+        @keyframes shadowBounce {
+            0%, 100% { 
+                transform: translateX(-50%) scale(1);
+                opacity: 0.3;
+            }
+            50% { 
+                transform: translateX(-50%) scale(1.2);
+                opacity: 0.15;
+            }
+        }
+
+        /* Tiny floating hearts */
+        .heart {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: linear-gradient(45deg, #ff6b9d, #ffa8cc);
+            border-radius: 50% 50% 0 50%;
+            transform: rotate(45deg);
+            animation: floatHeart 4s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        .heart::before {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: inherit;
+            border-radius: 50% 50% 0 50%;
+            top: -5px;
+            left: 0;
+        }
+
+        .heart::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: inherit;
+            border-radius: 50% 50% 0 50%;
+            top: 0;
+            left: -5px;
+        }
+
+        .heart-1 {
+            top: 10px;
+            right: 10px;
+            animation-delay: 0.5s;
+        }
+
+        .heart-2 {
+            bottom: 20px;
+            left: 5px;
+            animation-delay: 2.5s;
+        }
+
+        @keyframes floatHeart {
+            0%, 100% { 
+                opacity: 0;
+                transform: rotate(45deg) translateY(0px) scale(0.5);
+            }
+            50% { 
+                opacity: 0.8;
+                transform: rotate(45deg) translateY(-15px) scale(1);
+            }
+        }

@@ -1,11 +1,13 @@
 "use client"
-import { useState, useEffect, JSX, SetStateAction } from "react"
+import { useState, useEffect, JSX, SetStateAction, useRef } from "react"
 import { ChevronLeft, ChevronRight, Info } from "lucide-react"
 import AvatarFeaturer from "./avatar-component"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
+import { bungee } from "@/lib/fonts"
+import "@/styles/second-hero.css"
 
 const astrapuffs = [
   {
@@ -13,21 +15,20 @@ const astrapuffs = [
     imageUrl: "/examples/avatar1.webp",
     bgColor: "#fb923c",
     property: (
-      <>
-        <h3 className="text-lg font-semibold mb-2">Dimension: Puzzle Dimension</h3>
-        <p className="mb-4">
-          Kay Puzzle is from the Puzzle Dimension—a realm where the very fabric of reality twists and turns like an M.C.
-          Escher masterpiece. Here, staircases lead to endless loops, ceilings become floors, and perspectives shift
-          with every glance. The landscape is a labyrinth of interlocking shapes and mind-bending optical illusions,
-          where every surface hides a secret and every corner poses a challenge to logic.
-        </p>
-        <h3 className="text-lg font-semibold mb-2">Personality</h3>
-        <p>
-          Kay Puzzle is as enigmatic as their environment—witty, clever, and delightfully unpredictable. Their speech is
-          riddled with puns and cryptic hints, often leaving listeners both amused and intrigued. With a mind always at
-          work, Kay has a knack for solving the most intricate of puzzles, yet they never reveal all the pieces at once.
-        </p>
-      </>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-orange-800 mb-2">
+            🧩 Puzzle Dimension Guardian
+          </h3>
+          <p className="text-gray-700 leading-relaxed">
+            From a mind-bending realm of M.C. Escher-like illusions where reality twists through 
+            endless loops and impossible geometries. Cluepuff is an enigmatic puzzle master with 
+            a razor-sharp wit, speaking in clever puns and cryptic riddles that both amuse and 
+            intrigue. Always thinking several steps ahead, they reveal solutions piece by piece, 
+            making every interaction a delightful mental challenge.
+          </p>
+        </div>
+      </div>
     ),
   },
   {
@@ -35,92 +36,94 @@ const astrapuffs = [
     imageUrl: "/examples/avatar2.webp",
     bgColor: "#4ade80",
     property: (
-      <>
-        <h3 className="text-lg font-semibold mb-2">Dimension: Verdant Expanse</h3>
-        <p className="mb-4">
-          Welcome to the Verdant Expanse—a realm where every breath feels like the kiss of spring and the landscape is a
-          vibrant tapestry of blossoms, winding vines, and whispering trees. In this enchanted dimension, the earth
-          itself is alive with a magical energy that causes flowers to bloom with every step, and the colors of nature
-          dance in a perpetual celebration of life.
-        </p>
-        <h3 className="text-lg font-semibold mb-2">Personality</h3>
-        <p>
-          Terrabloom is nurturing, empathetic, and fiercely protective of all things green. With a warm and gentle
-          spirit, they embody the essence of nature&apos;s resilience and beauty, always ready to lend a hand—or a petal—to
-          those in need.
-        </p>
-      </>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-green-800 mb-2">
+            🌸 Verdant Expanse Nurturer
+          </h3>
+          <p className="text-gray-700 leading-relaxed">
+            Hails from an enchanted realm where every step blooms flowers and nature dances in 
+            perpetual celebration. This gentle soul embodies the resilience and beauty of the 
+            natural world, offering nurturing care and fierce protection to all living things. 
+            With an empathetic heart and healing touch, Terrabloom brings growth and harmony 
+            wherever they go.
+          </p>
+        </div>
+      </div>
     ),
   },
   {
     name: "Lucyfluff",
     imageUrl: "/examples/avatar3.webp",
-    bgColor:"#f87171",
+    bgColor: "#f87171",
     property: (
-      <>
-        <h3 className="text-lg font-semibold mb-2">Dimension: Techno Nexus</h3>
-        <p className="mb-4">
-          Welcome to the Techno Nexus—a vibrant digital frontier where circuits, code, and glowing holograms form a
-          breathtaking cityscape of endless innovation. In this realm, data flows like a living river and technology is
-          as natural as the wind.
-        </p>
-        <h3 className="text-lg font-semibold mb-2">Personality</h3>
-        <p>
-          Lucyfluff is brilliant, quick-witted, and ever-curious, always ready to guide you through the intricacies of
-          technology with a touch of playful mischief. His impish humor and affable nature make even the most complex
-          tech talk feel like a delightful adventure.
-        </p>
-      </>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-red-800 mb-2">
+            ⚡ Techno Nexus Innovator
+          </h3>
+          <p className="text-gray-700 leading-relaxed">
+            A brilliant digital native from a cyberpunk wonderland of flowing data streams and 
+            holographic cities. Quick-witted and endlessly curious, Lucyfluff navigates complex 
+            technology with playful mischief and infectious enthusiasm. Their impish humor and 
+            warm personality transform even the most intimidating tech concepts into delightful 
+            adventures of discovery.
+          </p>
+        </div>
+      </div>
     ),
   },
   {
     name: "Glimmerstorm",
     imageUrl: "/examples/avatar4.webp",
-    bgColor:"#facc15",
+    bgColor: "#facc15",
     property: (
-      <>
-        <h3 className="text-lg font-semibold mb-2">Dimension: Tempest Realm</h3>
-        <p className="mb-4">
-          Welcome to the Tempest Realm—a breathtaking expanse where the skies are alive with a symphony of weather. In
-          this dynamic dimension, clouds swirl in mesmerizing patterns, rainbows burst forth after sudden downpours, and
-          lightning dances gracefully across the horizon.
-        </p>
-        <h3 className="text-lg font-semibold mb-2">Personality</h3>
-        <p>
-          Glimmerstorm is gentle and kind-hearted, with a temperament that mirrors the weather he commands. He can be as
-          calm as a serene, sunlit morning or as exhilarated as a vibrant, stormy night, adapting his mood to the energy
-          around him.
-        </p>
-      </>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+            ⛈️ Tempest Realm Conductor
+          </h3>
+          <p className="text-gray-700 leading-relaxed">
+            Master of the ever-changing Tempest Realm where weather performs a breathtaking 
+            symphony across dynamic skies. Gentle and kind-hearted, Glimmerstorm&apos;s mood flows 
+            like the weather they command—from serene morning calm to exhilarating stormy 
+            passion. They bring balance and wonder, adapting gracefully to the energy of 
+            those around them.
+          </p>
+        </div>
+      </div>
     ),
   },
   {
     name: "Aurabloom",
     imageUrl: "/examples/avatar5.webp",
-    bgColor:"#60a5fa",
+    bgColor: "#60a5fa",
     property: (
-      <>
-        <h3 className="text-lg font-semibold mb-2">Dimension: Ice Cream Dimension</h3>
-        <p className="mb-4">
-          Welcome to the Ice Cream Dimension—a realm of endless sweetness and chilly delight, where the landscape is
-          made entirely of scrumptious frozen treats. Here, every hill is a mound of velvety ice cream, every river a
-          flowing cascade of melted caramel, and the air is always filled with a refreshing, minty breeze.
-        </p>
-        <h3 className="text-lg font-semibold mb-2">Personality</h3>
-        <p>
-          Aurabloom exudes a warm and gentle aura, offering comfort and sweetness to everyone they meet. They are
-          inherently nurturing, kind, and caring—always ready to offer a cool word of advice or a warm smile.
-        </p>
-      </>
+      <div className="space-y-4">
+        <div>
+          <h3 className="text-lg font-semibold text-blue-800 mb-2">
+            🍦 Ice Cream Dimension Sweetkeeper
+          </h3>
+          <p className="text-gray-700 leading-relaxed">
+            Guardian of a deliciously sweet frozen paradise where hills are made of velvety 
+            ice cream and rivers flow with liquid caramel. Despite their chilly domain, 
+            Aurabloom radiates warmth through their nurturing spirit and gentle care. Always 
+            ready with comforting words and sweet smiles, they bring joy and refreshment to 
+            weary souls seeking solace.
+          </p>
+        </div>
+      </div>
     ),
   },
-]
+];
 
 export default function AvatarShowcase() {
   const [selectedAvatar, setSelectedAvatar] = useState(astrapuffs[0]) // Default to first avatar
   const [dialogOpen, setDialogOpen] = useState(false)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isMobile, setIsMobile] = useState(false)
+  const [imageTransform, setImageTransform] = useState({ x: 0, y: 0, scale: 1 })
+const imageRef = useRef<HTMLDivElement>(null)
 
   // Check screen size
   useEffect(() => {
@@ -158,6 +161,34 @@ const handleAvatarClick = (avatar: SetStateAction<{ name: string; imageUrl: stri
       }, 150)
     }
   }
+  }
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  if (!imageRef.current) return
+  
+  const rect = imageRef.current.getBoundingClientRect()
+  const centerX = rect.left + rect.width / 2
+  const centerY = rect.top + rect.height / 2
+  
+  const mouseX = e.clientX
+  const mouseY = e.clientY
+  
+  const deltaX = (mouseX - centerX) / rect.width
+  const deltaY = (mouseY - centerY) / rect.height
+  
+  const maxStretch = 30
+  const stretchX = Math.max(-maxStretch, Math.min(maxStretch, deltaX * maxStretch))
+  const stretchY = Math.max(-maxStretch, Math.min(maxStretch, deltaY * maxStretch))
+  
+  setImageTransform({
+    x: stretchX,
+    y: stretchY,
+    scale: 1.05
+  })
+}
+
+const handleMouseLeave = () => {
+  setImageTransform({ x: 0, y: 0, scale: 1 })
 }
 
   const currentAvatar = astrapuffs[currentIndex]
@@ -165,7 +196,15 @@ const handleAvatarClick = (avatar: SetStateAction<{ name: string; imageUrl: stri
   // Mobile Layout
   if (isMobile) {
     return (
-      <div className="min-h-screen w-full transition-colors">
+      <div className="min-h-screen w-full transition-colors py-8"
+       style={{
+        background:
+          "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
+      }}>
+                      <h2 className={`text-2xl font-semibold sm:text-5xl righteous-regular ${bungee.className} slide-up-title`}>
+                <span className="title-what">Explore our</span>
+                <span className="title-astrapuff ml-3">Astrapuffs</span>
+              </h2>
         <div className="container relative mx-auto px-4 py-16">
           <Card className="overflow-hidden border-none bg-background/60 shadow-none">
             <CardContent className="grid gap-8 p-6 md:grid-cols-2 md:p-12">
@@ -247,11 +286,19 @@ const handleAvatarClick = (avatar: SetStateAction<{ name: string; imageUrl: stri
 // console.log(selectedAvatar)
   // Desktop Layout - Three Column Grid
   return (
-    <div className="min-h-screen w-full transition-colors">
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex gap-x-2 h-[600px]">
+    <div className="w-full transition-colors py-16"
+     style={{
+        background:
+          "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
+      }}>
+                            <h2 className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center ${bungee.className}`}>
+                <span className="title-what">Explore our</span>
+                <span className="title-astrapuff ml-3">Astrapuffs</span>
+              </h2>
+      <div className="container mx-auto py-16 pb-0">
+        <div className="flex gap-x-2">
           {/* First Column - Avatar List */}
-          <div className="flex w-[35%] flex-col gap-4 p-6 bg-card rounded-lg">
+          <div className="flex w-[35%] flex-col gap-4 p-6 pr-0 rounded-lg">
             {/* <h2 className="text-2xl font-semibold mb-4">Choose Avatar</h2> */}
             <div className="flex flex-wrap gap-4">
               {astrapuffs.map((avatar) => (
@@ -267,20 +314,28 @@ const handleAvatarClick = (avatar: SetStateAction<{ name: string; imageUrl: stri
           </div>
 
           {/* Second Column - Avatar Image */}
-          <div className="flex w-[35%] items-start justify-center p-6 bg-card rounded-lg overflow-hidden">
-  <div className="relative w-80 h-80 overflow-hidden rounded-full">
-    <img
-      src={selectedAvatar?.imageUrl || "/placeholder.svg"}
-      alt={`${selectedAvatar?.name} avatar`}
-      className={`w-full h-full object-cover transition-transform duration-300 ease-in-out ${
-        isChanging ? 'transform translate-y-full' : 'transform translate-y-0'
-      }`}
-    />
+          <div className="flex w-[35%] items-start justify-center p-6 pl-0 rounded-lg overflow-hidden">
+  <div 
+  className="relative w-80 h-80 overflow-hidden rounded-full cursor-pointer"
+  onMouseMove={handleMouseMove}
+  onMouseLeave={handleMouseLeave}
+  ref={imageRef}
+>
+ <img
+  src={selectedAvatar?.imageUrl || "/placeholder.svg"}
+  alt={`${selectedAvatar?.name} avatar`}
+  className={`w-full h-full object-cover transition-all duration-300 ease-out ${
+    isChanging ? 'transform translate-y-full' : 'transform translate-y-0'
+  }`}
+  style={{
+    transform: `translate(${imageTransform.x}px, ${imageTransform.y}px) scale(${imageTransform.scale})`
+  }}
+/>
   </div>
 </div>
 
           {/* Third Column - Name and Description */}
-          <div className="flex flex-col w-[30%] p-2 bg-card rounded-lg">
+          <div className="flex flex-col w-[30%] p-2 rounded-lg">
             <h1 className="text-4xl font-bold mb-6">{selectedAvatar?.name}</h1>
             <ScrollArea className="flex-1">
               <div className="prose prose-sm dark:prose-invert">

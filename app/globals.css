@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=DynaPuff:wght@400..700&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Sour+Gummy:ital,wght@0,100..900;1,100..900&display=swap');
 @import "tailwindcss";
-
+@import url('https://fonts.googleapis.com/css2?family=Comfortaa:wght@300..700&family=Righteous&display=swap');
 @plugin "tailwindcss-animate";
 
 @custom-variant dark (&:is(.dark *));
@@ -164,4 +164,25 @@
     transform: rotate(360deg);
   }
 }
+h1{
+    font-family: "Righteous", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
 
+div{
+    font-family: "Comfortaa", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+.righteous-regular {
+  font-family: "Righteous", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.comfortaa {
+  font-family: "Comfortaa", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}

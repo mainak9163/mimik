@@ -11,6 +11,8 @@ import { useGLTF, Environment, OrbitControls } from '@react-three/drei';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import '@/styles/second-hero.css';
+import { bungee } from '@/lib/fonts';
 
 // Default avatar URL - pre-defined to avoid user input
 const DEFAULT_AVATAR_URL = "./models/astra1.5.glb";
@@ -738,12 +740,18 @@ export default function AavatarFaceTracking() {
 
 
   return (
-    <div className="bg-background text-foreground px-4 py-16">
-      <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none mb-12 text-center"><span className="">Lets Play</span></h1>
+    <div className="text-foreground px-4 py-16"  style={{
+        background:
+          "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
+      }}>
+     <h2 className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center mb-6 ${bungee.className}`}>
+                <span className="title-what">Lets Play With</span>
+                <span className="title-astrapuff ml-3">Astrapuff !</span>
+              </h2>
   <div className="mx-auto max-w-screen sm:max-w-6xl">
-    <div className="flex flex-wrap">
+    <div className="flex flex-wrap justify-between">
       {/* Avatar Display - Left Side */}
-      <div className="w-full sm:w-1/2">
+      <div className="w-full sm:w-[45%]">
         <Card className="overflow-hidden shadow-md h-full">
           <CardContent className="p-0 h-full">
             <div className="relative w-full aspect-video h-full bg-muted">
@@ -776,7 +784,7 @@ export default function AavatarFaceTracking() {
       </div>
       
       {/* Controls - Right Side */}
-      <div className="w-full sm:w-1/2 mt-8 sm:mt-0">
+      <div className="w-full sm:w-[45%] mt-8 sm:mt-0">
         <Card className="h-full shadow-md">
           <CardContent className="pt-6 h-full flex flex-col">
             <h2 className="text-3xl font-semibold mb-6 text-center text-muted-foreground">Move your head side to side</h2>

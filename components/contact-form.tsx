@@ -58,7 +58,7 @@ export default function ContactForm() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="bg-purple-900 outline-none border-0 placeholder:text-gray-300"
+                className="bg-purple-900 outline-none border-0 placeholder:text-gray-300 text-gray-300"
               />
             </div>
             <div className="space-y-2">
@@ -69,10 +69,10 @@ export default function ContactForm() {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 required
-                className="min-h-[150px] bg-purple-900 outline-none border-0 placeholder:text-gray-300"
+                className="min-h-[150px] bg-purple-900 text-gray-300 outline-none border-0 placeholder:text-gray-300"
               />
             </div>
-            <Button type="submit" className="w-full bg-purple-500" size="lg" disabled={isLoading}>
+            <Button type="submit" className="w-full bg-purple-500 hover:bg-purple-500 transition-colors" size="lg" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
