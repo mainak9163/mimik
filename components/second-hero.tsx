@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 
 // import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { bungee, righteous } from "@/lib/fonts"
+import { bungee } from "@/lib/fonts"
 import "@/styles/second-hero.css"
 
 export default function SecondHero() {
