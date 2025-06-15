@@ -123,17 +123,16 @@ const SlidingComponent = () => {
         {/* Left panel - Logo */}
         <div className="w-screen h-full flex-shrink-0 relative">
           <div
-            className="w-full h-full bg-cover bg-center flex flex-col items-center justify-center"
+            className="w-full h-full bg-cover bg-center flex flex-col items-center justify-around"
             style={{ backgroundImage: "url('/astrapuff-bg.webp')" }}
           >
-            <img src="/logo-small.png" alt="Logo" className="w-96 h-auto mb-8" />
-
+            <img src="/logo-small.png" alt="Logo" className="w-[66%] sm:w-77 h-auto pt-4" />
             <button
               onClick={handleGameplayClick}
-              className="cursor-pointer flex flex-col items-center justify-center gap-2 bg-linear-to-r text-white py-6 px-8 rounded-xl hover:scale-110 active:scale-90 transition-colors text-5xl"
+              className="cursor-pointer flex flex-col items-center justify-start gap-2 bg-linear-to-r text-white rounded-xl hover:scale-110 active:scale-90 transition-colors text-3xl"
             >
-              <img src="./clappboard.webp" alt="play trailer" />
-              <span className="rounded-full text-4xl px-8 py-2 pb-4 bg-amber-300 border-4 border-white text-slate-800" >Lets play!</span>
+              <img src="./clappboard.webp" alt="play trailer" className="h-[70%]" />
+              <span className="flex align-center justify-center font-black rounded-full text-3xl bg-amber-300 px-8 py-3 border-4 border-white text-slate-800  tracking-wider" >Play Trailer</span>
             </button>
           </div>
         </div>

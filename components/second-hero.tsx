@@ -38,17 +38,19 @@ export default function SecondHero() {
 
   return (
     <div ref={sectionRef} className={`w-full transition-colors second-hero relative`}>
-      <Asset />
       <div className="container relative mx-auto px-4 pt-8 pb-0">
         <Card className="overflow-hidden border-none shadow-none bg-transparent">
           <CardContent className="grid gap-8 p-6 md:grid-cols-2 md:p-12 shadow-none">
             <div className="space-y-6">
+              <div>
+
               <h1 className={`text-4xl font-semibold sm:text-5xl righteous-regular ${bungee.className} slide-up-title ${isVisible ? 'visible' : ''}`}>
-                <span className="title-what">What is</span>
-                <span className="title-astrapuff ml-3">Astrapuff ?</span>
+                <span className="title-what">What is</span><br />
+                <span className="title-astrapuff">Astrapuffs?</span>
               </h1>
-              <p className={`text-2xl text-[#4a5568] font-medium ${righteous.className} slide-up-description ${isVisible ? 'visible' : ''}`}>
-                Astrapuffs is a multiplayer agentic NPC simulator that is set to revolutionize the cozy gaming genre. Our advanced
+              </div>
+              <p style={{fontWeight: 100,}} className={`text-2xl text-[#4a5568] font-thin leading-10  slide-up-description ${isVisible ? 'visible' : ''}`}>
+                Astrapuffs is an agentic NPC multiplayer that is set to revolutionize the cozy gaming genre. Our advanced
                 AI-driven NPCs create dynamic, responsive, and immersive stories that adapt to the player interactions
                 in real-time.
               </p>
@@ -61,7 +63,7 @@ export default function SecondHero() {
                 </Button>
               </div> */}
             </div>
-            <div className="relative rounded-lg">
+            <div className="relative rounded-lg h-full flex items-center justify-center">
               <Image 
                 src="/astra_2.webp" 
                 alt="Astrapuff Preview" 
@@ -79,8 +81,8 @@ export default function SecondHero() {
 }
 
 const Asset = () => (
-  <div className="bouncy-asset hidden sm:block absolute bottom-0 left-20">
-    <div className="blob-body">
+  <div className="bouncy-asset hidden sm:block">
+    <div className="blob-body h-[50px] w-[50px]">
       <div className="face">
         <div className="eyes">
           <div className="eye"></div>

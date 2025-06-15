@@ -17,8 +17,8 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-orange-800 mb-2">
-            🧩 Puzzle Dimension Guardian
+          <h3 className="text-lg font-semibold mb-2">
+            🧩 Puzzle Dimension Guide
           </h3>
           <p className="text-gray-700 leading-relaxed">
             From a mind-bending realm of M.C. Escher-like illusions where reality twists through 
@@ -38,7 +38,7 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-green-800 mb-2">
+          <h3 className="text-lg font-semibold mb-2">
             🌸 Verdant Expanse Nurturer
           </h3>
           <p className="text-gray-700 leading-relaxed">
@@ -59,7 +59,7 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-red-800 mb-2">
+          <h3 className="text-lg font-semibold mb-2">
             ⚡ Techno Nexus Innovator
           </h3>
           <p className="text-gray-700 leading-relaxed">
@@ -80,7 +80,7 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+          <h3 className="text-lg font-semibold mb-2">
             ⛈️ Tempest Realm Conductor
           </h3>
           <p className="text-gray-700 leading-relaxed">
@@ -101,7 +101,7 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold text-blue-800 mb-2">
+          <h3 className="text-lg font-semibold mb-2">
             🍦 Ice Cream Dimension Sweetkeeper
           </h3>
           <p className="text-gray-700 leading-relaxed">

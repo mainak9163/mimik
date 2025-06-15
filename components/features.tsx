@@ -49,7 +49,7 @@ const Feature: FC<SecondHeroProps> = ({
   }, []);
 
   const AssetIcon = ({ type }: { type: string }) => {
-    const baseClasses = "w-15 h-15 hidden lg:block ml-3";
+    const baseClasses = "w-9 h-9 hidden lg:block mr-3";
 
     switch (type) {
       case "fire":
@@ -129,12 +129,12 @@ const Feature: FC<SecondHeroProps> = ({
                 style={{ transitionDelay: `${index * 200}ms` }}
               >
                 <div className="flex items-center">
+                <AssetIcon type={asset} />
                 <h2
-                  className={`text-5xl font-semibold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent ${righteous.className}`}
+                  className={`text-5xl font-semibold bg-gradient-to-r from-purple-600 via-pink-400 to-blue-600 bg-clip-text text-black/40 ${righteous.className}`}
                 >
                   {title}
                   </h2>
-                   <AssetIcon type={asset} />
                   </div>
                 <p
                   className={`text-xl bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent leading-relaxed ${nunito.className}`}
@@ -231,7 +231,7 @@ export default function Features() {
     >
       <div className="container relative mx-auto px-4 pt-16">
         <h1
-          className={`text-6xl text-center font-bold tracking-tighter sm:text-5xl text-[#4a5568] ${bungee.className}`}
+          className={`text-5xl text-center tracking-tighter sm:text-4xl text-[#4a5568] ${bungee.className}`}
         >
           Key Features
         </h1>

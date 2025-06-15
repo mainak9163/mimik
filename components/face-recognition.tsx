@@ -744,7 +744,7 @@ export default function AavatarFaceTracking() {
         background:
           "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
       }}>
-     <h2 className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center mb-6 ${bungee.className}`}>
+     <h2 className={`text-2xl font-semibold sm:text-3xl righteous-regular text-center mb-6 ${bungee.className}`}>
                 <span className="title-what">Lets Play With</span>
                 <span className="title-astrapuff ml-3">Astrapuff !</span>
               </h2>
