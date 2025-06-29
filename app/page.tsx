@@ -7,9 +7,9 @@ import SecondHero from "@/components/second-hero";
 import SlidingComponent from "@/components/sliding-component";
 import ThreeJSAnimationWithNoSSR from "@/components/threejs-animation";
 import { Separator } from "@/components/ui/separator";
-import WaitlistComponent from "@/components/waitlist";
 import React from "react";
 import Features from "@/components/features";
+import NewWaitlist from "@/components/new-waitlist";
 
 const App = () => {
   return (
@@ -39,8 +39,8 @@ const App = () => {
           <AvatarFaceTracking />
         </section>
         <Separator className="bg-border" />
-        <section id="five" className="bg-[#faa0ab]/30">
-          <WaitlistComponent />
+        <section id="five">
+         <NewWaitlist/>
         </section>
         <Separator className="bg-border" />
         {/* <ContactForm/> */}

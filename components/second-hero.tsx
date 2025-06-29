@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 
 // import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { bungee } from "@/lib/fonts"
+import { lilita } from "@/lib/fonts"
 import "@/styles/second-hero.css"
 
 export default function SecondHero() {
@@ -44,7 +44,7 @@ export default function SecondHero() {
             <div className="space-y-6">
               <div>
 
-                <h1 className={`text-4xl font-semibold sm:text-5xl righteous-regular ${bungee.className} slide-up-title ${isVisible ? 'visible' : ''}`}>
+                <h1 className={`text-4xl font-semibold sm:text-5xl righteous-regular ${lilita.className} slide-up-title ${isVisible ? 'visible' : ''}`}>
                   <span className="title-what">What is</span><br />
                   <span className="title-astrapuff">Astrapuffs?</span>
                 </h1>

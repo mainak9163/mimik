@@ -1,5 +1,5 @@
 export const Asset = () => (
-    <div className="bouncy-asset hidden sm:block">
+    <div className="bouncy-asset hidden sm:block absolute left-20 bottom-20">
         <div className="blob-body h-[50px] w-[50px]">
             <div className="face">
                 <div className="eyes">

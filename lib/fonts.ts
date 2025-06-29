@@ -1,4 +1,4 @@
-import { Bungee } from "next/font/google";
+import { Bungee, Lilita_One } from "next/font/google";
 import { Righteous } from "next/font/google";
 import { Comfortaa } from "next/font/google";
 import { Nunito } from "next/font/google";
@@ -27,4 +27,10 @@ const nunito = Nunito({
   variable: '--font-nunito',
 });
 
-export { bungee, righteous, comfortaa, nunito };
+const lilita = Lilita_One({
+    subsets: ['latin'],
+  weight: '400',
+  variable: '--font-lilita',
+});
+
+export { bungee, righteous, comfortaa, nunito ,lilita};
