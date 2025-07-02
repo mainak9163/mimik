@@ -31,11 +31,13 @@ export default function AnimatedBorderTrail({
   return (
     <div
       {...props}
-      className={cn("relative h-fit w-fit overflow-hidden rounded-2xl bg-gray-200 p-px", className)}
-      >
-          <style>
-              {
-                  `
+      className={cn(
+        "relative h-fit w-fit overflow-hidden rounded-2xl bg-gray-200 p-px",
+        className,
+      )}
+    >
+      <style>
+        {`
                     @property --angle {
   syntax: "<angle>";
   initial-value: 0deg;
@@ -62,17 +64,18 @@ export default function AnimatedBorderTrail({
   --duration: 2s;
   animation: trail var(--duration) linear infinite;
 }
-                  `
-              }
-          </style>
+                  `}
+      </style>
       <div
         className="absolute inset-0 h-full w-full animate-trail"
-        style={{
-          "--duration": duration ?? "10s",
-          "--angle": "0deg",
-          background: `conic-gradient(from var(--angle) at 50% 50%, transparent ${100 - sizes[trailSize]}%, ${trailColor})`,
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        } as React.CSSProperties & Record<string, any>}
+        style={
+          {
+            "--duration": duration ?? "10s",
+            "--angle": "0deg",
+            background: `conic-gradient(from var(--angle) at 50% 50%, transparent ${100 - sizes[trailSize]}%, ${trailColor})`,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as React.CSSProperties & Record<string, any>
+        }
       />
       <div
         className={cn(

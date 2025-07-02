@@ -1,11 +1,13 @@
-"use client"
+"use client";
 
-import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
 
 export default function IceCreamCursor() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [sparkles, setSparkles] = useState<Array<{ id: number; x: number; y: number; delay: number }>>([])
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [sparkles, setSparkles] = useState<
+    Array<{ id: number; x: number; y: number; delay: number }>
+  >([]);
 
   useEffect(() => {
     // Generate sparkles relative to cursor
@@ -14,18 +16,18 @@ export default function IceCreamCursor() {
       x: Math.random() * 80 - 40, // Relative to cursor position
       y: Math.random() * 80 - 40,
       delay: Math.random() * 2,
-    }))
-    setSparkles(newSparkles)
-  }, [])
+    }));
+    setSparkles(newSparkles);
+  }, []);
 
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
     <>
@@ -91,7 +93,12 @@ export default function IceCreamCursor() {
           className="relative"
         >
           {/* Ice cream SVG scaled down for cursor use */}
-          <motion.svg width="40px" height="40px" viewBox="0 0 1024 1024" className="drop-shadow-md">
+          <motion.svg
+            width="40px"
+            height="40px"
+            viewBox="0 0 1024 1024"
+            className="drop-shadow-md"
+          >
             {/* Cone - slight sway animation */}
             <motion.g
               animate={{
@@ -149,8 +156,14 @@ export default function IceCreamCursor() {
                 delay: 0.2,
               }}
             >
-              <path d="M349.331243 226.198794H678.603548V340.700913H349.331243z" fill="#0083BF" />
-              <path d="M376.125298 226.198794h25.118979V340.700913h-25.118979z" fill="#0095DA" />
+              <path
+                d="M349.331243 226.198794H678.603548V340.700913H349.331243z"
+                fill="#0083BF"
+              />
+              <path
+                d="M376.125298 226.198794h25.118979V340.700913h-25.118979z"
+                fill="#0095DA"
+              />
             </motion.g>
 
             {/* Yellow stripe - wave animation with different timing */}
@@ -166,8 +179,14 @@ export default function IceCreamCursor() {
                 delay: 0.4,
               }}
             >
-              <path d="M349.331243 451.853904H678.603548v114.50212H349.331243z" fill="#FFCB05" />
-              <path d="M376.125298 453.110212h25.118979v113.245812h-25.118979z" fill="#FFDE2F" />
+              <path
+                d="M349.331243 451.853904H678.603548v114.50212H349.331243z"
+                fill="#FFCB05"
+              />
+              <path
+                d="M376.125298 453.110212h25.118979v113.245812h-25.118979z"
+                fill="#FFDE2F"
+              />
             </motion.g>
 
             {/* Outline */}
@@ -179,5 +198,5 @@ export default function IceCreamCursor() {
         </motion.div>
       </motion.div>
     </>
-  )
+  );
 }

@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
+import React, { useEffect, useRef } from "react";
+import { gsap } from "gsap";
 
 type GSAPButtonProps = {
   children?: React.ReactNode;
@@ -15,9 +15,9 @@ type GSAPButtonProps = {
   [key: string]: any;
 };
 
-const GSAPButton: React.FC<GSAPButtonProps> = ({ 
-  children = "Get GSAP", 
-  href = "#", 
+const GSAPButton: React.FC<GSAPButtonProps> = ({
+  children = "Get GSAP",
+  href = "#",
   className = "",
   onClick = undefined,
   borderColor = "#ffffff",
@@ -25,24 +25,28 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
   textHoverColor = "#000000",
   backgroundColor = "transparent",
   fillColor = "#ffffff",
-  ...props 
+  ...props
 }) => {
   const buttonRef = useRef<HTMLAnchorElement | null>(null);
   const flairRef = useRef<HTMLSpanElement | null>(null);
   const labelRef = useRef<HTMLSpanElement | null>(null);
   const xSetRef = useRef<((value: number) => void) | null>(null);
   const ySetRef = useRef<((value: number) => void) | null>(null);
-  
+
   useEffect(() => {
     const button = buttonRef.current;
     const flair = flairRef.current;
     const label = labelRef.current;
-    
+
     if (!button || !flair || !label) return;
 
     // Initialize GSAP quick setters
-    xSetRef.current = gsap.quickSetter(flair, "xPercent") as (value: number) => void;
-    ySetRef.current = gsap.quickSetter(flair, "yPercent") as (value: number) => void;
+    xSetRef.current = gsap.quickSetter(flair, "xPercent") as (
+      value: number,
+    ) => void;
+    ySetRef.current = gsap.quickSetter(flair, "yPercent") as (
+      value: number,
+    ) => void;
 
     // Set initial scale to 0
     gsap.set(flair, { scale: 0 });
@@ -53,17 +57,17 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
 
       const xTransformer = gsap.utils.pipe(
         gsap.utils.mapRange(0, width, 0, 100),
-        gsap.utils.clamp(0, 100)
+        gsap.utils.clamp(0, 100),
       );
 
       const yTransformer = gsap.utils.pipe(
         gsap.utils.mapRange(0, height, 0, 100),
-        gsap.utils.clamp(0, 100)
+        gsap.utils.clamp(0, 100),
       );
 
       return {
         x: xTransformer(e.clientX - left),
-        y: yTransformer(e.clientY - top)
+        y: yTransformer(e.clientY - top),
       };
     };
 
@@ -77,14 +81,14 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
       gsap.to(flair, {
         scale: 1,
         duration: 0.4,
-        ease: "power2.out"
+        ease: "power2.out",
       });
 
       // Change text color on hover
       gsap.to(label, {
         color: textHoverColor,
         duration: 0.15,
-        ease: "power2.out"
+        ease: "power2.out",
       });
     };
 
@@ -100,14 +104,14 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
         yPercent: y > 90 ? y + 20 : y < 10 ? y - 20 : y,
         scale: 0,
         duration: 0.3,
-        ease: "power2.out"
+        ease: "power2.out",
       });
 
       // Reset text color
       gsap.to(label, {
         color: textColor,
         duration: 0.15,
-        ease: "power2.out"
+        ease: "power2.out",
       });
     };
 
@@ -118,7 +122,7 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
         xPercent: x,
         yPercent: y,
         duration: 0.4,
-        ease: "power2"
+        ease: "power2",
       });
     };
 
@@ -150,71 +154,73 @@ const GSAPButton: React.FC<GSAPButtonProps> = ({
       href={href}
       className={`gsap-button ${className}`}
       onClick={handleClick}
-      style={{
-        alignItems: 'center',
-        background: backgroundColor,
-        border: 'none',
-        borderRadius: '6.25rem',
-        color: textColor,
-        cursor: 'pointer',
-        display: 'inline-flex',
-        fontSize: '1.2rem',
-        fontWeight: 600,
-        gap: '0.363636em',
-        justifyContent: 'center',
-        letterSpacing: '-0.01em',
-        lineHeight: 1.04545,
-        overflow: 'hidden',
-        padding: '0.9375rem 1.5rem',
-        position: 'relative',
-        textDecoration: 'none',
-        wordBreak: 'break-word',
-        transition: `color 0.15s cubic-bezier(0.77, 0, 0.175, 1)`,
-        '--border-color': borderColor,
-        '--fill-color': fillColor
-      } as React.CSSProperties}
+      style={
+        {
+          alignItems: "center",
+          background: backgroundColor,
+          border: "none",
+          borderRadius: "6.25rem",
+          color: textColor,
+          cursor: "pointer",
+          display: "inline-flex",
+          fontSize: "1.2rem",
+          fontWeight: 600,
+          gap: "0.363636em",
+          justifyContent: "center",
+          letterSpacing: "-0.01em",
+          lineHeight: 1.04545,
+          overflow: "hidden",
+          padding: "0.9375rem 1.5rem",
+          position: "relative",
+          textDecoration: "none",
+          wordBreak: "break-word",
+          transition: `color 0.15s cubic-bezier(0.77, 0, 0.175, 1)`,
+          "--border-color": borderColor,
+          "--fill-color": fillColor,
+        } as React.CSSProperties
+      }
       {...props}
     >
-      <span 
-        ref={flairRef} 
+      <span
+        ref={flairRef}
         className="button__flair"
         style={{
           bottom: 0,
           left: 0,
-          pointerEvents: 'none',
-          position: 'absolute',
+          pointerEvents: "none",
+          position: "absolute",
           right: 0,
           top: 0,
-          transform: 'scale(0)',
-          transformOrigin: '0 0',
-          willChange: 'transform'
+          transform: "scale(0)",
+          transformOrigin: "0 0",
+          willChange: "transform",
         }}
       >
-        <span 
+        <span
           style={{
-            aspectRatio: '1/1',
+            aspectRatio: "1/1",
             backgroundColor: fillColor,
-            borderRadius: '50%',
+            borderRadius: "50%",
             content: '""',
-            display: 'block',
+            display: "block",
             left: 0,
-            pointerEvents: 'none',
-            position: 'absolute',
+            pointerEvents: "none",
+            position: "absolute",
             top: 0,
-            transform: 'translate(-50%, -50%)',
-            width: '170%'
+            transform: "translate(-50%, -50%)",
+            width: "170%",
           }}
         />
       </span>
-      <span 
+      <span
         ref={labelRef}
         className="button__label"
         style={{
-          position: 'relative',
-          textAlign: 'center',
-          zIndex: 1
+          position: "relative",
+          textAlign: "center",
+          zIndex: 1,
         }}
-      > 
+      >
         {children}
       </span>
       <style jsx>{`

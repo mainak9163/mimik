@@ -1,6 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 "use client";
-import React from 'react';
+import React from "react";
 import { GlowingEffect } from "@/components/ui/glowing-effect";
 
 export function AstrapuffFeatures() {
@@ -8,27 +8,29 @@ export function AstrapuffFeatures() {
     {
       title: "Cozy",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra2.webp"
+      image: "/astra2.webp",
     },
     {
       title: "Companion",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra3.webp"
+      image: "/astra3.webp",
     },
     {
       title: "Delight",
       description: "Astrapuff is a multiplayer agentic NPC simulator",
-      image: "/astra4.webp"
-    }
+      image: "/astra4.webp",
+    },
   ];
 
   return (
     <div className="w-full max-w-6xl mx-auto px-4 py-12 h-screen">
-      <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">Features</h1>
-      
+      <h1 className="text-3xl md:text-4xl font-bold text-center mb-12">
+        Features
+      </h1>
+
       <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
         {features.map((feature, index) => (
-          <FeatureCard 
+          <FeatureCard
             key={index}
             title={feature.title}
             description={feature.description}
@@ -60,13 +62,13 @@ const FeatureCard = ({ title, description, image }: FeatureCardProps) => {
         />
         <div className="relative flex flex-col items-center justify-between h-full overflow-hidden rounded-xl border-[0.75px] bg-background p-6 shadow-sm">
           <div className="w-full aspect-video rounded-lg overflow-hidden bg-muted mb-6">
-            <img 
-              src={image} 
-              alt={`${title} feature`} 
+            <img
+              src={image}
+              alt={`${title} feature`}
               className="w-full h-full object-cover"
             />
           </div>
-          
+
           <div className="text-center space-y-3">
             <h3 className="text-xl font-semibold tracking-tight">{title}</h3>
             <p className="text-sm text-muted-foreground">{description}</p>

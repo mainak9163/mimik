@@ -4,33 +4,33 @@ import { Comfortaa } from "next/font/google";
 import { Nunito } from "next/font/google";
 
 const bungee = Bungee({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-bungee',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-bungee",
 });
 
 const righteous = Righteous({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-righteous',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-righteous",
 });
 
 const comfortaa = Comfortaa({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-comfortaa',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-comfortaa",
 });
 
 const nunito = Nunito({
-  subsets: ['latin'],
-  weight: '400',
-  variable: '--font-nunito',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-nunito",
 });
 
 const lilita = Lilita_One({
-    subsets: ['latin'],
-  weight: '400',
-  variable: '--font-lilita',
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-lilita",
 });
 
-export { bungee, righteous, comfortaa, nunito ,lilita};
+export { bungee, righteous, comfortaa, nunito, lilita };

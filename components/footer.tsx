@@ -1,18 +1,20 @@
-"use client"
+"use client";
 import GSAPButton from "@/components/animated-button";
 import ContactForm from "@/components/contact-form";
 import WaveText from "@/components/squash-animation";
 import { useRef, useState } from "react";
-import MarqueeText from "react-marquee-text"
+import MarqueeText from "react-marquee-text";
 
-const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+const handleSmoothScroll = (
+  e: React.MouseEvent<HTMLAnchorElement>,
+  id: string,
+) => {
   e.preventDefault();
   const scrollEleme = document.getElementById(id) as HTMLElement;
-  scrollEleme.scrollIntoView({ behavior: 'smooth' });
+  scrollEleme.scrollIntoView({ behavior: "smooth" });
 };
 
 export default function Footer() {
-
   const currentYear = new Date().getFullYear();
   const [showContactForm, setShowContactForm] = useState(false);
   const contactFormRef = useRef<HTMLDivElement>(null);
@@ -35,46 +37,76 @@ export default function Footer() {
   return (
     <footer className="bg-purple-900 p-2 sm:p-4">
       <style>
-        {
-          `
+        {`
             @keyframes marqueeScroll {
   to {
     transform: translate3d(0, 0, 0);
   }
 }
-          `
-        }
+          `}
       </style>
-      <MarqueeText direction="right" className="text-purple-800 font-bold mb-2  sm:text-7xl text-3xl my-4">
+      <MarqueeText
+        direction="right"
+        className="text-purple-800 font-bold mb-2  sm:text-7xl text-3xl my-4"
+      >
         Astrapuffs, Multiplayer Agentic NPC Simulator!
       </MarqueeText>
       <div className="container mx-auto flex flex-wrap justify-evenly gap-6 my-4 sm:my-[60px]">
         <div className="lg:w-[250px] md:w-[200px] w-[130px]">
-          <img src="/logo-small.png" alt="Logo" className="w-full h-auto mb-8" />
+          <img
+            src="/logo-small.png"
+            alt="Logo"
+            className="w-full h-auto mb-8"
+          />
         </div>
 
         <div className="flex flex-col gap-y-3 text-right sm:text-left">
-          <a href="#one" onClick={e => handleSmoothScroll(e, 'one')}>
-            <WaveText text="Watch" className="text-xl font-semibold text-white" />
+          <a href="#one" onClick={(e) => handleSmoothScroll(e, "one")}>
+            <WaveText
+              text="Watch"
+              className="text-xl font-semibold text-white"
+            />
           </a>
-          <a href="#one.one" onClick={e => handleSmoothScroll(e, 'one.one')}>
-            <WaveText text="Astrapuff" className="text-xl font-semibold text-white" />
+          <a href="#one.one" onClick={(e) => handleSmoothScroll(e, "one.one")}>
+            <WaveText
+              text="Astrapuff"
+              className="text-xl font-semibold text-white"
+            />
           </a>
-          <a href="#two.one" onClick={e => handleSmoothScroll(e, 'two.one')}>
-            <WaveText text="Features" className="text-xl font-semibold text-white" />
+          <a href="#two.one" onClick={(e) => handleSmoothScroll(e, "two.one")}>
+            <WaveText
+              text="Features"
+              className="text-xl font-semibold text-white"
+            />
           </a>
-          <a href="#three" onClick={e => handleSmoothScroll(e, 'three')}>
-            <WaveText text="Explore" className="text-xl font-semibold text-white" />
+          <a href="#three" onClick={(e) => handleSmoothScroll(e, "three")}>
+            <WaveText
+              text="Explore"
+              className="text-xl font-semibold text-white"
+            />
           </a>
-          <a href="#four" onClick={e => handleSmoothScroll(e, 'four')}>
-            <WaveText text="Lets Play" className="text-xl font-semibold text-white" />
+          <a href="#four" onClick={(e) => handleSmoothScroll(e, "four")}>
+            <WaveText
+              text="Lets Play"
+              className="text-xl font-semibold text-white"
+            />
           </a>
-          <a href="#five" onClick={e => handleSmoothScroll(e, 'five')}>
-            <WaveText text="Waitlist" className="text-xl font-semibold text-white" />
+          <a href="#five" onClick={(e) => handleSmoothScroll(e, "five")}>
+            <WaveText
+              text="Waitlist"
+              className="text-xl font-semibold text-white"
+            />
           </a>
         </div>
 
-        <GSAPButton onClick={handleContactClick} className="h-fit" backgroundColor="#59168b" textHoverColor="#59168b">Contact Us</GSAPButton>
+        <GSAPButton
+          onClick={handleContactClick}
+          className="h-fit"
+          backgroundColor="#59168b"
+          textHoverColor="#59168b"
+        >
+          Contact Us
+        </GSAPButton>
         <div className="flex flex-col">
           <div className="text-white text-sm mb-2">FOLLOW US</div>
           <div className="flex gap-x-2">
@@ -83,7 +115,20 @@ export default function Footer() {
               className="flex items-center gap-3 hover:text-primary transition-colors group"
             >
               <div className="rounded-full border-white border-[1px] p-[2px]">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-facebook-icon lucide-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" /></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-facebook-icon lucide-facebook"
+                >
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
+                </svg>
               </div>
             </a>
             <a
@@ -91,7 +136,22 @@ export default function Footer() {
               className="flex items-center gap-3 hover:text-primary transition-colors group"
             >
               <div className="rounded-full border-white border-[1px] p-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-instagram-icon lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5" /><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" /><line x1="17.5" x2="17.51" y1="6.5" y2="6.5" /></svg>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="white"
+                  strokeWidth="1"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="lucide lucide-instagram-icon lucide-instagram"
+                >
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
+                </svg>
               </div>
             </a>
           </div>
@@ -116,13 +176,19 @@ export default function Footer() {
               href="#terms-of-service"
               className="hover:text-primary transition-colors w-fit"
             >
-              <WaveText text="Terms of Service" className="text-base font-semibold text-white" />
+              <WaveText
+                text="Terms of Service"
+                className="text-base font-semibold text-white"
+              />
             </a>
             <a
               href="#privacy-policy"
               className="hover:text-primary transition-colors w-fit"
             >
-              <WaveText text="Privacy Policy" className="text-base font-semibold text-white" />
+              <WaveText
+                text="Privacy Policy"
+                className="text-base font-semibold text-white"
+              />
             </a>
           </div>
         </div>
@@ -130,5 +196,3 @@ export default function Footer() {
     </footer>
   );
 }
-
-

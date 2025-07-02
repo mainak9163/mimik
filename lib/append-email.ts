@@ -1,4 +1,4 @@
-"use server"
+"use server";
 // utils/googleSheets.ts
 import { google } from "googleapis";
 
@@ -14,7 +14,7 @@ export async function appendEmailToSheet(email: string) {
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
-//   const client = await auth.getClient();
+  //   const client = await auth.getClient();
   const sheets = google.sheets({ version: "v4", auth });
 
   try {

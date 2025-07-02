@@ -1,99 +1,120 @@
-"use client"
-import "../styles/second-hero.css"
-import { useState } from "react";
+"use client";
+import "../styles/second-hero.css";
+import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 export default function NewWaitlist() {
-    return (
-        <div className="h-screen flex flex-col justify-center items-enter relative"
-         style={{
+  const [emailCount, setEmailCount] = useState<number>(30);
+  useEffect(() => {
+    async function fetchEmailCount() {
+      setEmailCount((await getEmailCountFromEmailColumn()).count);
+    }
+    fetchEmailCount();
+  }, []);
+  return (
+    <div
+      className="h-screen flex flex-col justify-center items-enter relative"
+      style={{
         background:
           "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
-      }}>
-            <div>
-                <div className="flex items-center p-1 w-fit border-1 border-[#FF9B9B]/50 rounded-xl px-2 mx-auto">
-                    <span className="relative flex size-3 mr-2 -mt-[2px]">
-  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF9B9B]/80 opacity-75"></span>
-  <span className="relative inline-flex size-3 rounded-full bg-[#FF9B9B]"></span>
-                    </span>
-                    <span  className="text-[#cf689c] text-sm font-semibold">AVAILABLE IN EARLY 2025</span>
-                </div>
-                <div className="flex flex-col gap-y-2 mx-auto w-fit text-center my-6">
-                    <p className="text-xl sm:text-2xl font-semibold text-[#e3529a]">Get early access</p>
-                    <p className="text-sm sm:text-base max-w-[400px] text-[#c92838]">Be amongst the first to experience ,wait and launch a viral waitlist. Sign up to be notified when we launch!</p>
-                </div>
-                <FloatingInput />
-                <div className="mt-10">
-                    <AnimatedTooltipPreview />
-                    <div className="text-center text-sm sm:text-base text-[#c92838] ml-4 -mt-4">
-                        Join 
-                        <span className="mx-2">
-                            <NumberTicker
-                            startValue={10000}
-      value={12500}
-      className="whitespace-pre-wrap font-semibold tracking-tighter text-[#e3529a]"
-                            /></span>
-                        others on the waitlist
-                    </div>
-                    </div>
+      }}
+    >
+      <div>
+        <div className="flex items-center p-1 w-fit border-1 border-[#FF9B9B]/50 rounded-xl px-2 mx-auto">
+          <span className="relative flex size-3 mr-2 -mt-[2px]">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF9B9B]/80 opacity-75"></span>
+            <span className="relative inline-flex size-3 rounded-full bg-[#FF9B9B]"></span>
+          </span>
+          <span className="text-[#cf689c] text-sm font-semibold">
+            AVAILABLE IN EARLY 2025
+          </span>
         </div>
-        <Asset />
-        
+        <div className="flex flex-col gap-y-2 mx-auto w-fit text-center my-6">
+          <p className="text-xl sm:text-2xl font-semibold text-[#e3529a]">
+            Get early access
+          </p>
+          <p className="text-sm sm:text-base max-w-[400px] text-[#c92838]">
+            Be amongst the first to experience ,wait and launch a viral
+            waitlist. Sign up to be notified when we launch!
+          </p>
         </div>
-    )
+        <FloatingInput setEmailCount={setEmailCount} />
+        <div className="mt-10">
+          <AnimatedTooltipPreview />
+          <div className="text-center text-sm sm:text-base text-[#c92838] ml-4 -mt-4">
+            Join
+            <span className="mx-2">
+              <NumberTicker
+                startValue={10}
+                value={emailCount}
+                className="whitespace-pre-wrap font-semibold tracking-tighter text-[#e3529a]"
+              />
+            </span>
+            others on the waitlist
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
 
-function FloatingInput() {
-  const [email, setEmail] = useState("")
-  const [isFocused, setIsFocused] = useState(false)
- const [isLoading, setIsLoading] = useState(false);
+function FloatingInput({
+  setEmailCount,
+}: {
+  setEmailCount: (count: number) => void;
+}) {
+  const [email, setEmail] = useState("");
+  const [isFocused, setIsFocused] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const isFloating = isFocused || email.length > 0;
 
   // Email validation regex
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
-  const validateEmail = (email:string) => {
+  const validateEmail = (email: string) => {
     return emailRegex.test(email);
   };
 
   const isValidEmail = validateEmail(email);
-    const isSubmitDisabled = !email || !isValidEmail || isLoading;
-    
-      const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
-    
-        if (!email) {
-          toast.error("Please enter your email address")
-          return
-        }
-    
-        if (!validateEmail(email)) {
-          toast.error("Please enter a valid email address", {
-            icon: <AlertCircle className="h-5 w-5 text-red-500" />,
-          })
-          return
-        }
-    
-        setIsLoading(true)
-    
-        try {
-          await appendEmailToSheet(email)
-          toast.success("You've been added to our waitlist!", {
-            description: "We'll be in touch soon with updates.",
-            icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
-          })
-            setEmail("")
-            confetti();
-        } catch (error: unknown) {
-            console.error("Error appending email:", error)
-          toast.error("Something went wrong. Please try again.")
-        } finally {
-          setIsLoading(false)
-        }
-      }
+  const isSubmitDisabled = !email || !isValidEmail || isLoading;
 
-      const handleKeyPress = (e: React.KeyboardEvent<Element>) => {
-    if (e.key === 'Enter') {
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!email) {
+      toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!validateEmail(email)) {
+      toast.error("Please enter a valid email address", {
+        icon: <AlertCircle className="h-5 w-5 text-red-500" />,
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      await appendEmailToSheet(email);
+      toast.success("You've been added to our waitlist!", {
+        description: "We'll be in touch soon with updates.",
+        icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
+      });
+      setEmail("");
+      //@ts-expect-error something
+      setEmailCount((prevCount) => prevCount + 1);
+      confetti();
+    } catch (error: unknown) {
+      console.error("Error appending email:", error);
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<Element>) => {
+    if (e.key === "Enter") {
       handleSubmit(e);
     }
   };
@@ -104,7 +125,9 @@ function FloatingInput() {
         {/* Floating Label */}
         <label
           className={`absolute left-3 bg-white px-1 text-gray-500 pointer-events-none transition-all duration-200 ease-in-out ${
-            isFloating ? "-top-2 text-xs text-blue-600 font-medium" : "top-1/2 -translate-y-1/2 text-base"
+            isFloating
+              ? "-top-2 text-xs text-blue-600 font-medium"
+              : "top-1/2 -translate-y-1/2 text-base"
           }`}
         >
           Email
@@ -116,35 +139,35 @@ function FloatingInput() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onFocus={() => setIsFocused(true)}
-                  onBlur={() => setIsFocused(false)}
-                  onKeyPress={handleKeyPress}
+          onBlur={() => setIsFocused(false)}
+          onKeyPress={handleKeyPress}
           className={`w-full bg-transparent border-none outline-none text-base ${
             isFloating ? "pt-2 pb-1" : "py-0"
           } transition-all duration-200`}
         />
 
-              {/* Join Waitlist Button */}
-          <button 
-            className={`absolute right-1 top-1/2 -translate-y-1/2 px-4 py-2 text-white font-medium rounded-lg text-sm transition-all duration-200 ${
-              isSubmitDisabled 
-                ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer'
-            }`}
+        {/* Join Waitlist Button */}
+        <button
+          className={`absolute right-1 top-1/2 -translate-y-1/2 px-4 py-2 text-white font-medium rounded-lg text-sm transition-all duration-200 ${
+            isSubmitDisabled
+              ? "bg-gray-400 cursor-not-allowed"
+              : "bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer"
+          }`}
           disabled={isSubmitDisabled}
           onClick={handleSubmit}
-          >
-            {isLoading ? (
-              <div className="flex items-center">
-                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-                <span className="text-xs">Joining...</span>
-              </div>
-            ) : (
-              "Join waitlist"
-            )}
-              </button>
-          </div>
+        >
+          {isLoading ? (
+            <div className="flex items-center">
+              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              <span className="text-xs">Joining...</span>
+            </div>
+          ) : (
+            "Join waitlist"
+          )}
+        </button>
+      </div>
     </div>
-  )
+  );
 }
 
 import React from "react";
@@ -153,7 +176,7 @@ import { NumberTicker } from "./ui/number-ticker";
 import { toast } from "sonner";
 import { AlertCircle, CheckCircle2, Loader2 } from "lucide-react";
 import { appendEmailToSheet } from "@/lib/append-email";
-import { Asset } from "./second-hero-asset";
+import { getEmailCountFromEmailColumn } from "@/lib/get-number-email";
 const people = [
   {
     id: 1,
@@ -206,4 +229,3 @@ export function AnimatedTooltipPreview() {
     </div>
   );
 }
-

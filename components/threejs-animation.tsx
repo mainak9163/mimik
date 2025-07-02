@@ -1,10 +1,10 @@
-"use client"
-import React, { useRef, useState, useEffect, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
-import { useGSAP } from '@gsap/react';
-import gsap from 'gsap';
-import * as THREE from 'three';
+"use client";
+import React, { useRef, useState, useEffect, Suspense } from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { useGLTF } from "@react-three/drei";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import * as THREE from "three";
 
 // Global configuration constants
 const AVATAR_CONFIG = {
@@ -21,25 +21,39 @@ declare global {
 }
 
 // Model component that handles the 3D model
-const Model = ({ currentSection, isMobile, mousePosition }: {
-  currentSection: 'one' | 'two.one' | 'one.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five',
-  isMobile: boolean,
-  mousePosition: { x: number, y: number }
+const Model = ({
+  currentSection,
+  isMobile,
+  mousePosition,
+}: {
+  currentSection:
+    | "one"
+    | "two.one"
+    | "one.one"
+    | "two.two"
+    | "two.three"
+    | "two.four"
+    | "two.five"
+    | "three"
+    | "four"
+    | "five";
+  isMobile: boolean;
+  mousePosition: { x: number; y: number };
 }) => {
   const modelRef = useRef<THREE.Object3D | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
   const { viewport } = useThree();
 
   // Use drei's useGLTF hook instead of manually using GLTFLoader
-  const { scene, animations } = useGLTF('/models/astra3.glb');
+  const { scene, animations } = useGLTF("/models/astra3.glb");
 
   // Section positions configuration for desktop (only for section 'one')
   const desktopPositions = {
-    'one': {
+    one: {
       position: [1.5, -1, 0],
       rotation: [0, 0, 0], // Facing the user
-      scale: AVATAR_CONFIG.DESKTOP_SCALE
-    }
+      scale: AVATAR_CONFIG.DESKTOP_SCALE,
+    },
   };
 
   // Initialize animation mixer
@@ -61,7 +75,7 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
   // GSAP animations for model position, rotation, and scale
   useGSAP(() => {
     if (modelRef.current) {
-      if (currentSection === 'one') {
+      if (currentSection === "one") {
         // Use original position for section 'one'
         const { position, rotation, scale } = desktopPositions.one;
 
@@ -70,7 +84,7 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: position[1],
           z: position[2],
           duration: 2.5,
-          ease: "power2.inOut"
+          ease: "power2.inOut",
         });
 
         gsap.to(modelRef.current.rotation, {
@@ -78,7 +92,7 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: rotation[1],
           z: rotation[2],
           duration: 2.5,
-          ease: "power2.inOut"
+          ease: "power2.inOut",
         });
 
         gsap.to(modelRef.current.scale, {
@@ -86,16 +100,24 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: scale,
           z: scale,
           duration: 2.5,
-          ease: "power2.inOut"
+          ease: "power2.inOut",
         });
       } else {
         // For all other sections, shrink and follow mouse
-        const shrunkScale = isMobile ? AVATAR_CONFIG.MOBILE_SCALE : AVATAR_CONFIG.DESKTOP_FOLLOW_SCALE;
+        const shrunkScale = isMobile
+          ? AVATAR_CONFIG.MOBILE_SCALE
+          : AVATAR_CONFIG.DESKTOP_FOLLOW_SCALE;
 
         // Apply minimum distance constraint from edges
         const minDistance = AVATAR_CONFIG.MIN_DISTANCE_FROM_EDGE;
-        const constrainedMouseX = Math.max(minDistance, Math.min(window.innerWidth - minDistance, mousePosition.x));
-        const constrainedMouseY = Math.max(minDistance, Math.min(window.innerHeight - minDistance, mousePosition.y));
+        const constrainedMouseX = Math.max(
+          minDistance,
+          Math.min(window.innerWidth - minDistance, mousePosition.x),
+        );
+        const constrainedMouseY = Math.max(
+          minDistance,
+          Math.min(window.innerHeight - minDistance, mousePosition.y),
+        );
 
         // Convert constrained mouse position to 3D world coordinates
         const x = (constrainedMouseX / window.innerWidth) * 2 - 1;
@@ -111,7 +133,7 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: targetY,
           z: 2, // Bring it closer to camera
           duration: 1.2,
-          ease: "power2.out"
+          ease: "power2.out",
         });
 
         // Shrink the model
@@ -120,13 +142,16 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: shrunkScale,
           z: shrunkScale,
           duration: 1.5,
-          ease: "power2.inOut"
+          ease: "power2.inOut",
         });
 
         // Make model face the cursor
         const lookAtPosition = new THREE.Vector3(targetX, targetY, 2);
         const currentPosition = modelRef.current.position.clone();
-        const direction = lookAtPosition.clone().sub(currentPosition).normalize();
+        const direction = lookAtPosition
+          .clone()
+          .sub(currentPosition)
+          .normalize();
 
         // Calculate rotation to face the cursor
         const targetRotationY = Math.atan2(direction.x, direction.z);
@@ -137,7 +162,7 @@ const Model = ({ currentSection, isMobile, mousePosition }: {
           y: targetRotationY,
           z: 0,
           duration: 1.2,
-          ease: "power2.out"
+          ease: "power2.out",
         });
       }
     }
@@ -169,16 +194,13 @@ const Lights = () => {
   return (
     <>
       <ambientLight intensity={1.5} />
-      <directionalLight
-        position={[500, 500, 500]}
-        intensity={1}
-      />
+      <directionalLight position={[500, 500, 500]} intensity={1} />
     </>
   );
 };
 
 // Function to get current mouse position
-const getCurrentMousePosition = (): { x: number, y: number } => {
+const getCurrentMousePosition = (): { x: number; y: number } => {
   // Try to get mouse position from recent mouse events
   let mouseX = window.innerWidth / 2; // Default to center
   let mouseY = window.innerHeight / 2;
@@ -190,7 +212,10 @@ const getCurrentMousePosition = (): { x: number, y: number } => {
   };
 
   // Add listener briefly to capture current position
-  document.addEventListener('mousemove', captureMousePosition, { once: true, passive: true });
+  document.addEventListener("mousemove", captureMousePosition, {
+    once: true,
+    passive: true,
+  });
 
   // If we have a recent mouse position stored, use it
   const storedPosition = window?.__lastMousePosition;
@@ -204,7 +229,18 @@ const getCurrentMousePosition = (): { x: number, y: number } => {
 
 // Main component
 const ThreeJSAnimation = () => {
-  const [currentSection, setCurrentSection] = useState<'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five'>('one');
+  const [currentSection, setCurrentSection] = useState<
+    | "one"
+    | "one.one"
+    | "two.one"
+    | "two.two"
+    | "two.three"
+    | "two.four"
+    | "two.five"
+    | "three"
+    | "four"
+    | "five"
+  >("one");
   const [isMobile, setIsMobile] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
@@ -218,10 +254,10 @@ const ThreeJSAnimation = () => {
     checkMobile();
 
     // Add resize listener
-    window.addEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
 
     // Cleanup
-    return () => window.removeEventListener('resize', checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Initialize mouse position on mount
@@ -229,22 +265,22 @@ const ThreeJSAnimation = () => {
     // Set initial mouse position to center of screen
     setMousePosition({
       x: window.innerWidth / 2,
-      y: window.innerHeight / 2
+      y: window.innerHeight / 2,
     });
 
     // Store mouse position globally for reference
     const storeMousePosition = (event: MouseEvent) => {
       window.__lastMousePosition = {
         x: event.clientX,
-        y: event.clientY
+        y: event.clientY,
       };
     };
 
     // Always track mouse position globally
-    window.addEventListener('mousemove', storeMousePosition, { passive: true });
+    window.addEventListener("mousemove", storeMousePosition, { passive: true });
 
     return () => {
-      window.removeEventListener('mousemove', storeMousePosition);
+      window.removeEventListener("mousemove", storeMousePosition);
     };
   }, []);
 
@@ -253,23 +289,23 @@ const ThreeJSAnimation = () => {
     const handleMouseMove = (event: MouseEvent) => {
       setMousePosition({
         x: event.clientX + 200,
-        y: event.clientY
+        y: event.clientY,
       });
     };
 
     // Track mouse when not in section 'one'
-    if (currentSection !== 'one') {
-      window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    if (currentSection !== "one") {
+      window.addEventListener("mousemove", handleMouseMove, { passive: true });
     }
 
     return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener("mousemove", handleMouseMove);
     };
   }, [currentSection]);
 
   // Handle section changes - get current mouse position immediately
   useEffect(() => {
-    if (currentSection !== 'one') {
+    if (currentSection !== "one") {
       // Get current mouse position when transitioning out of section 'one'
       const currentPos = getCurrentMousePosition();
       setMousePosition(currentPos);
@@ -279,14 +315,48 @@ const ThreeJSAnimation = () => {
   // Scroll detection
   useEffect(() => {
     const handleScroll = () => {
-      const sections = document.querySelectorAll('section');
-      let active: 'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five' | '' = '';
+      const sections = document.querySelectorAll("section");
+      let active:
+        | "one"
+        | "one.one"
+        | "two.one"
+        | "two.two"
+        | "two.three"
+        | "two.four"
+        | "two.five"
+        | "three"
+        | "four"
+        | "five"
+        | "" = "";
 
       sections.forEach((section) => {
         const rect = section.getBoundingClientRect();
         if (rect.top <= window.innerHeight / 3) {
-          if (['one', 'one.one', 'two.one', 'two.two', 'two.three', 'two.four', 'two.five', 'three', 'four', 'five'].includes(section.id)) {
-            active = section.id as 'one' | 'one.one' | 'two.one' | 'two.two' | 'two.three' | 'two.four' | 'two.five' | 'three' | 'four' | 'five';
+          if (
+            [
+              "one",
+              "one.one",
+              "two.one",
+              "two.two",
+              "two.three",
+              "two.four",
+              "two.five",
+              "three",
+              "four",
+              "five",
+            ].includes(section.id)
+          ) {
+            active = section.id as
+              | "one"
+              | "one.one"
+              | "two.one"
+              | "two.two"
+              | "two.three"
+              | "two.four"
+              | "two.five"
+              | "three"
+              | "four"
+              | "five";
           }
         }
       });
@@ -296,8 +366,8 @@ const ThreeJSAnimation = () => {
       }
     };
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [currentSection]);
 
   // Handle touch events for mobile
@@ -307,7 +377,7 @@ const ThreeJSAnimation = () => {
         const touch = event.touches[0];
         const newPosition = {
           x: touch.clientX,
-          y: touch.clientY
+          y: touch.clientY,
         };
         setMousePosition(newPosition);
         // Also store globally
@@ -321,7 +391,7 @@ const ThreeJSAnimation = () => {
         const touch = event.touches[0];
         const newPosition = {
           x: touch.clientX,
-          y: touch.clientY
+          y: touch.clientY,
         };
         setMousePosition(newPosition);
         // Also store globally
@@ -330,28 +400,30 @@ const ThreeJSAnimation = () => {
     };
 
     // Track touch when not in section 'one' and on mobile
-    if (currentSection !== 'one' && isMobile) {
-      window.addEventListener('touchmove', handleTouchMove, { passive: true });
-      window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    if (currentSection !== "one" && isMobile) {
+      window.addEventListener("touchmove", handleTouchMove, { passive: true });
+      window.addEventListener("touchstart", handleTouchStart, {
+        passive: true,
+      });
     }
 
     return () => {
-      window.removeEventListener('touchmove', handleTouchMove);
-      window.removeEventListener('touchstart', handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("touchstart", handleTouchStart);
     };
   }, [currentSection, isMobile]);
 
   return (
     <div
       style={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
         zIndex: 50,
-        pointerEvents: 'none'
+        pointerEvents: "none",
       }}
     >
       <Canvas
-        style={{ pointerEvents: 'none' }}
+        style={{ pointerEvents: "none" }}
         camera={{ position: [0, 0, 13], fov: 10 }}
       >
         <Lights />
@@ -368,15 +440,15 @@ const ThreeJSAnimation = () => {
 };
 
 // Preload the model
-useGLTF.preload('/models/astra3.glb');
+useGLTF.preload("/models/astra3.glb");
 
 // Since Next.js uses server-side rendering by default, we need to use
 // dynamic import with ssr: false for Three.js components
-import dynamic from 'next/dynamic';
+import dynamic from "next/dynamic";
 
 const ThreeJSAnimationWithNoSSR = dynamic(
   () => Promise.resolve(ThreeJSAnimation),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default ThreeJSAnimationWithNoSSR;

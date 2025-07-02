@@ -108,7 +108,10 @@ const Footer = () => {
 
       {/* Contact Form */}
       {showContactForm && (
-        <div ref={contactFormRef} className="border-t border-border bg-muted/30">
+        <div
+          ref={contactFormRef}
+          className="border-t border-border bg-muted/30"
+        >
           <div className="container mx-auto px-4 py-8">
             <ContactForm />
           </div>

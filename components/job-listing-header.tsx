@@ -6,12 +6,15 @@ export default function JobListingHeader() {
       </div>
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 md:py-32">
         <div className="max-w-3xl">
-          <h1 className="font-montserrat text-4xl md:text-5xl font-bold tracking-tight mb-6">Join the P3CO Team</h1>
+          <h1 className="font-montserrat text-4xl md:text-5xl font-bold tracking-tight mb-6">
+            Join the P3CO Team
+          </h1>
           <p className="font-merriweather text-xl md:text-2xl text-gray-300 mb-8">
-            Help build one of the first agentic cozy multiplayers that&apos;s actually fun to play!
+            Help build one of the first agentic cozy multiplayers that&apos;s
+            actually fun to play!
           </p>
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -1,20 +1,26 @@
-"use client"
-import Image from 'next/image';
+"use client";
+import Image from "next/image";
 
 interface AvatarFeaturerProps {
-  bgColor: string;  // Background color for the button    
-  imgSrc: string;   // Image source for the avatar
+  bgColor: string; // Background color for the button
+  imgSrc: string; // Image source for the avatar
   onClick: () => void; // Click handler for the button
   isSelected?: boolean; // Optional prop to indicate if the avatar is selected
 }
-export default function AvatarFeaturer({ bgColor, imgSrc, onClick, isSelected }: AvatarFeaturerProps) {
+export default function AvatarFeaturer({
+  bgColor,
+  imgSrc,
+  onClick,
+  isSelected,
+}: AvatarFeaturerProps) {
   return (
-    <button onClick={onClick}
-      style={{ backgroundColor: isSelected ? bgColor : 'transparent' }}
-      className={`relative w-[104px] h-[84px] hover:scale-105 transition-all duration-500 cursor-pointer [clip-path:polygon(20%_0,_100%_0,_100%_100%,_0_100%,_0_27.1%)] rounded-b-lg rounded-tr-lg border border-white/10 overflow-hidden group`}>
+    <button
+      onClick={onClick}
+      style={{ backgroundColor: isSelected ? bgColor : "transparent" }}
+      className={`relative w-[104px] h-[84px] hover:scale-105 transition-all duration-500 cursor-pointer [clip-path:polygon(20%_0,_100%_0,_100%_100%,_0_100%,_0_27.1%)] rounded-b-lg rounded-tr-lg border border-white/10 overflow-hidden group`}
+    >
       <style>
-        {
-          `
+        {`
             
 .holographic-card::before {
   content: '';
@@ -42,8 +48,7 @@ export default function AvatarFeaturer({ bgColor, imgSrc, onClick, isSelected }:
   opacity: 1;
   transform: rotate(-45deg) translateY(100%);
 }
-          `
-        }
+          `}
       </style>
       <div className="holographic-card h-[95%] w-[95%] mx-auto rounded-b-lg rounded-tr-lg [clip-path:polygon(20%_0,_100%_0,_100%_100%,_0_100%,_0_27.1%)] relative z-10">
         <Image

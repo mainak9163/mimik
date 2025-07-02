@@ -40,7 +40,7 @@ const App = () => {
         </section>
         <Separator className="bg-border" />
         <section id="five">
-         <NewWaitlist/>
+          <NewWaitlist />
         </section>
         <Separator className="bg-border" />
         {/* <ContactForm/> */}

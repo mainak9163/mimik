@@ -34,7 +34,7 @@ const Modal: FC<ModalProps> = ({ children }) => {
     <div
       className={cn(
         "fixed left-0 top-0 flex w-full h-full scroll-auto",
-        isModalOpen ? "flex" : "hidden"
+        isModalOpen ? "flex" : "hidden",
       )}
     >
       <div className="absolute p-8 w-full flex justify-end">

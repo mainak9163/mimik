@@ -34,7 +34,7 @@ export default function RootLayout({
         {children}
         <Toaster richColors />
         <Footer />
-        <IceCreamCursor/>
+        <IceCreamCursor />
       </body>
     </html>
   );
