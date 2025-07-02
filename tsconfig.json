@@ -23,6 +23,5 @@
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
-  "exclude": ["node_modules","app"]
-  //i exlucded app since the confetti import requires webpack build and wont work in node
+  "exclude": ["node_modules"]
 }
