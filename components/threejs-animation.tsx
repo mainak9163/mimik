@@ -42,16 +42,24 @@ const Model = ({
 }) => {
   const modelRef = useRef<THREE.Object3D | null>(null);
   const mixerRef = useRef<THREE.AnimationMixer | null>(null);
+  const danceTimelineRef = useRef<gsap.core.Timeline | null>(null);
+  const danceTimeRef = useRef(0);
+  const isTransitioningRef = useRef(false);
   const { viewport } = useThree();
 
   // Use drei's useGLTF hook instead of manually using GLTFLoader
   const { scene, animations } = useGLTF("/models/astra3.glb");
 
-  // Section positions configuration for desktop (only for section 'one')
-  const desktopPositions = {
+  // Section positions configuration
+  const sectionPositions = {
     one: {
-      position: [1.5, -1, 0],
-      rotation: [0, 0, 0], // Facing the user
+      position: [-5, -1, 0], // Off-screen left
+      rotation: [0, 0, 0],
+      scale: AVATAR_CONFIG.DESKTOP_SCALE,
+    },
+    "one.one": {
+      position: [1.2, -0.8, 0], // Final dance position
+      rotation: [0, 0, 0],
       scale: AVATAR_CONFIG.DESKTOP_SCALE,
     },
   };
@@ -65,19 +73,142 @@ const Model = ({
     }
   }, [scene, animations]);
 
+  // Dance animation function (from original code)
+  const applyDanceAnimation = (time: number) => {
+    if (!modelRef.current || isTransitioningRef.current) return;
+
+    // Get the base position for one.one
+    const basePosition = sectionPositions["one.one"].position;
+    
+    // Create rhythmic dance movements
+    const bounceY = Math.sin(time * 4) * 0.3; // Vertical bounce
+    const swayX = Math.sin(time * 2) * 0.2; // Side-to-side sway
+    const bobZ = Math.sin(time * 3) * 0.1; // Front-to-back bob
+    
+    // Apply dance position
+    modelRef.current.position.set(
+      basePosition[0] + swayX,
+      basePosition[1] + bounceY,
+      basePosition[2] + bobZ
+    );
+    
+    // Add rotational dance movements
+    const rotationY = Math.sin(time * 1.5) * 0.3; // Twist
+    const rotationX = Math.sin(time * 2.5) * 0.1; // Nod
+    const rotationZ = Math.sin(time * 1.8) * 0.15; // Tilt
+    
+    modelRef.current.rotation.set(
+      rotationX,
+      rotationY,
+      rotationZ
+    );
+    
+    // Add scale pulsing for extra dance effect
+    const pulsScale = 1 + Math.sin(time * 6) * 0.05;
+    modelRef.current.scale.set(pulsScale, pulsScale, pulsScale);
+  };
+
   // Animation loop
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (mixerRef.current) {
       mixerRef.current.update(delta);
     }
+
+    // Apply dance animation only in section one.one and when not transitioning
+    if (currentSection === "one.one" && !isTransitioningRef.current) {
+      danceTimeRef.current += delta;
+      applyDanceAnimation(danceTimeRef.current);
+    }
   });
+
+  // Function to handle smooth transition into dancing position
+  const transitionToDance = (isFirstTime: boolean = false) => {
+    if (!modelRef.current) return;
+
+    isTransitioningRef.current = true;
+    
+    // Stop any existing dance timeline
+    if (danceTimelineRef.current) {
+      danceTimelineRef.current.kill();
+    }
+
+    const { position, rotation, scale } = sectionPositions["one.one"];
+    
+    // Create entrance animation timeline
+    const tl = gsap.timeline({
+      onComplete: () => {
+        isTransitioningRef.current = false;
+        danceTimeRef.current = 0; // Reset dance time
+      }
+    });
+
+    if (isFirstTime) {
+      // First time entrance: rotate while moving into position
+      tl.to(modelRef.current.rotation, {
+        y: Math.PI * 2, // Full rotation
+        duration: 2,
+        ease: "power2.out",
+      })
+      .to(modelRef.current.position, {
+        x: position[0],
+        y: position[1],
+        z: position[2],
+        duration: 2,
+        ease: "power2.inOut",
+      }, "<") // Start at the same time as rotation
+      .to(modelRef.current.scale, {
+        x: scale,
+        y: scale,
+        z: scale,
+        duration: 1.5,
+        ease: "power2.inOut",
+      }, "<0.5") // Start 0.5 seconds after rotation begins
+      .to(modelRef.current.rotation, {
+        x: rotation[0],
+        y: rotation[1],
+        z: rotation[2],
+        duration: 1,
+        ease: "power2.inOut",
+      }); // End with proper rotation
+    } else {
+      // Returning from other sections: smooth scale and position transition
+      tl.to(modelRef.current.scale, {
+        x: scale,
+        y: scale,
+        z: scale,
+        duration: 1.5,
+        ease: "power2.inOut",
+      })
+      .to(modelRef.current.position, {
+        x: position[0],
+        y: position[1],
+        z: position[2],
+        duration: 1.5,
+        ease: "power2.inOut",
+      }, "<") // Start at the same time as scale
+      .to(modelRef.current.rotation, {
+        x: rotation[0],
+        y: rotation[1],
+        z: rotation[2],
+        duration: 1.5,
+        ease: "power2.inOut",
+      }, "<"); // Start at the same time as scale
+    }
+  };
+
+  // Track previous section to determine transition type
+  const prevSectionRef = useRef<string>(currentSection);
 
   // GSAP animations for model position, rotation, and scale
   useGSAP(() => {
     if (modelRef.current) {
+      const prevSection = prevSectionRef.current;
+      
       if (currentSection === "one") {
-        // Use original position for section 'one'
-        const { position, rotation, scale } = desktopPositions.one;
+        // Hide model off-screen in section one
+        const { position, rotation, scale } = sectionPositions.one;
+        
+        isTransitioningRef.current = true;
 
         gsap.to(modelRef.current.position, {
           x: position[0],
@@ -101,12 +232,31 @@ const Model = ({
           z: scale,
           duration: 2.5,
           ease: "power2.inOut",
+          onComplete: () => {
+            isTransitioningRef.current = false;
+          }
         });
+
+        // Stop dance animation
+        if (danceTimelineRef.current) {
+          danceTimelineRef.current.kill();
+        }
+      } else if (currentSection === "one.one") {
+        // Determine if this is first time or returning from other sections
+        const isFirstTime = prevSection === "one";
+        transitionToDance(isFirstTime);
       } else {
-        // For all other sections, shrink and follow mouse
+        // For sections two and beyond, shrink and follow mouse
         const shrunkScale = isMobile
           ? AVATAR_CONFIG.MOBILE_SCALE
           : AVATAR_CONFIG.DESKTOP_FOLLOW_SCALE;
+
+        isTransitioningRef.current = true;
+
+        // Stop dance animation
+        if (danceTimelineRef.current) {
+          danceTimelineRef.current.kill();
+        }
 
         // Apply minimum distance constraint from edges
         const minDistance = AVATAR_CONFIG.MIN_DISTANCE_FROM_EDGE;
@@ -143,6 +293,9 @@ const Model = ({
           z: shrunkScale,
           duration: 1.5,
           ease: "power2.inOut",
+          onComplete: () => {
+            isTransitioningRef.current = false;
+          }
         });
 
         // Make model face the cursor
@@ -165,15 +318,34 @@ const Model = ({
           ease: "power2.out",
         });
       }
+      
+      // Update previous section
+      prevSectionRef.current = currentSection;
     }
   }, [currentSection, isMobile, mousePosition.x, mousePosition.y, viewport]);
+
+  // Reset dance time when leaving one.one section
+  useEffect(() => {
+    if (currentSection !== "one.one") {
+      danceTimeRef.current = 0;
+    }
+  }, [currentSection]);
+
+  // Cleanup dance animation on unmount
+  useEffect(() => {
+    return () => {
+      if (danceTimelineRef.current) {
+        danceTimelineRef.current.kill();
+      }
+    };
+  }, []);
 
   return (
     <primitive
       ref={modelRef}
       object={scene}
       scale={AVATAR_CONFIG.DESKTOP_SCALE}
-      position={[-3, -1, 0]}
+      position={[-5, -1, 0]} // Start off-screen
       rotation={[0, 0, 0]} // Start facing the user
     />
   );
@@ -293,8 +465,8 @@ const ThreeJSAnimation = () => {
       });
     };
 
-    // Track mouse when not in section 'one'
-    if (currentSection !== "one") {
+    // Track mouse when in sections two and beyond
+    if (currentSection.startsWith("two") || ["three", "four", "five"].includes(currentSection)) {
       window.addEventListener("mousemove", handleMouseMove, { passive: true });
     }
 
@@ -305,8 +477,8 @@ const ThreeJSAnimation = () => {
 
   // Handle section changes - get current mouse position immediately
   useEffect(() => {
-    if (currentSection !== "one") {
-      // Get current mouse position when transitioning out of section 'one'
+    if (currentSection.startsWith("two") || ["three", "four", "five"].includes(currentSection)) {
+      // Get current mouse position when transitioning to cursor-following sections
       const currentPos = getCurrentMousePosition();
       setMousePosition(currentPos);
     }
@@ -381,7 +553,6 @@ const ThreeJSAnimation = () => {
         };
         setMousePosition(newPosition);
         // Also store globally
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         window.__lastMousePosition = newPosition;
       }
     };
@@ -399,8 +570,8 @@ const ThreeJSAnimation = () => {
       }
     };
 
-    // Track touch when not in section 'one' and on mobile
-    if (currentSection !== "one" && isMobile) {
+    // Track touch when in cursor-following sections and on mobile
+    if ((currentSection.startsWith("two") || ["three", "four", "five"].includes(currentSection)) && isMobile) {
       window.addEventListener("touchmove", handleTouchMove, { passive: true });
       window.addEventListener("touchstart", handleTouchStart, {
         passive: true,
@@ -423,7 +594,7 @@ const ThreeJSAnimation = () => {
       }}
     >
       <Canvas
-        style={{ pointerEvents: "none" }}
+        style={{ pointerEvents: "none",filter: "saturate(1.4)" }}
         camera={{ position: [0, 0, 13], fov: 10 }}
       >
         <Lights />
@@ -440,7 +611,7 @@ const ThreeJSAnimation = () => {
 };
 
 // Preload the model
-useGLTF.preload("/models/astra3.glb");
+useGLTF.preload("/models/scene-compressed.glb");//compressed version of astra3.glb
 
 // Since Next.js uses server-side rendering by default, we need to use
 // dynamic import with ssr: false for Three.js components

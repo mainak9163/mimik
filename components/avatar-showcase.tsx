@@ -13,6 +13,8 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { lilita } from "@/lib/fonts";
 import "@/styles/second-hero.css";
+import { AuroraText } from "./ui/aurora-text";
+import ScrambleHover from "./ui/scramble-hover";
 
 const astrapuffs = [
   {
@@ -234,10 +236,10 @@ export default function AvatarShowcase() {
         }}
       >
         <h2
-          className={`text-2xl font-semibold sm:text-5xl righteous-regular ${lilita.className} slide-up-title`}
+          className={`text-4xl font-semibold righteous-regular ${lilita.className} slide-up-title`}
         >
           <span className="title-what">Explore our</span>
-          <span className="title-astrapuff ml-3">Astrapuffs</span>
+          <AuroraText className="ml-3">Astrapuffs</AuroraText>
         </h2>
         <div className="container relative mx-auto px-4 py-16">
           <Card className="overflow-hidden border-none bg-background/60 shadow-none">
@@ -254,7 +256,7 @@ export default function AvatarShowcase() {
                   </div>
                   <div className="text-center">
                     <h3 className="mb-2 text-3xl sm:text-4xl font-semibold">
-                      {currentAvatar.name}
+                      <ScrambleHover text={currentAvatar.name}/>
                     </h3>
                     <Button
                       variant="outline"
@@ -337,7 +339,7 @@ export default function AvatarShowcase() {
         className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center ${lilita.className}`}
       >
         <span className="title-what">Explore our</span>
-        <span className="title-astrapuff ml-3">Astrapuffs</span>
+        <AuroraText className="ml-3">Astrapuffs</AuroraText>
       </h2>
       <div className="container mx-auto py-16 pb-0">
         <div className="flex gap-x-2">
@@ -382,7 +384,7 @@ export default function AvatarShowcase() {
 
           {/* Third Column - Name and Description */}
           <div className="flex flex-col w-[30%] p-2 rounded-lg">
-            <h1 className="text-4xl font-bold mb-6">{selectedAvatar?.name}</h1>
+            <h1 className="text-4xl font-bold mb-6"><ScrambleHover text={selectedAvatar?.name}/></h1>
             <ScrollArea className="flex-1">
               <div className="prose prose-sm dark:prose-invert">
                 {selectedAvatar?.property}

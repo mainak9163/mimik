@@ -317,7 +317,7 @@ const SlidingComponent = () => {
           {/* Character - Bottom Center */}
           <div
             ref={characterRef}
-            className="absolute -bottom-[20%] left-0 transform -translate-x-0 z-10 hidden"
+            className="absolute -bottom-[20%] left-0 transform -translate-x-0 z-10 hidden sm:block"
           >
             <img
               src="/parallax_character.webp"
@@ -329,7 +329,7 @@ const SlidingComponent = () => {
           {/* Play Button - Bottom Right */}
           <div
             ref={playButtonRef}
-            className="absolute bottom-8 left-1/2 -translate-x-1/2 sm:left-32 sm:translate-x-0 z-20"
+            className="absolute bottom-8  sm:left-[60%] left-1/2 -translate-x-1/2 sm:translate-x-0 z-20"
           >
             <button
               onClick={handleGameplayClick}

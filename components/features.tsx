@@ -9,8 +9,7 @@ import TreeIcon from "@/lib/tree";
 import ShieldIcon from "@/lib/shield";
 import IcecreamIcon from "@/lib/ice-cream";
 import MagicIcon from "@/lib/magic";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/dist/ScrollTrigger";
+import { AuroraText } from "./ui/aurora-text";
 
 interface SecondHeroProps {
   index: number;
@@ -40,7 +39,7 @@ const Feature: FC<SecondHeroProps> = ({
           observer.unobserve(entry.target);
         }
       },
-      { threshold: 0.1 },
+      { threshold: 0.1 }
     );
 
     if (ref.current) {
@@ -90,65 +89,91 @@ const Feature: FC<SecondHeroProps> = ({
   };
 
   return (
-    <section id={id} ref={ref} className="w-screen shrink-0 px-4">
-      <div className="w-full h-screen flex items-center justify-center">
-        <Card className="overflow-hidden border-none !bg-transparent shadow-none max-w-6xl w-full">
-          <CardContent className="flex gap-10 lg:gap-20 justify-between flex-col h-full">
-            <div
-              className={`my-auto space-y-3 w-full transform transition-all duration-700 ease-out ${
-                isVisible
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-8 opacity-0"
+    <section id={id} ref={ref}>
+      <style>
+        {`
+             .subtle {
+            animation: subtleBounce 1.8s ease-in-out infinite;
+        }
+
+        @keyframes subtleBounce {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+            50% {
+                transform: translateY(-25px) rotate(-1deg);
+            }
+            75% {
+                transform: translateY(-10px) rotate(1deg);
+            }
+        }
+
+          `}
+      </style>
+      <div className={`w-full transition-colors py-3`}>
+        <div className="container relative mx-auto px-4 pt-16">
+          <Card className="overflow-hidden border-none bg-transparent shadow-none">
+            <CardContent
+              className={`flex gap-10 lg:gap-20 justify-between flex-col ${
+                index % 2 ? "lg:flex-row-reverse" : "lg:flex-row"
               }`}
-              style={{ transitionDelay: `${index * 200}ms` }}
             >
-              <div className="flex items-center justify-center">
+              <div
+                className={`my-auto space-y-6 w-full transform transition-all duration-700 ease-out ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                }`}
+                style={{ transitionDelay: `${index * 200}ms` }}
+              >
+                <div className="flex items-center">
                 <AssetIcon type={asset} />
                 <h2
-                  className={`text-5xl sm:text-6xl font-semibold bg-gradient-to-r from-purple-600 via-pink-400 to-blue-600 bg-clip-text text-black/40 ${righteous.className}`}
+                  className={`text-5xl font-semibold bg-gradient-to-r from-purple-600 via-pink-400 to-blue-600 bg-clip-text text-black/40 ${righteous.className}`}
                 >
                   {title}
-                </h2>
-              </div>
-              <p
-                className={`text-xl sm:text-2xl text-center bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent leading-relaxed ${nunito.className}`}
-              >
-                {description}
-              </p>
-            </div>
-            <div
-              className={`w-full transform transition-all duration-700 ease-out ${
-                isVisible
-                  ? "translate-y-0 opacity-100"
-                  : "translate-y-8 opacity-0"
-              } group`}
-              style={{ transitionDelay: `${index * 200 + 100}ms` }}
-            >
-              <div className="relative overflow-hidden rounded-3xl transition-all duration-300 hover:scale-105 hover:rotate-1">
-                {Array.isArray(image) ? (
-                  <div className="transform transition-transform duration-300">
-                    <CustomCarousel images={image} autoPlayInterval={5000} />
+                  </h2>
                   </div>
-                ) : (
-                  <img
-                    src={image}
-                    className="w-full max-w-2xl mx-auto bg-cover rounded-3xl transform transition-transform duration-300"
-                    alt={title}
-                  />
-                )}
+                <p
+                  className={`text-xl bg-gradient-to-r from-gray-700 to-gray-900 bg-clip-text text-transparent leading-relaxed ${nunito.className}`}
+                >
+                  {description}
+                </p>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+              <div
+                className={`w-full transform transition-all duration-700 ease-out ${
+                  isVisible
+                    ? "translate-y-0 opacity-100"
+                    : "translate-y-8 opacity-0"
+                } group`}
+                style={{ transitionDelay: `${index * 200 + 100}ms` }}
+              >
+                <div className="relative overflow-hidden rounded-3xl transition-all duration-300 hover:scale-105 hover:rotate-1 animate-bounce-subtle">
+                  {Array.isArray(image) ? (
+                    <div className="transform transition-transform duration-300">
+                      <CustomCarousel images={image} autoPlayInterval={5000} />
+                    </div>
+                  ) : (
+                    <img
+                      src={image}
+                      className="w-full bg-cover rounded-3xl transform transition-transform duration-300"
+                      alt={title}
+                    />
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </section>
   );
 };
 
 export default function Features() {
-  const featuresRef = useRef<(HTMLDivElement | null)[]>([]);
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
   const features: {
     id: string;
     title: string;
@@ -198,34 +223,6 @@ export default function Features() {
     },
   ];
 
-  // Register GSAP plugin
-  gsap.registerPlugin(ScrollTrigger);
-
-  useEffect(() => {
-    // GSAP horizontal scroll animation
-    const ctx = gsap.context(() => {
-      gsap.to(featuresRef.current, {
-        xPercent: -100 * (features.length - 1),
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          pin: true,
-          scrub: 1,
-          snap: 1 / (features.length - 1),
-          end: () =>
-            containerRef.current
-              ? `+=${containerRef.current.offsetWidth}`
-              : "+=0",
-        },
-      });
-    });
-
-    return () => {
-      ctx.revert();
-      ScrollTrigger.getAll().forEach((st) => st.kill());
-    };
-  }, [features.length]);
-
   return (
     <div
       style={{
@@ -233,110 +230,76 @@ export default function Features() {
           "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
       }}
     >
-      {/* Header Section */}
-      <div className="py-16">
-        <div className="container relative mx-auto px-4">
-          <h1
-            className={`text-4xl sm:text-5xl text-center text-[#4a5568] ${lilita.className}`}
-          >
-            Key Features
-          </h1>
-        </div>
+      <div className="container relative mx-auto px-4 pt-16">
+        <h1
+          className={`text-4xl text-center tracking-tighter sm:text-5xl text-[#4a5568] ${lilita.className}`}
+        >
+          Key
+          <AuroraText className="ml-2">{"  Features"}</AuroraText>
+          
+        </h1>
       </div>
-
-      {/* Horizontal Scroll Section */}
-      <section
-        ref={containerRef}
-        className="overflow-hidden"
-        style={{
-          width: `${features.length * 100}vw`,
-          background:
-            "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
-        }}
-      >
-        <div className="flex flex-nowrap h-screen">
-          {features.map((feature, index) => (
-            <div
-              key={feature.id}
-              ref={(el) => {
-                featuresRef.current[index] = el;
-              }}
-              className="w-screen shrink-0"
-            >
-              <Feature
-                index={index}
-                id={feature.id}
-                title={feature.title}
-                description={feature.description}
-                image={feature.image}
-                asset={feature.asset}
-              />
-            </div>
-          ))}
-        </div>
-      </section>
+      {features.map((feature, index) => (
+        <Feature
+          key={index}
+          index={index}
+          id={feature.id}
+          title={feature.title}
+          description={feature.description}
+          image={feature.image}
+          asset={feature.asset}
+        />
+      ))}
 
       <style jsx>{`
         @keyframes bounce-subtle {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-2px);
-          }
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
         }
-
+        
         @keyframes sway {
-          0%,
-          100% {
-            transform: rotate(-2deg);
-          }
-          50% {
-            transform: rotate(2deg);
-          }
+          0%, 100% { transform: rotate(-2deg); }
+          50% { transform: rotate(2deg); }
         }
-
+        
         @keyframes spin-slow {
-          from {
-            transform: rotate(0deg);
-          }
-          to {
-            transform: rotate(360deg);
-          }
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
         }
-
+        
         .animate-bounce-subtle {
           animation: bounce-subtle 6s ease-in-out infinite;
         }
-
+        
         .animate-sway {
           animation: sway 3s ease-in-out infinite;
         }
-
+        
         .animate-spin-slow {
           animation: spin-slow 8s linear infinite;
         }
 
+
         @keyframes subtleBounce {
-          0%,
-          100% {
-            transform: translateY(0) rotate(0deg);
-          }
-          25% {
-            transform: translateY(-15px) rotate(2deg);
-          }
-          50% {
-            transform: translateY(-25px) rotate(-1deg);
-          }
-          75% {
-            transform: translateY(-10px) rotate(1deg);
-          }
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-15px) rotate(2deg);
+            }
+            50% {
+                transform: translateY(-25px) rotate(-1deg);
+            }
+            75% {
+                transform: translateY(-10px) rotate(1deg);
+            }
         }
 
-        .subtle {
-          animation: subtleBounce 1.8s ease-in-out infinite;
+                 .subtle {
+            animation: subtleBounce 1.8s ease-in-out infinite;
         }
+
+
       `}</style>
     </div>
   );

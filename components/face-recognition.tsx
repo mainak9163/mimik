@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import "@/styles/second-hero.css";
 import { lilita } from "@/lib/fonts";
+import { AuroraText } from "./ui/aurora-text";
 
 // Default avatar URL - pre-defined to avoid user input
 const DEFAULT_AVATAR_URL = "./models/astra1.5.glb";
@@ -894,7 +895,7 @@ export default function AavatarFaceTracking() {
         className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center mb-6 ${lilita.className}`}
       >
         <span className="title-what">Lets Play With</span>
-        <span className="title-astrapuff ml-3">Astrapuff !</span>
+        <AuroraText className="ml-3">Astrapuff !</AuroraText>
       </h2>
       <div className="mx-auto max-w-screen sm:max-w-6xl">
         <div className="flex flex-wrap justify-between">

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 export default function NewWaitlist() {
   const [emailCount, setEmailCount] = useState<number>(30);
+  const screenSize = useScreenSize()
   useEffect(() => {
     async function fetchEmailCount() {
       setEmailCount((await getEmailCountFromEmailColumn()).count);
@@ -12,14 +13,49 @@ export default function NewWaitlist() {
   }, []);
   return (
     <div
-      className="h-screen flex flex-col justify-center items-enter relative"
+      className="h-screen flex flex-col justify-center items-enter relative z-[5]"
       style={{
         background:
           "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
       }}
     >
+       <Gravity
+        attractorStrength={0.0}
+        cursorStrength={0.0004}
+        cursorFieldRadius={200}
+        className="w-full h-full z-0 absolute hidden sm:block"
+      >
+        {[...Array(75)].map((_, i) => {
+          // Adjust max size based on screen size
+          const maxSize = screenSize.lessThan("sm")
+            ? 20
+            : screenSize.lessThan("md")
+              ? 30
+              : 40
+          const size = Math.max(
+            screenSize.lessThan("sm") ? 10 : 20,
+            Math.random() * maxSize
+          )
+          return (
+            <MatterBody
+              key={i}
+              matterBodyOptions={{ friction: 0.5, restitution: 0.2 }}
+              x={`${Math.random() * 100}%`}
+              y={`${Math.random() * 100}%`}
+            >
+              <div
+                className="rounded-full bg-[#eee]"
+                style={{
+                  width: `${size}px`,
+                  height: `${size}px`,
+                }}
+              />
+            </MatterBody>
+          )
+        })}
+      </Gravity>
       <div>
-        <div className="flex items-center p-1 w-fit border-1 border-[#FF9B9B]/50 rounded-xl px-2 mx-auto">
+        <div className="flex items-center p-1 w-fit border-1 border-[#FF9B9B]/50 rounded-xl px-2 mx-auto z-10 relative">
           <span className="relative flex size-3 mr-2 -mt-[2px]">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF9B9B]/80 opacity-75"></span>
             <span className="relative inline-flex size-3 rounded-full bg-[#FF9B9B]"></span>
@@ -28,15 +64,10 @@ export default function NewWaitlist() {
             AVAILABLE IN EARLY 2025
           </span>
         </div>
-        <div className="flex flex-col gap-y-2 mx-auto w-fit text-center my-6">
-          <p className="text-xl sm:text-2xl font-semibold text-[#e3529a]">
-            Get early access
-          </p>
-          <p className="text-sm sm:text-base max-w-[400px] text-[#c92838]">
-            Be amongst the first to experience ,wait and launch a viral
-            waitlist. Sign up to be notified when we launch!
-          </p>
-        </div>
+        <TextRotater/>
+        <ElasticLiner/>
+
+
         <FloatingInput setEmailCount={setEmailCount} />
         <div className="mt-10">
           <AnimatedTooltipPreview />
@@ -120,14 +151,15 @@ function FloatingInput({
   };
 
   return (
-    <div className="flex items-center justify-center p-8">
-      <div className="relative bg-white border-2 border-gray-300 rounded-lg p-4 w-80 sm:w-100 h-12 flex items-center focus-within:border-[#e02a85] transition-colors duration-200">
+    <div className="flex flex-col items-center justify-center p-8 w-full max-w-4xl mx-auto">
+      {/* Input Field */}
+      <div className="relative  border-2 border-gray-300 rounded-lg p-4 w-full h-16 flex items-center focus-within:border-[#e02a85] transition-colors duration-200 mb-4">
         {/* Floating Label */}
         <label
-          className={`absolute left-3 bg-white px-1 text-gray-500 pointer-events-none transition-all duration-200 ease-in-out ${
+          className={`absolute left-4   px-1 text-gray-500 pointer-events-none transition-all duration-200 ease-in-out ${
             isFloating
-              ? "-top-2 text-xs text-blue-600 font-medium"
-              : "top-1/2 -translate-y-1/2 text-base"
+              ? "-top-5 text-sm text-blue-600 font-medium"
+              : "top-1/2 -translate-y-1/2 text-lg"
           }`}
         >
           Email
@@ -141,31 +173,31 @@ function FloatingInput({
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
           onKeyPress={handleKeyPress}
-          className={`w-full bg-transparent border-none outline-none text-base ${
-            isFloating ? "pt-2 pb-1" : "py-0"
+          className={`w-full bg-transparent border-none outline-none text-lg z-[200] ${
+            isFloating ? "pt-3 pb-2" : "py-0"
           } transition-all duration-200`}
         />
-
-        {/* Join Waitlist Button */}
-        <button
-          className={`absolute right-1 top-1/2 -translate-y-1/2 px-4 py-2 text-white font-medium rounded-lg text-sm transition-all duration-200 ${
-            isSubmitDisabled
-              ? "bg-gray-400 cursor-not-allowed"
-              : "bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer"
-          }`}
-          disabled={isSubmitDisabled}
-          onClick={handleSubmit}
-        >
-          {isLoading ? (
-            <div className="flex items-center">
-              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-              <span className="text-xs">Joining...</span>
-            </div>
-          ) : (
-            "Join waitlist"
-          )}
-        </button>
       </div>
+
+      {/* Join Waitlist Button */}
+      <button
+        className={`w-fit mx-auto px-6 py-4 text-white font-medium rounded-lg text-lg transition-all duration-200 relative z-10 ${
+          isSubmitDisabled
+            ? "hover:bg-[#e02a85]/60 cursor-not-allowed"
+            : "bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer"
+        }`}
+        disabled={isSubmitDisabled}
+        onClick={handleSubmit}
+      >
+        {isLoading ? (
+          <div className="flex items-center justify-center">
+            <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+            <span>Joining...</span>
+          </div>
+        ) : (
+          "Join waitlist"
+        )}
+      </button>
     </div>
   );
 }
@@ -228,4 +260,72 @@ export function AnimatedTooltipPreview() {
       <AnimatedTooltip items={people} />
     </div>
   );
+}
+
+
+import { LayoutGroup, motion } from "motion/react"
+
+import TextRotate from "@/components/ui/text-rotate"
+import ElasticLine from "./ui/elastic-line";
+import Gravity, { MatterBody } from "./ui/cursor-attractor-and-gravity";
+import useScreenSize from "@/lib/hooks/use-screen-size";
+
+function TextRotater() {
+  return (
+    <div className="relative z-10 w-dvw text-2xl sm:text-3xl md:text-7xl flex flex-row items-center justify-center font-overused-grotesk my-6 dark:text-muted text-foreground font-light overflow-hidden">
+      <LayoutGroup>
+        <motion.p className="flex whitespace-pre" layout>
+          <motion.span
+            className="pt-0.5 sm:pt-1 md:pt-2"
+            layout
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+          >
+            Get in Touch with{" "}
+          </motion.span>
+          <TextRotate
+            texts={[
+              "Us!",
+              "Astrapuffs ✽",
+              "Friends",
+              "Community",
+            ]}
+            mainClassName="text-white px-2 sm:px-2 md:px-3 bg-[#ff5941] overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
+            staggerFrom={"last"}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-120%" }}
+            staggerDuration={0.025}
+            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            rotationInterval={2000}
+          />
+        </motion.p>
+      </LayoutGroup>
+    </div>
+  )
+}
+
+
+
+
+
+ function ElasticLiner() {
+
+  return (
+    <div className="max-w-5xl mx-auto flex-row items-center justify-center font-overused-grotesk overflow-hidden bg-white text-foreground dark:text-muted hidden sm:flex">
+      <div className="absolute left-0 -top-20 w-full h-full z-10">
+        {/* Animated elastic line */}
+        <ElasticLine
+          releaseThreshold={50}
+          strokeWidth={1}
+          animateInTransition={{
+            type: "spring",
+            stiffness: 300,
+            damping: 30,
+            delay: 0.15,
+          }}
+        />
+      </div>
+    </div>
+  )
 }
