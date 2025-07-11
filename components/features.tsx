@@ -192,12 +192,7 @@ export default function Features() {
       id: "two.two",
       title: "Calm",
       description: `Landscapes shift with your journey—from cozy meadows to glowing crystal caves—each designed to spark curiosity and invite peaceful exploration, blending comfort with a sense of magical discovery.`,
-      image: [
-        "/features/dia.webp",
-        "/features/estrellas.webp",
-        "/features/nocheLuna.webp",
-        "/features/amanecer.webp",
-      ],
+      image:  "/features/dia.webp",
       asset: "tree",
     },
     {
@@ -304,3 +299,11 @@ export default function Features() {
     </div>
   );
 }
+
+
+// [
+//         "/features/dia.webp",
+//         "/features/estrellas.webp",
+//         "/features/nocheLuna.webp",
+//         "/features/amanecer.webp",
+//       ],

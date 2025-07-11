@@ -1,7 +1,7 @@
 "use client";
 import "../styles/second-hero.css";
 import { useEffect, useState } from "react";
-import confetti from "canvas-confetti";
+// import confetti from "canvas-confetti"; //need to use dynamic import
 export default function NewWaitlist() {
   const [emailCount, setEmailCount] = useState<number>(30);
   const screenSize = useScreenSize()
@@ -135,7 +135,8 @@ function FloatingInput({
       setEmail("");
       //@ts-expect-error something
       setEmailCount((prevCount) => prevCount + 1);
-      confetti();
+      const confetti = (await import('canvas-confetti')).default;
+  if(confetti)confetti();
     } catch (error: unknown) {
       console.error("Error appending email:", error);
       toast.error("Something went wrong. Please try again.");
