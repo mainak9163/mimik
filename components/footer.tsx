@@ -2,6 +2,7 @@
 import GSAPButton from "@/components/animated-button";
 import ContactForm from "@/components/contact-form";
 import WaveText from "@/components/squash-animation";
+import { LucideInstagram } from "lucide-react";
 import { useRef, useState } from "react";
 import MarqueeText from "react-marquee-text";
 
@@ -114,45 +115,16 @@ export default function Footer() {
               href="https://instagram.com/astrapuffs"
               className="flex items-center gap-3 hover:text-primary transition-colors group"
             >
-              <div className="rounded-full border-white border-[1px] p-[2px]">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-facebook-icon lucide-facebook"
-                >
-                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-                </svg>
-              </div>
+          
+                <LucideInstagram className="text-white"/>
+             
             </a>
             <a
               href="https://www.tiktok.com/@astrapuffs"
-              className="flex items-center gap-3 hover:text-primary transition-colors group"
+              className="flex items-center gap-3 hover:text-primary transition-colors group ml-3"
             >
-              <div className="rounded-full border-white border-[1px] p-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="white"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="lucide lucide-instagram-icon lucide-instagram"
-                >
-                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
-                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
-                </svg>
-              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" className="h-full w-auto text-white" stroke="white" fill="white">
+                <path d="M448 209.9a210.1 210.1 0 0 1 -122.8-39.3V349.4A162.6 162.6 0 1 1 185 188.3V278.2a74.6 74.6 0 1 0 52.2 71.2V0l88 0a121.2 121.2 0 0 0 1.9 22.2h0A122.2 122.2 0 0 0 381 102.4a121.4 121.4 0 0 0 67 20.1z" /></svg>
             </a>
           </div>
         </div>
@@ -173,7 +145,7 @@ export default function Footer() {
           </p>
           <div className="flex gap-x-3 w-fit mx-auto">
             <a
-              href="#terms-of-service"
+              href="/terms-of-service"
               className="hover:text-primary transition-colors w-fit"
             >
               <WaveText
@@ -182,7 +154,7 @@ export default function Footer() {
               />
             </a>
             <a
-              href="#privacy-policy"
+              href="/privacy-policy"
               className="hover:text-primary transition-colors w-fit"
             >
               <WaveText
