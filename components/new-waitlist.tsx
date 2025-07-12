@@ -61,7 +61,7 @@ export default function NewWaitlist() {
             <span className="relative inline-flex size-3 rounded-full bg-[#FF9B9B]"></span>
           </span>
           <span className="text-[#cf689c] text-sm font-semibold">
-            AVAILABLE IN EARLY 2025
+            PLAYTESTS STARTING SOON!
           </span>
         </div>
         <TextRotater/>
@@ -70,7 +70,7 @@ export default function NewWaitlist() {
 
         <FloatingInput setEmailCount={setEmailCount} />
         <div className="mt-10">
-          <AnimatedTooltipPreview />
+          {/* <AnimatedTooltipPreview /> */}
           <div className="text-center text-sm sm:text-base text-[#c92838] ml-4 -mt-4">
             Join
             <span className="mx-2">
@@ -184,7 +184,7 @@ function FloatingInput({
       <button
         className={`w-fit mx-auto px-6 py-4 text-white font-medium rounded-lg text-lg transition-all duration-200 relative z-10 ${
           isSubmitDisabled
-            ? "hover:bg-[#e02a85]/60 cursor-not-allowed"
+            ? "bg-[#e02a85]/60 cursor-not-allowed"
             : "bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer"
         }`}
         disabled={isSubmitDisabled}
