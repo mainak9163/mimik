@@ -1,4 +1,4 @@
-"use server"
+"use server";
 import { google } from "googleapis";
 
 export async function appendContactToSheet(email: string, content: string) {
@@ -12,7 +12,7 @@ export async function appendContactToSheet(email: string, content: string) {
     scopes: ["https://www.googleapis.com/auth/spreadsheets"],
   });
 
-//   const client = await auth.getClient();
+  //   const client = await auth.getClient();
   const sheets = google.sheets({ version: "v4", auth });
 
   try {
@@ -48,9 +48,9 @@ export async function appendContactToSheet(email: string, content: string) {
       },
     });
 
-    console.log(
-      `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Content "${content}", Date/Time "${dateTime}" in row ${nextRow}.`,
-    );
+    // console.log(
+    //   `Data added successfully: Serial No. ${serialNumber}, Email "${email}", Content "${content}", Date/Time "${dateTime}" in row ${nextRow}.`,
+    // );
     return { success: true, message: `Data added in row ${nextRow}` };
   } catch (err) {
     console.error("Error appending data:", err);
