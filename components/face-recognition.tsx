@@ -971,7 +971,7 @@ export default function AavatarFaceTracking() {
                   {!cameraActive ? (
                     <Button
                       variant="default"
-                      className="w-full py-6 text-2xl bg-[#faa0ab]"
+                      className="w-full py-6 text-2xl bg-[#e02a85]"
                       onClick={setup}
                     >
                       Enable Camera
@@ -1023,11 +1023,13 @@ export default function AavatarFaceTracking() {
                             : "ring-1 ring-border hover:ring-2 hover:ring-primary/50",
                         )}
                       >
-                        <img
-                          src={modelChoice.modelImage || "/placeholder.svg"}
-                          alt={`Avatar option ${index + 1}`}
-                          className="w-full h-full object-cover aspect-square"
-                        />
+<img
+  src={modelChoice.modelImage || "/placeholder.svg"}
+  alt={`Avatar option ${index + 1}`}
+  className="w-full h-full object-cover aspect-square"
+  loading="lazy"
+  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 25vw, 20vw"
+/>
                       </div>
                     </div>
                   ))}

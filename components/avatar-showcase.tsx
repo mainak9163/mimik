@@ -1,22 +1,60 @@
 "use client";
-import { useState, useEffect, JSX, SetStateAction, useRef } from "react";
+
+import { useState, useEffect, useCallback, useMemo, useRef, memo } from "react";
 import { ChevronLeft, ChevronRight, Info } from "lucide-react";
-import AvatarFeaturer from "./avatar-component";
+import dynamic from "next/dynamic";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { lilita } from "@/lib/fonts";
 import "@/styles/second-hero.css";
 import { AuroraText } from "./ui/aurora-text";
 import ScrambleHover from "./ui/scramble-hover";
 
-const astrapuffs = [
+// Lazy load heavy components
+const AvatarFeaturer = dynamic(() => import("./avatar-component"), {
+  loading: () => <div className="w-16 h-16 bg-gray-200 rounded-full animate-pulse" />
+});
+
+const Dialog = dynamic(() => import("@/components/ui/dialog").then(mod => ({
+  default: mod.Dialog
+})));
+
+const DialogContent = dynamic(() => import("@/components/ui/dialog").then(mod => ({
+  default: mod.DialogContent
+})));
+
+const DialogHeader = dynamic(() => import("@/components/ui/dialog").then(mod => ({
+  default: mod.DialogHeader
+})));
+
+const DialogTitle = dynamic(() => import("@/components/ui/dialog").then(mod => ({
+  default: mod.DialogTitle
+})));
+
+// Types
+interface AstrapuffData {
+  name: string;
+  imageUrl: string;
+  bgColor: string;
+  property: React.ReactNode;
+}
+
+interface ImageTransform {
+  x: number;
+  y: number;
+  scale: number;
+}
+
+// Constants moved outside component to prevent recreation
+const MOBILE_BREAKPOINT = 1024;
+const MAX_STRETCH = 30;
+// const TRANSFORM_TRANSITION_DURATION = 300;
+const CHANGE_ANIMATION_DURATION = 150;
+
+// Memoized static data
+const astrapuffs: readonly AstrapuffData[] = [
   {
     name: "Cluepuff",
     imageUrl: "/examples/avatar1.webp",
@@ -24,9 +62,9 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h2 className="text-lg font-semibold mb-2">
             🧩 Puzzle Dimension Guide
-          </h3>
+          </h2>
           <p className="text-gray-700 leading-relaxed">
             From a mind-bending realm of M.C. Escher-like illusions where
             reality twists through endless loops and impossible geometries.
@@ -47,9 +85,9 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h2 className="text-lg font-semibold mb-2">
             🌸 Verdant Expanse Nurturer
-          </h3>
+          </h2>
           <p className="text-gray-700 leading-relaxed">
             Hails from an enchanted realm where every step blooms flowers and
             nature dances in perpetual celebration. This gentle soul embodies
@@ -69,9 +107,9 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h2 className="text-lg font-semibold mb-2">
             ⚡ Techno Nexus Innovator
-          </h3>
+          </h2>
           <p className="text-gray-700 leading-relaxed">
             A brilliant digital native from a cyberpunk wonderland of flowing
             data streams and holographic cities. Quick-witted and endlessly
@@ -91,9 +129,9 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h2 className="text-lg font-semibold mb-2">
             ⛈️ Tempest Realm Conductor
-          </h3>
+          </h2>
           <p className="text-gray-700 leading-relaxed">
             Master of the ever-changing Tempest Realm where weather performs a
             breathtaking symphony across dynamic skies. Gentle and kind-hearted,
@@ -113,9 +151,9 @@ const astrapuffs = [
     property: (
       <div className="space-y-4">
         <div>
-          <h3 className="text-lg font-semibold mb-2">
+          <h2 className="text-lg font-semibold mb-2">
             🍦 Ice Cream Dimension Sweetkeeper
-          </h3>
+          </h2>
           <p className="text-gray-700 leading-relaxed">
             Guardian of a deliciously sweet frozen paradise where hills are made
             of velvety ice cream and rivers flow with liquid caramel. Despite
@@ -128,24 +166,89 @@ const astrapuffs = [
       </div>
     ),
   },
-];
+] as const;
 
-export default function AvatarShowcase() {
-  const [selectedAvatar, setSelectedAvatar] = useState(astrapuffs[0]); // Default to first avatar
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentIndex, setCurrentIndex] = useState(0);
+// Memoized background style
+const backgroundStyle = {
+  background: "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
+};
+
+// Memoized navigation button component
+const NavigationButton = memo(({ 
+  onClick, 
+  direction, 
+  ariaLabel 
+}: {
+  onClick: () => void;
+  direction: 'left' | 'right';
+  ariaLabel: string;
+}) => {
+  const Icon = direction === 'left' ? ChevronLeft : ChevronRight;
+  
+  return (
+    <button
+      onClick={onClick}
+      className="z-20 rounded-full active:opacity-50 hover:opacity-75 transition-opacity"
+      aria-label={ariaLabel}
+      type="button"
+    >
+      <Icon className="w-20 h-20 cursor-pointer" />
+    </button>
+  );
+});
+
+NavigationButton.displayName = 'NavigationButton';
+
+// Memoized avatar image component
+const AvatarImage = memo(({ 
+  src, 
+  alt, 
+  className,
+  transform,
+  onMouseMove,
+  onMouseLeave,
+  priority = false
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+  transform?: ImageTransform;
+  onMouseMove?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseLeave?: () => void;
+  priority?: boolean;
+}) => {
+  const imageStyle = transform ? {
+    transform: `translate(${transform.x}px, ${transform.y}px) scale(${transform.scale})`,
+  } : undefined;
+
+  return (
+    <div
+      className={className}
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+    >
+      <Image
+        src={src}
+        alt={alt}
+        fill
+        className="object-cover transition-all duration-300 ease-out"
+        style={imageStyle}
+        priority={priority}
+        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+      />
+    </div>
+  );
+});
+
+AvatarImage.displayName = 'AvatarImage';
+
+// Custom hook for responsive design
+const useResponsive = () => {
   const [isMobile, setIsMobile] = useState(false);
-  const [imageTransform, setImageTransform] = useState({
-    x: 0,
-    y: 0,
-    scale: 1,
-  });
-  const imageRef = useRef<HTMLDivElement>(null);
 
-  // Check screen size
   useEffect(() => {
     const checkScreenSize = () => {
-      setIsMobile(window.innerWidth < 1024); // lg breakpoint
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
     };
 
     checkScreenSize();
@@ -154,42 +257,19 @@ export default function AvatarShowcase() {
     return () => window.removeEventListener("resize", checkScreenSize);
   }, []);
 
-  const handlePrevious = () => {
-    setCurrentIndex(
-      (prev) => (prev - 1 + astrapuffs.length) % astrapuffs.length,
-    );
-  };
+  return isMobile;
+};
 
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % astrapuffs.length);
-  };
+// Custom hook for image transform
+const useImageTransform = () => {
+  const [imageTransform, setImageTransform] = useState<ImageTransform>({
+    x: 0,
+    y: 0,
+    scale: 1,
+  });
+  const imageRef = useRef<HTMLDivElement>(null);
 
-  const [isChanging, setIsChanging] = useState(false);
-
-  // Modify the handleAvatarClick function
-  const handleAvatarClick = (
-    avatar: SetStateAction<{
-      name: string;
-      imageUrl: string;
-      bgColor: string;
-      property: JSX.Element;
-    }>,
-  ) => {
-    if (isMobile) {
-      setSelectedAvatar(avatar);
-      setDialogOpen(true);
-    } else {
-      if (selectedAvatar?.name !== avatar.name) {
-        setIsChanging(true);
-        setTimeout(() => {
-          setSelectedAvatar(avatar);
-          setTimeout(() => setIsChanging(false), 50);
-        }, 150);
-      }
-    }
-  };
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
     if (!imageRef.current) return;
 
     const rect = imageRef.current.getBoundingClientRect();
@@ -202,14 +282,13 @@ export default function AvatarShowcase() {
     const deltaX = (mouseX - centerX) / rect.width;
     const deltaY = (mouseY - centerY) / rect.height;
 
-    const maxStretch = 30;
     const stretchX = Math.max(
-      -maxStretch,
-      Math.min(maxStretch, deltaX * maxStretch),
+      -MAX_STRETCH,
+      Math.min(MAX_STRETCH, deltaX * MAX_STRETCH),
     );
     const stretchY = Math.max(
-      -maxStretch,
-      Math.min(maxStretch, deltaY * maxStretch),
+      -MAX_STRETCH,
+      Math.min(MAX_STRETCH, deltaY * MAX_STRETCH),
     );
 
     setImageTransform({
@@ -217,46 +296,78 @@ export default function AvatarShowcase() {
       y: stretchY,
       scale: 1.05,
     });
-  };
+  }, []);
 
-  const handleMouseLeave = () => {
+  const handleMouseLeave = useCallback(() => {
     setImageTransform({ x: 0, y: 0, scale: 1 });
-  };
+  }, []);
 
-  const currentAvatar = astrapuffs[currentIndex];
+  return { imageTransform, handleMouseMove, handleMouseLeave, imageRef };
+};
 
-  // Mobile Layout
+// Main component
+export default function AvatarShowcase() {
+  const [selectedAvatar, setSelectedAvatar] = useState<AstrapuffData>(astrapuffs[0]);
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isChanging, setIsChanging] = useState(false);
+
+  const isMobile = useResponsive();
+  const { imageTransform, handleMouseMove, handleMouseLeave } = useImageTransform();
+
+  // Memoized handlers
+  const handlePrevious = useCallback(() => {
+    setCurrentIndex((prev) => (prev - 1 + astrapuffs.length) % astrapuffs.length);
+  }, []);
+
+  const handleNext = useCallback(() => {
+    setCurrentIndex((prev) => (prev + 1) % astrapuffs.length);
+  }, []);
+
+  const handleAvatarClick = useCallback((avatar: AstrapuffData) => {
+    if (isMobile) {
+      setSelectedAvatar(avatar);
+      setDialogOpen(true);
+    } else {
+      if (selectedAvatar.name !== avatar.name) {
+        setIsChanging(true);
+        setTimeout(() => {
+          setSelectedAvatar(avatar);
+          setTimeout(() => setIsChanging(false), 50);
+        }, CHANGE_ANIMATION_DURATION);
+      }
+    }
+  }, [isMobile, selectedAvatar.name]);
+
+  // Memoized current avatar for mobile
+  const currentAvatar = useMemo(() => astrapuffs[currentIndex], [currentIndex]);
+
+  // Memoized title component
+  const title = useMemo(() => (
+    <h2 className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center ${lilita.className}`}>
+      <span className="title-what">Explore our</span>
+      <AuroraText className="ml-3">Astrapuffs</AuroraText>
+    </h2>
+  ), []);
+
+  // Mobile layout
   if (isMobile) {
     return (
-      <div
-        className="min-h-screen w-full transition-colors py-8"
-        style={{
-          background:
-            "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
-        }}
-      >
-        <h2
-          className={`text-4xl font-semibold righteous-regular ${lilita.className} slide-up-title`}
-        >
-          <span className="title-what">Explore our</span>
-          <AuroraText className="ml-3">Astrapuffs</AuroraText>
-        </h2>
+      <div className="min-h-screen w-full transition-colors py-8" style={backgroundStyle}>
+        {title}
         <div className="container relative mx-auto px-4 py-16">
           <Card className="overflow-hidden border-none bg-background/60 shadow-none">
             <CardContent className="grid gap-8 p-6 md:grid-cols-2 md:p-12">
               <div className="relative flex flex-col items-center">
-                {/* Navigation controls with improved positioning */}
                 <div className="flex w-full justify-between pb-6">
-                  <div
+                  <NavigationButton
                     onClick={handlePrevious}
-                    className="z-20 rounded-full active:opacity-50 hover:opacity-75"
-                    aria-label="Previous avatar"
-                  >
-                    <ChevronLeft className="w-20 h-20 cursor-pointer" />
-                  </div>
+                    direction="left"
+                    ariaLabel="Previous avatar"
+                  />
                   <div className="text-center">
                     <h3 className="mb-2 text-3xl sm:text-4xl font-semibold">
-                      <ScrambleHover text={currentAvatar.name}/>
+                      <ScrambleHover text={currentAvatar.name} />
                     </h3>
                     <Button
                       variant="outline"
@@ -269,24 +380,22 @@ export default function AvatarShowcase() {
                       Know More
                     </Button>
                   </div>
-                  <div
+                  <NavigationButton
                     onClick={handleNext}
-                    className="z-20 rounded-full active:opacity-50 hover:opacity-75"
-                    aria-label="Next avatar"
-                  >
-                    <ChevronRight className="w-20 h-20 cursor-pointer" />
-                  </div>
+                    direction="right"
+                    ariaLabel="Next avatar"
+                  />
                 </div>
 
-                {/* Card container with backdrop blur effect */}
                 <div className="relative h-[400px] w-full overflow-hidden rounded-lg bg-gradient-to-b from-background/10 to-background/60 backdrop-blur-sm">
                   <div className="flex h-full items-center justify-center">
                     <div className="flex h-[400px] w-full flex-col items-center justify-center gap-4 rounded-lg bg-card p-6 shadow-md transition-all duration-300">
-                      <div className="relative h-full w-full flex justify-center flex-shrink-0 overflow-hidden">
-                        <img
-                          src={currentAvatar.imageUrl || "/placeholder.svg"}
+                      <div className="relative h-full w-full flex justify-center flex-shrink-0 overflow-hidden rounded-full">
+                        <AvatarImage
+                          src={currentAvatar.imageUrl}
                           alt={`${currentAvatar.name} avatar`}
-                          className="object-cover w-auto rounded-full h-full"
+                          className="relative w-auto h-full"
+                          priority={true}
                         />
                       </div>
                     </div>
@@ -307,10 +416,10 @@ export default function AvatarShowcase() {
               </DialogHeader>
               <div className="grid gap-6 py-4 md:grid-cols-[200px_1fr]">
                 <div className="relative aspect-square overflow-hidden rounded-lg">
-                  <img
-                    src={selectedAvatar.imageUrl || "/placeholder.svg"}
+                  <AvatarImage
+                    src={selectedAvatar.imageUrl}
                     alt={`${selectedAvatar.name} avatar`}
-                    className="w-full h-full object-cover"
+                    className="relative w-full h-full"
                   />
                 </div>
                 <ScrollArea className="h-[300px] pr-4">
@@ -325,27 +434,15 @@ export default function AvatarShowcase() {
       </div>
     );
   }
-  // console.log(selectedAvatar)
-  // Desktop Layout - Three Column Grid
+
+  // Desktop layout
   return (
-    <div
-      className="w-full transition-colors py-16"
-      style={{
-        background:
-          "linear-gradient(135deg, #f8f9ff 0%, #fff5f8 50%, #f0fff4 100%)",
-      }}
-    >
-      <h2
-        className={`text-4xl font-semibold sm:text-5xl righteous-regular text-center ${lilita.className}`}
-      >
-        <span className="title-what">Explore our</span>
-        <AuroraText className="ml-3">Astrapuffs</AuroraText>
-      </h2>
+    <div className="w-full transition-colors py-16" style={backgroundStyle}>
+      {title}
       <div className="container mx-auto py-16 pb-0">
         <div className="flex gap-x-2">
-          {/* First Column - Avatar List */}
+          {/* Avatar List */}
           <div className="flex w-[35%] flex-col gap-4 p-6 pr-0 rounded-lg">
-            {/* <h2 className="text-2xl font-semibold mb-4">Choose Avatar</h2> */}
             <div className="flex flex-wrap gap-4">
               {astrapuffs.map((avatar) => (
                 <AvatarFeaturer
@@ -353,41 +450,35 @@ export default function AvatarShowcase() {
                   imgSrc={avatar.imageUrl}
                   bgColor={avatar.bgColor}
                   onClick={() => handleAvatarClick(avatar)}
-                  isSelected={selectedAvatar?.name == avatar.name}
+                  isSelected={selectedAvatar.name === avatar.name}
                 />
               ))}
             </div>
           </div>
 
-          {/* Second Column - Avatar Image */}
+          {/* Avatar Image */}
           <div className="flex w-[35%] items-start justify-center p-6 pl-0 rounded-lg overflow-hidden">
-            <div
-              className="relative w-80 h-80 overflow-hidden rounded-full cursor-pointer"
+            <AvatarImage
+              src={selectedAvatar.imageUrl}
+              alt={`${selectedAvatar.name} avatar`}
+              className={`relative w-80 h-80 overflow-hidden rounded-full cursor-pointer transition-all duration-300 ease-out ${
+                isChanging ? "transform translate-y-full" : "transform translate-y-0"
+              }`}
+              transform={imageTransform}
               onMouseMove={handleMouseMove}
               onMouseLeave={handleMouseLeave}
-              ref={imageRef}
-            >
-              <img
-                src={selectedAvatar?.imageUrl || "/placeholder.svg"}
-                alt={`${selectedAvatar?.name} avatar`}
-                className={`w-full h-full object-cover transition-all duration-300 ease-out ${
-                  isChanging
-                    ? "transform translate-y-full"
-                    : "transform translate-y-0"
-                }`}
-                style={{
-                  transform: `translate(${imageTransform.x}px, ${imageTransform.y}px) scale(${imageTransform.scale})`,
-                }}
-              />
-            </div>
+              priority={true}
+            />
           </div>
 
-          {/* Third Column - Name and Description */}
+          {/* Name and Description */}
           <div className="flex flex-col w-[30%] p-2 rounded-lg">
-            <h1 className="text-4xl font-bold mb-6"><ScrambleHover text={selectedAvatar?.name}/></h1>
+            <h1 className="text-4xl font-bold mb-6">
+              <ScrambleHover text={selectedAvatar.name} />
+            </h1>
             <ScrollArea className="flex-1">
               <div className="prose prose-sm dark:prose-invert">
-                {selectedAvatar?.property}
+                {selectedAvatar.property}
               </div>
             </ScrollArea>
           </div>

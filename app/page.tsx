@@ -12,6 +12,7 @@ import Features from "@/components/features";
 import NewWaitlist from "@/components/new-waitlist";
 
 const App = () => {
+  console.error=()=>{}
   return (
     <div className="flex flex-col">
       <ThreeJSAnimationWithNoSSR />

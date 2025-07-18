@@ -1,16 +1,20 @@
 "use client";
 import "../styles/second-hero.css";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 // import confetti from "canvas-confetti"; //need to use dynamic import
 export default function NewWaitlist() {
   const [emailCount, setEmailCount] = useState<number>(30);
-  const screenSize = useScreenSize()
-  useEffect(() => {
+  const screenSize = useScreenSize();
+
+  const cachedFetchEmailCount = useCallback(
     async function fetchEmailCount() {
       setEmailCount((await getEmailCountFromEmailColumn()).count);
-    }
-    fetchEmailCount();
-  }, []);
+    }, [])
+  
+  useEffect(() => { 
+    cachedFetchEmailCount();
+  }, [cachedFetchEmailCount]);
+
   return (
     <div
       className="h-screen flex flex-col justify-center items-enter relative z-[5]"
@@ -60,7 +64,7 @@ export default function NewWaitlist() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#FF9B9B]/80 opacity-75"></span>
             <span className="relative inline-flex size-3 rounded-full bg-[#FF9B9B]"></span>
           </span>
-          <span className="text-[#cf689c] text-sm font-semibold">
+          <span className="text-[#cf689c] text-sm">
             PLAYTESTS STARTING SOON!
           </span>
         </div>
@@ -88,37 +92,33 @@ export default function NewWaitlist() {
   );
 }
 
-function FloatingInput({
-  setEmailCount,
-}: {
-  setEmailCount: (count: number) => void;
-}) {
-  const [email, setEmail] = useState("");
+import { Dispatch, SetStateAction } from "react";
+
+interface FloatingInputProps {
+  setEmailCount: Dispatch<SetStateAction<number>>;
+}
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+function FloatingInput({ setEmailCount }: FloatingInputProps) {
+  const [email, setEmail] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
   const isFloating = isFocused || email.length > 0;
-
-  // Email validation regex
-  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-
-  const validateEmail = (email: string) => {
-    return emailRegex.test(email);
-  };
-
-  const isValidEmail = validateEmail(email);
+  const isValidEmail = useMemo(() => EMAIL_REGEX.test(email), [email]);
   const isSubmitDisabled = !email || !isValidEmail || isLoading;
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!email) {
-      toast.error("Please enter your email address");
+      toast.error('Please enter your email address');
       return;
     }
 
-    if (!validateEmail(email)) {
-      toast.error("Please enter a valid email address", {
+    if (!isValidEmail) {
+      toast.error('Please enter a valid email address', {
         icon: <AlertCircle className="h-5 w-5 text-red-500" />,
       });
       return;
@@ -132,61 +132,69 @@ function FloatingInput({
         description: "We'll be in touch soon with updates.",
         icon: <CheckCircle2 className="h-5 w-5 text-green-500" />,
       });
-      setEmail("");
-      //@ts-expect-error something
-      setEmailCount((prevCount) => prevCount + 1);
+      setEmail('');
+      setEmailCount((prev: number) => prev + 1);
+      
+      // Dynamic confetti import
       const confetti = (await import('canvas-confetti')).default;
-  if(confetti)confetti();
-    } catch (error: unknown) {
-      console.error("Error appending email:", error);
-      toast.error("Something went wrong. Please try again.");
+      confetti?.();
+    } catch (error) {
+      console.error('Error appending email:', error);
+      toast.error('Something went wrong. Please try again.');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [email, isValidEmail, setEmailCount]);
 
-  const handleKeyPress = (e: React.KeyboardEvent<Element>) => {
-    if (e.key === "Enter") {
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
       handleSubmit(e);
     }
-  };
+  }, [handleSubmit]);
+
+  const handleFocus = useCallback(() => setIsFocused(true), []);
+  const handleBlur = useCallback(() => setIsFocused(false), []);
+
+  // Memoized class names
+  const labelClasses = useMemo(() => 
+    `absolute left-4 px-1 text-gray-500 pointer-events-none transition-all duration-200 ease-in-out ${
+      isFloating
+        ? '-top-5 text-sm text-blue-600 font-medium'
+        : 'top-1/2 -translate-y-1/2 text-lg'
+    }`, [isFloating]);
+
+  const inputClasses = useMemo(() => 
+    `w-full bg-transparent border-none outline-none text-lg z-[200] transition-all duration-200 ${
+      isFloating ? 'pt-3 pb-2' : 'py-0'
+    }`, [isFloating]);
+
+  const buttonClasses = useMemo(() => 
+    `w-fit mx-auto px-6 py-4 text-white font-medium rounded-lg text-lg transition-all duration-200 relative z-10 ${
+      isSubmitDisabled
+        ? 'bg-[#e02a85]/60 cursor-not-allowed'
+        : 'bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer'
+    }`, [isSubmitDisabled]);
 
   return (
     <div className="flex flex-col items-center justify-center p-8 w-full max-w-4xl mx-auto">
-      {/* Input Field */}
-      <div className="relative  border-2 border-gray-300 rounded-lg p-4 w-full h-16 flex items-center focus-within:border-[#e02a85] transition-colors duration-200 mb-4">
-        {/* Floating Label */}
-        <label
-          className={`absolute left-4   px-1 text-gray-500 pointer-events-none transition-all duration-200 ease-in-out ${
-            isFloating
-              ? "-top-5 text-sm text-blue-600 font-medium"
-              : "top-1/2 -translate-y-1/2 text-lg"
-          }`}
-        >
+      <div className="relative border-2 border-gray-300 rounded-lg p-4 w-full h-16 flex items-center focus-within:border-[#e02a85] transition-colors duration-200 mb-4">
+        <label className={labelClasses} htmlFor="email-input">
           Email
         </label>
-
-        {/* Input Field */}
         <input
           type="email"
+          id="email-input"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          onFocus={() => setIsFocused(true)}
-          onBlur={() => setIsFocused(false)}
-          onKeyPress={handleKeyPress}
-          className={`w-full bg-transparent border-none outline-none text-lg z-[200] ${
-            isFloating ? "pt-3 pb-2" : "py-0"
-          } transition-all duration-200`}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onKeyDown={handleKeyDown}
+          className={inputClasses}
         />
       </div>
 
-      {/* Join Waitlist Button */}
       <button
-        className={`w-fit mx-auto px-6 py-4 text-white font-medium rounded-lg text-lg transition-all duration-200 relative z-10 ${
-          isSubmitDisabled
-            ? "bg-[#e02a85]/60 cursor-not-allowed"
-            : "bg-[#e02a85] hover:bg-[#e02a85]/80 cursor-pointer"
-        }`}
+        className={buttonClasses}
         disabled={isSubmitDisabled}
         onClick={handleSubmit}
       >
@@ -196,7 +204,7 @@ function FloatingInput({
             <span>Joining...</span>
           </div>
         ) : (
-          "Join waitlist"
+          'Join waitlist'
         )}
       </button>
     </div>
